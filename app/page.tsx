@@ -1,5 +1,8 @@
 import Image from "next/image";
 import PrimaryCard from "./components/ui/PrimaryCard";
+import MockUp from "@/assets/home/images/app_mockup.png";
+import AppStore from "@/assets/home/images/apple_app_store.svg";
+import GooglePlay from "@/assets/home/images/google_play.svg";
 
 export default function Home() {
   return (
@@ -15,7 +18,7 @@ export default function Home() {
         </div>
         <div className="flex justify-center items-center">
           <Image
-            src="/app_mockup.png"
+            src={MockUp}
             alt="앱 화면 목업"
             width={420}
             height={420}
@@ -42,7 +45,7 @@ export default function Home() {
           <div className="flex flex-row pt-10 gap-5 justify-center">
             <a href="https://apps.apple.com/kr/app/id6751395152" target="_blank" rel="noopener noreferrer" aria-label="애플 앱 스토어로 이동">
               <Image
-                src="/apple_app_store.svg"
+                src={AppStore}
                 width={150}
                 height={150}
                 alt="애플 앱 스토어"
@@ -50,7 +53,7 @@ export default function Home() {
             </a>
             <a href="https://play.google.com/store/apps/details?id=com.dutyit.app" target="_blank" rel="noopener noreferrer" aria-label="구글 플레이 스토어로 이동">
               <Image
-                src="/google_play.svg"
+                src={GooglePlay}
                 width={150}
                 height={150}
                 alt="애플 앱 스토어"
