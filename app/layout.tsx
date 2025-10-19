@@ -1,6 +1,13 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Header from "./components/Header";
+import { Noto_Sans_KR } from "next/font/google";
+
+const notoSansKR = Noto_Sans_KR({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "듀잇",
@@ -13,7 +20,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko">
+    <html lang="ko" className={notoSansKR.className}>
       <body
         className={"antialiased min-h-screen flex flex-col"}
       >
