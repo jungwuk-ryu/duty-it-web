@@ -39,8 +39,8 @@ export default function Home() {
         <p className="text-2xl font-bold">지금 듀잇을 다운로드 하세요!</p>
         <p className="leading-8">언제 어디서든 최신 간호 행사 정보를 확인하고, 앞서 나아가세요.</p>
         <div className="flex flex-row pt-10 gap-5 justify-center">
-          <div className="py-2 px-5 items-center bg-white rounded-sm font-bold text-black">App Store</div>
-          <div className="py-2 px-5 items-center bg-white rounded-sm font-bold text-black">Google Play</div>
+          <a href="https://apps.apple.com/kr/app/id6751395152" target="_blank" rel="noopener noreferrer" aria-label="애플 앱 스토어로 이동"><div className="py-2 px-5 items-center bg-white rounded-sm font-bold text-black">App Store</div></a>
+          <a href="https://play.google.com/store/apps/details?id=com.dutyit.app" target="_blank" rel="noopener noreferrer" aria-label="구글 플레이 스토어로 이동"><div className="py-2 px-5 items-center bg-white rounded-sm font-bold text-black">Google Play</div></a>
         </div>
       </div>
     </div>
