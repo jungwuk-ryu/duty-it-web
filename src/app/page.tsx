@@ -1,8 +1,8 @@
 import Image from "next/image";
-import PrimaryCard from "./components/ui/PrimaryCard";
-import MockUp from "@/assets/home/images/app_mockup.png";
-import AppStore from "@/assets/home/images/apple_app_store.svg";
-import GooglePlay from "@/assets/home/images/google_play.svg";
+import PrimaryCard from "../components/ui/PrimaryCard";
+import MockUp from "@/src/assets/home/images/app_mockup.png";
+import AppStore from "@/src/assets/home/images/apple_app_store.svg";
+import GooglePlay from "@/src/assets/home/images/google_play.svg";
 
 export default function Home() {
   return (
@@ -47,7 +47,7 @@ export default function Home() {
               <Image
                 src={AppStore}
                 width={150}
-                height={150}
+                height={50}
                 alt="애플 앱 스토어"
               />
             </a>
@@ -55,7 +55,7 @@ export default function Home() {
               <Image
                 src={GooglePlay}
                 width={150}
-                height={150}
+                height={50}
                 alt="애플 앱 스토어"
               /></a>
           </div>
