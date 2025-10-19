@@ -7,7 +7,7 @@ export default function Home() {
       <div className="pt-20 flex flex-col md:flex-row justify-center items-center gap-20">
         <div className="flex flex-col gap-5 text-center md:text-left">
           <h1 className="text-4xl md:text-5xl font-bold leading-relaxed tracking-tighter">
-            <span className="text-brand">듀잇</span>과 함께,<br className="hidden md:block" />모든 간호사 행사를 한 눈에!
+            <span className="text-brand">듀잇</span>과 함께,<br className="hidden md:block" /> 모든 간호사 행사를 한 눈에!
           </h1>
           <p className="text-gray-600 text-xl">
             국내 모든 간호 행사를 한 곳에 모아두었어요.
