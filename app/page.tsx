@@ -29,9 +29,9 @@ export default function Home() {
       <div className="flex flex-col justify-center text-center">
         <SectionDescription title="듀잇의 특별한 기능" desc="간호사/간호대학생분들을 위한 맞춤형 기능을 만나보세요." />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-20">
-          <PrimaryCard title="맞춤 검색 & 필터" content="행사 종류, 주최별로 원하는 행사를 쉽게 찾아보세요."/>
-          <PrimaryCard title="관심 행사 알림" content="북마크한 행사의 신청 마감일을 놓치지 않도록 알려드립니다."/>
-          <PrimaryCard title="캘린더에서 한 눈에" content="관심 있는 행사를 캘린더에서 한 눈에 확인할 수 있습니다."/>
+          <PrimaryCard title="맞춤 검색 & 필터" content="행사 종류, 주최별로 원하는 행사를 쉽게 찾아보세요." />
+          <PrimaryCard title="관심 행사 알림" content="북마크한 행사의 신청 마감일을 놓치지 않도록 알려드립니다." />
+          <PrimaryCard title="캘린더에서 한 눈에" content="관심 있는 행사를 캘린더에서 한 눈에 확인할 수 있습니다." />
         </div>
       </div>
 
@@ -52,7 +52,7 @@ type SectionProps = {
   desc: string;
 };
 
-function SectionDescription({title, desc} : SectionProps) {
+function SectionDescription({ title, desc }: SectionProps) {
   return (
     <header className="space-y-2">
       <h2 className="text-2xl font-bold leading-relaxed">{title}</h2>
