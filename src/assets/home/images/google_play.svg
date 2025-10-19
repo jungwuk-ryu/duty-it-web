@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="artwork" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 135 40">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #4285f4;
+      }
+
+      .cls-2, .cls-3, .cls-4, .cls-5, .cls-6, .cls-7, .cls-8, .cls-9 {
+        font-family: GoogleSans-Regular, 'Google Sans';
+        font-variation-settings: 'opsz' 18, 'wght' 400, 'GRAD' 0;
+      }
+
+      .cls-10, .cls-11, .cls-12 {
+        font-family: NotoSansKR-Thin, 'Noto Sans KR';
+        font-variation-settings: 'wght' 100;
+        font-weight: 200;
+      }
+
+      .cls-13 {
+        font-size: 11.5px;
+      }
+
+      .cls-13, .cls-12 {
+        fill: #fff;
+      }
+
+      .cls-3 {
+        letter-spacing: 0em;
+      }
+
+      .cls-4 {
+        letter-spacing: 0em;
+      }
+
+      .cls-5 {
+        letter-spacing: 0em;
+      }
+
+      .cls-14 {
+        fill: #a6a6a6;
+      }
+
+      .cls-15 {
+        fill: #34a853;
+      }
+
+      .cls-16 {
+        fill: #fbbc04;
+      }
+
+      .cls-6 {
+        letter-spacing: -.02em;
+      }
+
+      .cls-17 {
+        fill: #ea4335;
+      }
+
+      .cls-7 {
+        letter-spacing: 0em;
+      }
+
+      .cls-8 {
+        letter-spacing: 0em;
+      }
+
+      .cls-9 {
+        letter-spacing: .02em;
+      }
+
+      .cls-18 {
+        letter-spacing: -.03em;
+      }
+
+      .cls-11 {
+        letter-spacing: -.03em;
+      }
+
+      .cls-19 {
+        letter-spacing: .02em;
+      }
+
+      .cls-20 {
+        letter-spacing: 0em;
+      }
+
+      .cls-12 {
+        font-size: 8.7px;
+      }
+    </style>
+  </defs>
+  <g>
+    <rect width="135" height="40" rx="5" ry="5"/>
+    <path class="cls-14" d="M130,.8c2.32,0,4.2,1.88,4.2,4.2v30c0,2.32-1.88,4.2-4.2,4.2H5c-2.32,0-4.2-1.88-4.2-4.2V5C.8,2.68,2.68.8,5,.8h125M130,0H5C2.25,0,0,2.25,0,5v30c0,2.75,2.25,5,5,5h125c2.75,0,5-2.25,5-5V5C135,2.25,132.75,0,130,0h0Z"/>
+    <g>
+      <path class="cls-17" d="M20.72,19.42l-10.65,11.3s0,0,0,0c.33,1.23,1.45,2.13,2.78,2.13.53,0,1.03-.14,1.46-.4l.03-.02,11.98-6.91-5.61-6.11Z"/>
+      <path class="cls-16" d="M31.49,17.5h-.01s-5.17-3.01-5.17-3.01l-5.83,5.19,5.85,5.85,5.15-2.97c.9-.49,1.51-1.44,1.51-2.53s-.6-2.04-1.5-2.52Z"/>
+      <path class="cls-1" d="M10.07,9.28c-.06.24-.1.48-.1.74v19.97c0,.26.03.5.1.74l11.01-11.01-11.01-10.44Z"/>
+      <path class="cls-15" d="M20.8,20l5.51-5.51-11.97-6.94c-.43-.26-.94-.41-1.49-.41-1.33,0-2.45.91-2.78,2.13,0,0,0,0,0,0l10.73,10.72Z"/>
+    </g>
+  </g>
+  <text class="cls-13" transform="translate(40.25 17.13)"><tspan class="cls-9" x="0" y="0">G</tspan><tspan class="cls-3" x="9.26" y="0">oog</tspan><tspan class="cls-5" x="29.9" y="0">l</tspan><tspan class="cls-2" x="32.37" y="0">e </tspan><tspan class="cls-8" x="41.51" y="0">P</tspan><tspan class="cls-4" x="48.07" y="0">l</tspan><tspan class="cls-6" x="50.53" y="0">a</tspan><tspan class="cls-7" x="56.4" y="0">y</tspan><tspan class="cls-11" x="62.4" y="0">에</tspan><tspan class="cls-10" x="72.65" y="0">서</tspan></text>
+  <text class="cls-12" transform="translate(40.15 30.96)"><tspan class="cls-20" x="0" y="0">다</tspan><tspan class="cls-18" x="8.06" y="0">운</tspan><tspan class="cls-19" x="15.78" y="0">로</tspan><tspan x="23.95" y="0">드</tspan></text>
+</svg>
