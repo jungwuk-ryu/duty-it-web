@@ -11,7 +11,7 @@ const notoSansKR = Noto_Sans_KR({
 
 export const metadata: Metadata = {
   title: "듀잇",
-  description: "국내 모든 간호 행사가 한 곳에",
+  description: "국내 모든 간호 행사가 한 곳에!",
 };
 
 export default function RootLayout({
