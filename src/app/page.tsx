@@ -6,7 +6,7 @@ import GooglePlay from "@/src/assets/home/images/google_play.svg";
 
 export default function Home() {
   return (
-    <div className="flex flex-col px-5 md:px-20 gap-20">
+    <div className="flex flex-col px-5 md:px-20 gap-20 container mx-auto px-4">
       <div className="pt-20 flex flex-col md:flex-row justify-center items-center gap-20">
         <div className="flex flex-col gap-5 text-center md:text-left">
           <h1 className="text-4xl md:text-5xl font-bold leading-relaxed tracking-tighter">
