@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Header from "./components/Header";
 import { Noto_Sans_KR } from "next/font/google";
+import Footer from "./components/Footer";
 
 const notoSansKR = Noto_Sans_KR({
   subsets: ["latin"],
@@ -26,9 +27,9 @@ export default function RootLayout({
       >
         <Header />
         <main className="flex-1 pt-20 bg-[#F8F9FA] ">
-        {children}
+          {children}
         </main>
-        
+        <Footer />
       </body>
     </html>
   );
