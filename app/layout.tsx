@@ -20,7 +20,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko" className={notoSansKR.className}>
+    <html lang="ko" className="{notoSansKR.className} scroll-smooth">
       <body
         className={"antialiased min-h-screen flex flex-col"}
       >
