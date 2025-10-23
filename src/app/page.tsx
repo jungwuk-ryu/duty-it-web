@@ -3,6 +3,12 @@ import PrimaryCard from "../components/ui/PrimaryCard";
 import MockUp from "@/src/assets/home/images/app_mockup.png";
 import AppStore from "@/src/assets/home/images/apple_app_store.svg";
 import GooglePlay from "@/src/assets/home/images/google_play.svg";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "듀잇 - 간호 행사가 한 곳에!",
+  description: "국내 모든 간호 행사를 한곳에 모아두었어요."
+};
 
 export default function Home() {
   return (
@@ -41,7 +47,7 @@ export default function Home() {
       <section id="download">
         <div className="flex flex-col bg-brand py-20 text-center text-white">
           <h3 className="text-2xl font-bold">지금 듀잇을 다운로드하세요!</h3>
-          <p className="leading-8 text-white/80">언제 어디서든 최신 간호 행사 정보를 확인하고 앞서 나아가세요.</p>
+          <p className="leading-8 text-white/96">언제 어디서든 최신 간호 행사 정보를 확인하고 앞서 나아가세요.</p>
           <div className="flex flex-row pt-10 gap-5 justify-center">
             <a href="https://apps.apple.com/kr/app/id6751395152" target="_blank" rel="noopener noreferrer" aria-label="애플 앱 스토어로 이동">
               <Image
