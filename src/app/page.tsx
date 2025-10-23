@@ -3,6 +3,12 @@ import PrimaryCard from "../components/ui/PrimaryCard";
 import MockUp from "@/src/assets/home/images/app_mockup.png";
 import AppStore from "@/src/assets/home/images/apple_app_store.svg";
 import GooglePlay from "@/src/assets/home/images/google_play.svg";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "듀잇 - 간호 행사가 한 곳에!",
+  description: "국내 모든 간호 행사를 한곳에 모아두었어요."
+};
 
 export default function Home() {
   return (
