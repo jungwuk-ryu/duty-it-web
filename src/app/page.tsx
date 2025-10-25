@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <div className="flex flex-col px-5 md:px-20 gap-20 container mx-auto px-4">
-      <div className="pt-20 flex flex-col md:flex-row justify-center items-center gap-20">
+      <section className="pt-20 flex flex-col md:flex-row justify-center items-center gap-20">
         <div className="flex flex-col gap-5 text-center md:text-left">
           <h1 className="text-4xl md:text-5xl font-bold leading-relaxed tracking-tighter">
             <span className="text-brand">듀잇</span>과 함께,<br className="hidden md:block" /> 모든 간호사 행사를 한눈에!
@@ -33,16 +33,16 @@ export default function Home() {
             className="drop-shadow-xl rounded-2xl"
           />
         </div>
-      </div>
+      </section>
 
-      <div className="flex flex-col justify-center text-center">
+      <section id="features" className="flex flex-col justify-center text-center">
         <SectionDescription title="듀잇의 특별한 기능" desc="간호사·간호대학생분들을 위한 맞춤형 기능을 만나보세요." />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-20">
           <PrimaryCard title="맞춤 검색 & 필터" content="행사 종류, 주최별로 원하는 행사를 쉽게 찾아보세요." />
           <PrimaryCard title="관심 행사 알림" content="북마크한 행사의 신청 마감일을 놓치지 않도록 알려드립니다." />
           <PrimaryCard title="캘린더에서 한눈에" content="관심 있는 행사를 캘린더에서 한눈에 확인할 수 있습니다." />
         </div>
-      </div>
+      </section>
 
       <section id="download">
         <div className="flex flex-col bg-brand py-20 text-center text-white">
