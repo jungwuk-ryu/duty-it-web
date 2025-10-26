@@ -9,7 +9,7 @@ type Props = {
 
 export default function EventCard({ event }: Props) {
     return (
-        <article className="rounded-lg hover:scale-103 transition-transform drop-shadow-lg bg-white p-5 cursor-pointer">
+        <article className="rounded-lg hover:scale-103 transition-transform drop-shadow-lg bg-white p-5">
             <div className="relative aspect-[2/1] w-full content-center overflow-hidden mb-3">
                 <Image
                     src={event.thumbnail ?? "/event-thumbnail-placeholder.svg"}
@@ -22,7 +22,7 @@ export default function EventCard({ event }: Props) {
             </div>
             <div className="flex-1">
                 <CategoryTag category={event.eventType} />
-                <Link href={event.uri.toString()} aria-label='행사 바로가기' prefetch={false} target="_blank" rel="noopener">
+                <Link href={event.uri.toString()} aria-label='행사 바로가기' prefetch={false} cursor-pointer target="_blank" rel="noopener">
                     <h3 className='text-xl font-bold mt-3 mb-3'>
                         {event.title}
                     </h3>
