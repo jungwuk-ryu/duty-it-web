@@ -10,7 +10,7 @@ export default function Header() {
                 </div>
                 <ul className="flex items-center gap-6 text-gray-700">
                     <li><Link href="/events">행사 목록</Link></li>
-                    <li><Link href="#download"><PrimaryButton>앱 다운로드</PrimaryButton></Link></li>
+                    <li><Link href="/#download"><PrimaryButton>앱 다운로드</PrimaryButton></Link></li>
                 </ul>
             </nav>
         </header>
