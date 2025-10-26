@@ -29,6 +29,7 @@ export default function Home() {
             width={420}
             height={420}
             priority
+            fetchPriority="high"
             sizes="(min-width: 768px) 420px, 80vw"
             className="drop-shadow-xl rounded-2xl"
           />
