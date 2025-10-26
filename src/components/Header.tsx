@@ -8,7 +8,7 @@ export default function Header() {
                 <div className="text-xl text-brand font-bold">
                     <Link href="/">듀잇 - DuIt!</Link>
                 </div>
-                <ul className="flex items-center gap-6 text-gray-700">
+                <ul className="flex break-keep items-center gap-6 text-gray-700 text-auto">
                     <li><Link href="/#features">주요 기능</Link></li>
                     <li><Link href="/events">행사 목록</Link></li>
                     <li><Link href="/#download"><PrimaryButton>앱 다운로드</PrimaryButton></Link></li>
