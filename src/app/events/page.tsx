@@ -4,7 +4,10 @@ import { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-    title: '듀잇 - 행사 목록'
+    title: '듀잇 - 행사 목록',
+    alternates: {
+        canonical: 'https://www.dutyit.net/events'
+    }
 }
 
 type Props = { searchParams: { page?: string } };
