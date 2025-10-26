@@ -24,13 +24,13 @@ export default async function EventsPage({ searchParams }: Props) {
                 <h2 className="text-xl text-gray-600 font-bold mb-5">{page} 페이지</h2>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7">
+            <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7">
                 {
                     content.map((event) => (
-                        <EventCard key={event.id} event={event} />
+                        <li key={event.id}><EventCard event={event} /></li>
                     ))
                 }
-            </div>
+            </ul>
             <nav className="mt-8 flex items-center justify-center gap-5">
                 {page > 1 && (
                     <Link href={`/events?page=${page - 1}`} className="bg-white border border-gray-300 rounded-xl drop-shadow-lg px-3 py-1">
