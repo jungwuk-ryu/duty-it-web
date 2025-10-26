@@ -22,7 +22,7 @@ export default function EventCard({ event }: Props) {
             </div>
             <div className="flex-1">
                 <CategoryTag category={event.eventType} />
-                <Link href={event.uri.toString()} aria-label={`${event.title} 바로가기`} prefetch={false} cursor-pointer target="_blank" rel="noopener">
+                <Link href={event.uri.toString()} aria-label={`${event.title} 바로가기`} prefetch={false} target="_blank" rel="noopener">
                     <h3 className='text-xl font-bold mt-3 mb-3'>
                         {event.title}
                     </h3>
