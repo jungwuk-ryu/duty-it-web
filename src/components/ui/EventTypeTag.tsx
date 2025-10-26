@@ -1,7 +1,7 @@
 import { EventType, EventTypeLabel } from "@/src/lib/schemas/event-type";
 
 export default function CategoryTag({category} : CategoryTagProps) {
-    let color: string = CATEGORY_STYLE[category];
+    const color: string = CATEGORY_STYLE[category];
 
     return (
         <span className={`text-sm font-semibold ${color} px-3 py-1 rounded-full `}>
