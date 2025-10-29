@@ -3,7 +3,7 @@ import "./globals.css";
 import Header from "../components/Header";
 import { Noto_Sans_KR } from "next/font/google";
 import Footer from "../components/Footer";
-import { GoogleTagManager } from '@next/third-parties/google'
+import { GoogleAnalytics } from '@next/third-parties/google'
 
 const notoSansKR = Noto_Sans_KR({
   subsets: ["latin"],
@@ -58,7 +58,7 @@ export default function RootLayout({
         </main>
         <Footer />
       </body>
-      <GoogleTagManager gtmId={process.env.GA_ID ?? ""} />
+      <GoogleAnalytics gaId={process.env.GA_ID ?? ""} />
     </html>
   );
 }
