@@ -39,6 +39,9 @@ export const metadata: Metadata = {
       width: 1200,
       height: 630
     }
+  },
+  other: {
+    'apple-itunes-app': 'app-id=6751395152'
   }
 };
 
