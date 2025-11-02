@@ -9,18 +9,15 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-};
-
-module.exports = {
   async redirects() {
     return [
       {
         source: '/submit-event',
-        destination: process.env['SUBMIT_FORM_URL'],
+        destination: process.env['SUBMIT_FORM_URL']!,
         permanent: false,
       },
     ]
   },
-}
+};
 
 export default nextConfig;
