@@ -9,9 +9,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-};
-
-module.exports = {
   async redirects() {
     return [
       {
@@ -21,6 +18,6 @@ module.exports = {
       },
     ]
   },
-}
+};
 
 export default nextConfig;
