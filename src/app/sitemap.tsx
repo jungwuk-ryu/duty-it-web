@@ -7,12 +7,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const events = await fetchEvents();
     const totalPages = events.pageInfo.totalPages;
 
-    const eventsPages = Array.from({ length: totalPages }, (_, i) => ({
+    const eventsPages = Array.from({ length: Math.min(totalPages, 10) }, (_, i) => ({
         url: `${base}/events?page=${i + 1}`,
         lastModified: new Date(),
         changeFrequency: "weekly" as const,
         priority: 0.8,
-      }));
+    }));
 
     return [
         {

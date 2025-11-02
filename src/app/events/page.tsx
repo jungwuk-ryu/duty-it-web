@@ -3,17 +3,29 @@ import { fetchEvents } from "@/src/lib/api/events";
 import { Metadata } from "next";
 import Link from "next/link";
 
-export const metadata: Metadata = {
-    title: '듀잇 - 행사 목록',
-    alternates: {
-        canonical: 'https://www.dutyit.net/events'
-    }
-}
-
 type Props = { searchParams: { page?: string } };
 
+export async function generateMetadata(
+    { searchParams }: Props): Promise<Metadata> {
+    const page = Number(searchParams.page ?? "1");
+    const title = `듀잇 - 행사 목록 ${page}페이지`;
+    let canonical = 'https://www.dutyit.net/events';
+    if (page != 1) canonical += `?page=${page}`;
+
+    return {
+        title: title,
+        alternates: {
+            canonical: canonical
+        },
+        openGraph: {
+            url: canonical,
+            title,
+          },
+    };
+}
+
 export default async function EventsPage({ searchParams }: Props) {
-    const page = Number((await searchParams).page ?? "1");
+    const page = Number(searchParams.page ?? "1");
 
     const { content, pageInfo } = await fetchEvents({ page: page - 1 });
     const totalPages = pageInfo.totalPages;

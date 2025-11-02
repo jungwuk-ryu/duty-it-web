@@ -13,7 +13,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/submit-event',
-        destination: process.env['SUBMIT_FORM_URL'],
+        destination: process.env['SUBMIT_FORM_URL']!,
         permanent: false,
       },
     ]
