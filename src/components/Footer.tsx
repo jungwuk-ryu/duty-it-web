@@ -14,7 +14,7 @@ export default function Footer() {
                     </Link>
                 </li>
                 <li>
-                    <Link href="mailto:vojougae35@gmail.com" className="hover:text-brand transition">
+                    <Link href="mailto:contact@dutyit.net" className="hover:text-brand transition">
                         문의하기
                     </Link>
                 </li>
