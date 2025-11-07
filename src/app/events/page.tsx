@@ -39,7 +39,7 @@ export default async function EventsPage({ searchParams }: Props) {
                 <h2 className="text-xl text-gray-600 font-bold mb-5">{page} 페이지</h2>
             </div>
 
-            <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7">
+            <ul className="grid grid-cols-1 sm:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-7">
                 {
                     content.map((event) => (
                         <li key={event.id}><EventCard event={event} /></li>
