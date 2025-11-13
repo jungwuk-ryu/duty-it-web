@@ -6,8 +6,8 @@ import GooglePlay from "@/src/assets/home/images/google_play.svg";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "듀잇 - 간호 행사가 한 곳에!",
-  description: "국내 모든 간호 행사를 한곳에 모아두었어요."
+  title: "간호의 미래를 여는 의미 있는 여정 | 듀잇",
+  description: "간호 행사·학술대회·보수교육을 한눈에. 듀잇이 당신의 배움과 성장을 더 쉽게 이어드립니다."
 };
 
 export default function Home() {
