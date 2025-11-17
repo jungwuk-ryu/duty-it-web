@@ -8,7 +8,7 @@ type Props = { searchParams: { page?: string } };
 export async function generateMetadata(
     { searchParams }: Props): Promise<Metadata> {
     const page = Number(searchParams.page ?? "1");
-    const title = `듀잇 - 행사 목록 ${page}페이지`;
+    const title = `간호 행사 목록 ${page}페이지 | 듀잇`;
     let canonical = 'https://www.dutyit.net/events';
     if (page != 1) canonical += `?page=${page}`;
 
@@ -19,7 +19,7 @@ export async function generateMetadata(
         },
         openGraph: {
             url: canonical,
-            title,
+            title: title,
           },
     };
 }
