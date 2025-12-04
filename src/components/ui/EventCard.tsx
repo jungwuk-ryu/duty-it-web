@@ -50,12 +50,17 @@ function formatDates(start: Date | null, end: Date | null): string {
         return formatDate(start!);
     }
     if (start == null) {
-        return formatDate(end!);
+        return `~ ${formatDate(end!)}`;
     }
 
-    return `${formatDate(start)} ~ ${formatDate(end)}`;
+    const formattedStart = formatDate(start);
+    const formattedEnd = formatDate(end);
+
+    if (formattedStart == formattedEnd) return formattedStart;
+
+    return `${formattedStart} ~ ${formattedEnd}`;
 }
 
 function formatDate(date: Date): string {
-    return `${date.getFullYear()}년 ${date.getMonth()}월 ${date.getDay()}일`;
+    return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
 }
