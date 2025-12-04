@@ -10,9 +10,9 @@
   },
   "dependencies": {
     "@next/third-parties": "^16.0.0",
-    "next": "15.5.4",
-    "react": "19.1.0",
-    "react-dom": "19.1.0",
+    "next": "15.5.7",
+    "react": "19.1.2",
+    "react-dom": "19.1.2",
     "zod": "^4.1.12"
   },
   "devDependencies": {
