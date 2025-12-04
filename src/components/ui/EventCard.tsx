@@ -50,7 +50,7 @@ function formatDates(start: Date | null, end: Date | null): string {
         return formatDate(start!);
     }
     if (start == null) {
-        return formatDate(end!);
+        return `~ ${formatDate(end!)}`;
     }
 
     const formattedStart = formatDate(start);
