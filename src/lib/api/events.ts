@@ -21,7 +21,7 @@ export async function fetchEvents(opts: FetchOptions = {}): Promise<EventRespons
         field: "ID"
     });
 
-    const res = await fetch(`${API_BASE}/events?${params.toString()}`, { next: { revalidate: 60 * 30 } });
+    const res = await fetch(`${API_BASE}/events?${params.toString()}`);
     if (!res.ok) throw new Error("Failed to fetch");
 
     const json = await res.json();
