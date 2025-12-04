@@ -53,7 +53,12 @@ function formatDates(start: Date | null, end: Date | null): string {
         return formatDate(end!);
     }
 
-    return `${formatDate(start)} ~ ${formatDate(end)}`;
+    const formattedStart = formatDate(start);
+    const formattedEnd = formatDate(end);
+
+    if (formattedStart == formattedEnd) return formattedStart;
+
+    return `${formattedStart} ~ ${formattedEnd}`;
 }
 
 function formatDate(date: Date): string {
