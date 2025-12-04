@@ -57,5 +57,5 @@ function formatDates(start: Date | null, end: Date | null): string {
 }
 
 function formatDate(date: Date): string {
-    return `${date.getFullYear()}년 ${date.getMonth()}월 ${date.getDay()}일`;
+    return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
 }
