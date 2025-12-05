@@ -7,7 +7,7 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "간호의 미래를 여는 의미 있는 여정 | 듀잇",
-  description: "간호 행사·학술대회·보수교육을 한눈에. 듀잇이 당신의 배움과 성장을 더 쉽게 이어드립니다."
+  description: "간호 대외활동·행사·학술대회·보수교육을 한눈에. 듀잇이 당신의 배움과 성장을 더 쉽게 이어드려요."
 };
 
 export default function Home() {
@@ -17,10 +17,10 @@ export default function Home() {
         <section className="pt-20 flex flex-col md:flex-row justify-center items-center gap-20">
           <div className="flex flex-col gap-5 text-center md:text-left">
             <h1 className="text-4xl md:text-5xl font-bold leading-relaxed tracking-tighter">
-              <span className="text-brand">듀잇</span>과 함께,<br className="hidden md:block" /> 모든 간호사 행사를 한눈에!
+              <span className="text-brand">듀잇</span>과 함께,<br className="hidden md:block" /> 간호 대외활동과 행사를 한눈에!
             </h1>
             <p className="text-gray-600 text-xl">
-              국내 모든 간호 행사를 한곳에 모아두었어요.
+              국내 간호 대외활동과 행사를 한곳에 모아두었어요.
             </p>
           </div>
           <div className="flex justify-center items-center">
