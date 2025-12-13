@@ -2,10 +2,9 @@ import { z } from "zod";
 
 
 export const PageInfoSchema = z.object({
-    "pageNumber": z.number(),
+    "hasNext": z.boolean(),
+    "nextCursor": z.string().nullable(),
     "pageSize": z.number(),
-    "totalPages": z.number(),
-    "totalElements": z.number(),
 });
 
 export type PageInfo = z.infer<typeof PageInfoSchema>;
