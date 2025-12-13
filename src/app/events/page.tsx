@@ -8,7 +8,7 @@ type Props = { searchParams: { cursor?: string | null } };
 export async function generateMetadata(
     { searchParams }: Props): Promise<Metadata> {
     const title = `간호 행사 목록 | 듀잇`;
-    let canonical = 'https://www.dutyit.net/events';
+    const canonical = 'https://www.dutyit.net/events';
 
     return {
         title: title,
