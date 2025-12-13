@@ -9,7 +9,7 @@ type Props = {
 
 export default function EventCard({ event }: Props) {
     return (
-        <article className="rounded-lg hover:scale-103 transition-transform drop-shadow-lg bg-white p-5">
+        <article className="h-full rounded-lg hover:scale-103 transition-transform drop-shadow-lg bg-white p-5">
             <div className="relative aspect-[2/1] w-full content-center overflow-hidden mb-3">
                 <Image
                     src={event.thumbnail ?? "/event-thumbnail-placeholder.svg"}
