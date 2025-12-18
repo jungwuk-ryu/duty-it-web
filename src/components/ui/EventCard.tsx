@@ -8,6 +8,9 @@ type Props = {
 };
 
 export default function EventCard({ event }: Props) {
+    const url = new URL(event.uri.toString());
+    url.searchParams.set("utm_source", "dutyit.net");
+    
     return (
         <article className="h-full rounded-lg hover:scale-103 transition-transform drop-shadow-lg bg-white p-5">
             <div className="relative aspect-[2/1] w-full content-center overflow-hidden mb-3">
@@ -22,7 +25,7 @@ export default function EventCard({ event }: Props) {
             </div>
             <div className="flex-1">
                 <CategoryTag category={event.eventType} />
-                <Link href={event.uri.toString()} aria-label={`${event.title} 바로가기`} prefetch={false} target="_blank" rel="noopener">
+                <Link href={url.toString()} aria-label={`${event.title} 바로가기`} prefetch={false} target="_blank" rel="noopener">
                     <h3 className='text-xl font-bold mt-3 mb-3'>
                         {event.title}
                     </h3>
