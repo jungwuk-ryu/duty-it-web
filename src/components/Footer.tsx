@@ -15,7 +15,7 @@ export default function Footer() {
                     </Link>
                 </li>
                 <li>
-                    <Link href="/submit-event" className="hover:text-brand transition">
+                    <Link href="/submit-event" className="hover:text-brand transition" prefetch={false}>
                         행사 제보하기
                     </Link>
                 </li>
