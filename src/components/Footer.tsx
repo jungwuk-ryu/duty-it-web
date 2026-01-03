@@ -10,6 +10,11 @@ export default function Footer() {
 
             <ul className="flex gap-4 text-sm">
                 <li>
+                    <Link href="https://status.dutyit.net/" className="hover:text-brand transition">
+                        상태
+                    </Link>
+                </li>
+                <li>
                     <Link href="/submit-event" className="hover:text-brand transition">
                         행사 제보하기
                     </Link>
