@@ -20,7 +20,7 @@ export async function fetchEvents(opts: FetchOptions = {}): Promise<EventRespons
     if (cursor != null) params.set("cursor", `${cursor}`);
 
 
-    const res = await fetch(`${API_BASE}/v2/events?${params.toString()}`, { next: { revalidate: 60 * 30 } });
+    const res = await fetch(`${API_BASE}/v2/events?${params.toString()}`, { next: { revalidate: 60 } });
     if (!res.ok) {
         console.log(await res.text())
         throw new Error("Failed to fetch");

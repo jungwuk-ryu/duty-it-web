@@ -1,7 +1,16 @@
+"use client";
+
 import Image from "next/image";
 import { Event } from '@/src/lib/schemas/event';
 import CategoryTag from './EventTypeTag';
 import Link from "next/link";
+
+const KST_FORMATTER = new Intl.DateTimeFormat("ko-KR", {
+    timeZone: "Asia/Seoul",
+    year: "numeric",
+    month: "numeric",
+    day: "numeric",
+});
 
 type Props = {
     event: Event
@@ -10,7 +19,7 @@ type Props = {
 export default function EventCard({ event }: Props) {
     const url = new URL(event.uri.toString());
     url.searchParams.set("utm_source", "dutyit.net");
-    
+
     return (
         <article className="h-full rounded-lg hover:scale-103 transition-transform drop-shadow-lg bg-white p-5">
             <div className="relative aspect-[2/1] w-full content-center overflow-hidden mb-3">
@@ -25,7 +34,19 @@ export default function EventCard({ event }: Props) {
             </div>
             <div className="flex-1">
                 <CategoryTag category={event.eventType} />
-                <Link href={url.toString()} aria-label={`${event.title} 바로가기`} prefetch={false} target="_blank" rel="noopener">
+                <Link
+                    href={url.toString()}
+                    aria-label={`${event.title} 바로가기`}
+                    prefetch={false}
+                    target="_blank"
+                    rel="noopener"
+                    onClick={() => {
+                        navigator.sendBeacon(
+                            "/api/view",
+                            JSON.stringify({ eventId: event.id })
+                        );
+                    }}
+                >
                     <h3 className='text-xl font-bold mt-3 mb-3'>
                         {event.title}
                     </h3>
@@ -65,5 +86,9 @@ function formatDates(start: Date | null, end: Date | null): string {
 }
 
 function formatDate(date: Date): string {
-    return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
+    const parts = KST_FORMATTER.formatToParts(date);
+    const y = parts.find(p => p.type === "year")?.value;
+    const m = parts.find(p => p.type === "month")?.value;
+    const d = parts.find(p => p.type === "day")?.value;
+    return `${y}년 ${m}월 ${d}일`;
 }
