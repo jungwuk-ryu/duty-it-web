@@ -26,6 +26,7 @@ export default function EventCard({ event }: Props) {
                 <Image
                     src={event.thumbnail ?? "/event-thumbnail-placeholder.svg"}
                     alt="행사 섬네일"
+                    unoptimized={true}
                     fill
                     priority
                     className="rounded-lg object-cover"
