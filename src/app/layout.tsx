@@ -4,6 +4,7 @@ import Header from "../components/Header";
 import { Noto_Sans_KR } from "next/font/google";
 import Footer from "../components/Footer";
 import { GoogleAnalytics } from '@next/third-parties/google'
+import AndroidOnlySmartBanner from "../components/AndroidOnlySmartBanner";
 
 const notoSansKR = Noto_Sans_KR({
   subsets: ["latin"],
@@ -40,8 +41,14 @@ export const metadata: Metadata = {
       height: 630
     }
   },
+  icons: {
+    other: [
+      { rel: "android-touch-icon", url: "/app-icon.png" }
+    ]
+  },
   other: {
-    'apple-itunes-app': 'app-id=6751395152'
+    'apple-itunes-app': 'app-id=6751395152',
+    'google-play-app' : 'app-id=com.dutyit.app',
   }
 };
 
@@ -60,6 +67,7 @@ export default function RootLayout({
           {children}
         </main>
         <Footer />
+        <AndroidOnlySmartBanner />
       </body>
       <GoogleAnalytics gaId={process.env.GA_ID ?? ""} />
     </html>
