@@ -1,0 +1,176 @@
+  :root {
+    --sb-glass-border: rgba(255, 255, 255, 0.40);
+    /*--sb-shadow: 0 14px 34px rgba(0, 0, 0, 0.18);*/
+
+    /* typography */
+    --sb-text: rgba(17, 24, 39, 0.92);      /* slate-900 */
+    --sb-subtext: rgba(55, 65, 81, 0.78);   /* slate-700 */
+    --sb-muted: rgba(107, 114, 128, 0.78);  /* slate-500 */
+
+    /* brand accent */
+    --sb-accent: #C63C33;
+    --sb-accent-hover: #c63f33;
+
+    --sb-radius: 18px;
+    --sb-h: 85px;
+    --sb-pad-x: 12px;
+  }
+
+
+  .smartbanner-bottom {
+    left: 12px !important;
+    right: 12px !important;
+    bottom: 12px !important;
+    width: auto !important;
+    z-index: var(--sb-z) !important;
+  }
+
+  .smartbanner {
+    height: var(--sb-h) !important;
+    border-radius: var(--sb-radius) !important;
+    overflow: hidden !important;
+
+    background: rgba(0, 0, 0, 0.08) !important;
+    border: 1px solid var(--sb-glass-border) !important;
+    box-shadow: none !important;
+  }
+
+  .smartbanner-container {
+    height: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 0 !important;
+    padding: 0 var(--sb-pad-x) !important;
+    position: relative !important;
+    z-index: 1 !important;
+  }
+
+  .smartbanner-icon {
+    width: 46px !important;
+    height: 46px !important;
+    border-radius: 14px !important;
+    flex: 0 0 auto !important;
+    background-size: cover !important;
+    background-position: center !important;
+
+    border: 1px solid rgba(255,255,255,0.45) !important;
+    box-shadow: 0 10px 22px rgba(0,0,0,0.10) !important;
+  }
+
+  .smartbanner-android .smartbanner-close,
+  .smartbanner-close {
+    border-radius: 12px !important;
+    flex: 0 0 auto !important;
+
+    background: rgba(255, 255, 255, 0.45) !important;
+    border: 1px solid rgba(255, 255, 255, 0.55) !important;
+    color: rgba(17, 24, 39, 0.75) !important;
+
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    transition: transform 160ms ease, background 160ms ease, border-color 160ms ease !important;
+    box-shadow: none !important;
+  }
+
+  .smartbanner-close:hover {
+    background: rgba(255, 255, 255, 0.62) !important;
+    border-color: rgba(255, 255, 255, 0.70) !important;
+    transform: translateY(-1px) !important;
+  }
+
+  .smartbanner-android .smartbanner-info,
+  .smartbanner-info {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2px !important;
+
+    color: var(--sb-text) !important;
+    line-height: 1.18 !important;
+    text-shadow: none !important;
+  }
+
+  .smartbanner-title {
+    font-size: 14px !important;
+    font-weight: 760 !important;
+    color: var(--sb-text) !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .smartbanner-author {
+    font-size: 12px !important;
+    font-weight: 650 !important;
+    color: var(--sb-subtext) !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .smartbanner-description {
+    font-size: 12px !important;
+    color: var(--sb-muted) !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .smartbanner-wrapper {
+    flex: 0 0 auto !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 10px !important;
+    width: 20% !important;
+  }
+
+  .smartbanner-button {
+    text-decoration: none !important;
+    border-radius: 14px !important;
+    overflow: hidden !important;
+    box-shadow: none !important;
+  }
+
+  .smartbanner-android .smartbanner-button-text,
+  .smartbanner-button-text {
+    display: inline-flex !important;
+    justify-content: center !important;
+
+    height: 36px !important;
+    padding: 0 14px !important;
+    border-radius: 14px !important;
+
+    background: linear-gradient(180deg, var(--sb-accent), var(--sb-accent-hover)) !important;
+    color: rgba(255, 255, 255, 0.96) !important;
+
+    font-size: 13px !important;
+    font-weight: 820 !important;
+    letter-spacing: -0.2px !important;
+
+    box-shadow: 0 12px 22px rgba(217, 75, 65, 0.22) !important;
+    transition: transform 160ms ease, filter 160ms ease !important;
+  }
+
+  .smartbanner-button-text:hover {
+    transform: translateY(-1px) !important;
+    filter: brightness(1.03) saturate(1.03) !important;
+  }
+
+  .smartbanner-button-text:active {
+    transform: translateY(0px) scale(0.99) !important;
+  }
+
+  @media (max-width: 360px) {
+    :root { --sb-h: 70px; --sb-gap: 10px; }
+    .smartbanner-icon { width: 42px !important; height: 42px !important; border-radius: 13px !important; }
+    .smartbanner-button-text { height: 34px !important; padding: 0 12px !important; border-radius: 13px !important; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .smartbanner-close, .smartbanner-button-text { transition: none !important; }
+  }
