@@ -20,5 +20,9 @@ export default async function Page({ params }: { params: { eventId: string } }) 
 
   void increaseViewCount(eventId);
 
-  redirect(parsed.data.uri);
+
+  const url = new URL(parsed.data.uri);
+  url.searchParams.set("utm_source", "dutyit.net");
+
+  redirect(url.toString());
 }
