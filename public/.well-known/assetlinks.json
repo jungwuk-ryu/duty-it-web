@@ -1,0 +1,11 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.dutyit.app",
+      "sha256_cert_fingerprints":
+        ["0B:68:CC:C3:90:92:11:FE:C1:24:A6:5F:8A:57:A6:4C:36:5D:CE:79:3E:8D:52:E8:C8:A7:48:D7:D3:62:5F:90"]
+    }
+  }
+]
