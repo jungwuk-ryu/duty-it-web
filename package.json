@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@next/third-parties": "^16.0.0",
-    "next": "15.5.9",
+    "next": "^15.5.12",
     "react": "19.1.2",
     "react-dom": "19.1.2",
     "smartbanner-tsx": "^1.1.1",
