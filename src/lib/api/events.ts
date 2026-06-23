@@ -22,7 +22,10 @@ export async function fetchEvents(opts: FetchOptions = {}): Promise<EventRespons
 
     const res = await fetch(`${API_BASE}/v2/events?${params.toString()}`, { next: { revalidate: 60 } });
     if (!res.ok) {
-        console.log(await res.text())
+        console.error("Failed to fetch events", {
+            status: res.status,
+            statusText: res.statusText,
+        });
         throw new Error("Failed to fetch");
     }
     
