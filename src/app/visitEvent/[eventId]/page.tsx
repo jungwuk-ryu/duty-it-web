@@ -1,7 +1,9 @@
 import { notFound, redirect } from "next/navigation";
 import { EventSchema } from "@/src/lib/schemas/event";
 import { increaseViewCount } from "@/src/lib/api/increaseView";
+import { guardViewCountRequest, normalizeViewEventId } from "@/src/lib/api/viewGuard";
 import { withUtmSource } from "@/src/lib/url";
+import { headers } from "next/headers";
 
 const API_BASE = process.env.API_BASE!;
 
@@ -11,9 +13,10 @@ type Props = {
 
 export default async function Page({ params }: Props) {
   const { eventId } = await params;
-  if (!eventId) notFound();
+  const normalizedEventId = normalizeViewEventId(eventId);
+  if (!normalizedEventId) notFound();
 
-  const res = await fetch(`${API_BASE}/v2/events/${encodeURIComponent(eventId)}`, {
+  const res = await fetch(`${API_BASE}/v2/events/${encodeURIComponent(normalizedEventId)}`, {
     next: { revalidate: 0 },
   });
 
@@ -24,14 +27,25 @@ export default async function Page({ params }: Props) {
   const parsed = EventSchema.safeParse(json);
   if (!parsed.success) throw new Error("행사 정보를 불러오는 중에 오류가 발생했어요.");
 
-  try {
-    const updated = await increaseViewCount(eventId);
-    if (!updated) {
-      console.error("Failed to increase event view count");
+  const decision = guardViewCountRequest(normalizedEventId, await headers());
+  if (decision.allowed) {
+    try {
+      const updated = await increaseViewCount(decision.eventId);
+      if (!updated) {
+        console.error("Failed to increase event view count");
+      }
+    } catch (error) {
+      console.error("Failed to increase event view count", getSafeErrorLog(error));
     }
-  } catch (error) {
-    console.error("Failed to increase event view count", error);
   }
 
   redirect(withUtmSource(parsed.data.uri));
+}
+
+function getSafeErrorLog(error: unknown) {
+  if (error instanceof Error) {
+    return { name: error.name, message: error.message };
+  }
+
+  return { type: typeof error };
 }
