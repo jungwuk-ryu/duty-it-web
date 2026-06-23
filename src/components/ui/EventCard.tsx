@@ -1,10 +1,8 @@
-"use client";
-
 import Image from "next/image";
 import { Event } from '@/src/lib/schemas/event';
 import CategoryTag from './EventTypeTag';
 import Link from "next/link";
-import { withUtmSource } from "@/src/lib/url";
+import { EventStatusLabel } from "@/src/lib/schemas/event-status";
 
 const KST_FORMATTER = new Intl.DateTimeFormat("ko-KR", {
     timeZone: "Asia/Seoul",
@@ -14,39 +12,41 @@ const KST_FORMATTER = new Intl.DateTimeFormat("ko-KR", {
 });
 
 type Props = {
-    event: Event
+    event: Event;
+    eager?: boolean;
+    priority?: boolean;
 };
 
-export default function EventCard({ event }: Props) {
-    const url = withUtmSource(event.uri);
-
+export default function EventCard({ event, eager = false, priority = false }: Props) {
     return (
         <article className="h-full rounded-lg hover:scale-103 transition-transform drop-shadow-lg bg-white p-5">
             <div className="relative aspect-[2/1] w-full content-center overflow-hidden mb-3">
                 <Image
                     src={event.thumbnail ?? "/event-thumbnail-placeholder.svg"}
                     alt="행사 섬네일"
-                    unoptimized={true}
                     fill
-                    priority
+                    loading={priority ? undefined : eager ? "eager" : undefined}
+                    priority={priority}
                     className="rounded-lg object-cover"
-                    sizes="(min-width: 768px) 100vw, 50vw"
+                    sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 100vw"
                 />
             </div>
             <div className="flex-1">
-                <CategoryTag category={event.eventType} />
+                <div className="flex flex-wrap items-center gap-2">
+                    <CategoryTag category={event.eventType} />
+                    <span className="rounded-full bg-gray-100 px-3 py-1 text-sm font-semibold text-gray-700">
+                        {EventStatusLabel[event.eventStatus]}
+                    </span>
+                    <span className="ml-auto text-xs text-gray-500">
+                        조회 {event.viewCount.toLocaleString("ko-KR")}
+                    </span>
+                </div>
                 <Link
-                    href={url}
+                    href={`/visitEvent/${event.id}`}
                     aria-label={`${event.title} 바로가기`}
                     prefetch={false}
                     target="_blank"
-                    rel="noopener"
-                    onClick={() => {
-                        navigator.sendBeacon(
-                            "/api/view",
-                            JSON.stringify({ eventId: event.id })
-                        );
-                    }}
+                    rel="noopener noreferrer"
                 >
                     <h3 className='text-xl font-bold mt-3 mb-3'>
                         {event.title}
@@ -72,10 +72,10 @@ function formatDates(start: Date | null, end: Date | null): string {
     if (start == null && end == null) return "";
 
     if (end == null) {
-        return formatDate(start!);
+        return start == null ? "" : formatDate(start);
     }
     if (start == null) {
-        return `~ ${formatDate(end!)}`;
+        return `~ ${formatDate(end)}`;
     }
 
     const formattedStart = formatDate(start);

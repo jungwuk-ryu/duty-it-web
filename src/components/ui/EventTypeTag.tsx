@@ -20,6 +20,7 @@ const CATEGORY_STYLE = {
     EDUCATION: "bg-emerald-100 text-emerald-800",
     VOLUNTEER: "bg-teal-100 text-teal-800",
     TRAINING: "bg-sky-100 text-sky-800",
+    SUPPORTERS: "bg-purple-100 text-purple-800",
     ETC: "bg-gray-100 text-gray-800",
   } satisfies Record<EventType, string>;
 
