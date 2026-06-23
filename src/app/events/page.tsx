@@ -103,7 +103,6 @@ export default async function EventsPage({ searchParams }: Props) {
     return (
         <div className="container mx-auto px-4 mb-5 py-10">
             <header className="mb-6 text-center">
-                <p className="mb-2 text-sm font-semibold text-brand">간호 행사 탐색</p>
                 <h1 className="text-3xl font-bold">행사 목록</h1>
                 <p className="mt-3 text-gray-600">
                     관심 분야와 일정에 맞는 행사만 골라 확인해보세요.
