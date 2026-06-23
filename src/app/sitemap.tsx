@@ -1,5 +1,4 @@
 import type { MetadataRoute } from "next";
-import { fetchEvents } from "../lib/api/events";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const base = "https://www.dutyit.net";
