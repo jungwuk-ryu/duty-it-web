@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { SmartBanner } from "smartbanner-tsx";
 import "smartbanner-tsx/dist/style.css";
 import "./smartbanner.fancy.css";
@@ -9,12 +9,24 @@ function isAndroidUA(ua: string) {
   return /Android/i.test(ua);
 }
 
-export default function AndroidOnlySmartBanner() {
-  const [isAndroid, setIsAndroid] = useState(false);
+function subscribeToUserAgent() {
+  return () => {};
+}
 
-  useEffect(() => {
-    setIsAndroid(isAndroidUA(navigator.userAgent));
-  }, []);
+function getAndroidSnapshot() {
+  return typeof navigator !== "undefined" && isAndroidUA(navigator.userAgent);
+}
+
+function getServerSnapshot() {
+  return false;
+}
+
+export default function AndroidOnlySmartBanner() {
+  const isAndroid = useSyncExternalStore(
+    subscribeToUserAgent,
+    getAndroidSnapshot,
+    getServerSnapshot
+  );
 
   if (!isAndroid) return null;
 

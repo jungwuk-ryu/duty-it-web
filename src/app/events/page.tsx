@@ -3,30 +3,39 @@ import { fetchEvents } from "@/src/lib/api/events";
 import { Metadata } from "next";
 import Link from "next/link";
 
-type Props = { searchParams: { cursor?: string | null } };
+const EVENTS_CANONICAL = "https://www.dutyit.net/events";
+
+type EventsSearchParams = {
+    cursor?: string | string[] | null;
+};
+
+type Props = { searchParams: Promise<EventsSearchParams> };
 
 export async function generateMetadata(
     { searchParams }: Props): Promise<Metadata> {
     const title = `간호 행사 목록 | 듀잇`;
-    const canonical = 'https://www.dutyit.net/events';
+    const cursor = getCursor(await searchParams);
 
     return {
         title: title,
         alternates: {
-            canonical: canonical
+            canonical: EVENTS_CANONICAL
         },
         openGraph: {
-            url: `canonical?cursor=${searchParams.cursor}`,
+            url: getEventsUrl(cursor),
             title: title,
           },
     };
 }
 
 export default async function EventsPage({ searchParams }: Props) {
-    const cursor = searchParams.cursor;
+    const cursor = getCursor(await searchParams);
 
     const { content, pageInfo } = await fetchEvents({ cursor: cursor });
     const hasNext = pageInfo.hasNext;
+    const nextHref = hasNext && pageInfo.nextCursor
+        ? `/events?${new URLSearchParams({ cursor: pageInfo.nextCursor }).toString()}`
+        : null;
 
     return (
         <div className="container mx-auto px-4 mb-5 py-10">
@@ -42,12 +51,24 @@ export default async function EventsPage({ searchParams }: Props) {
                 }
             </ul>
             <nav className="mt-8 flex items-center justify-center gap-5">
-                {hasNext && (
-                    <Link href={`/events?cursor=${pageInfo.nextCursor}`} className="bg-white border border-gray-300 rounded-xl drop-shadow-lg px-3 py-1">
+                {nextHref && (
+                    <Link href={nextHref} className="bg-white border border-gray-300 rounded-xl drop-shadow-lg px-3 py-1">
                         다음
                     </Link>
                 )}
             </nav>
         </div>
     );
+}
+
+function getCursor(searchParams: EventsSearchParams): string | null {
+    const cursor = searchParams.cursor;
+    if (Array.isArray(cursor)) return cursor[0] ?? null;
+    return cursor ?? null;
+}
+
+function getEventsUrl(cursor: string | null): string {
+    const url = new URL(EVENTS_CANONICAL);
+    if (cursor) url.searchParams.set("cursor", cursor);
+    return url.toString();
 }

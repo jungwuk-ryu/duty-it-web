@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Event } from '@/src/lib/schemas/event';
 import CategoryTag from './EventTypeTag';
 import Link from "next/link";
+import { withUtmSource } from "@/src/lib/url";
 
 const KST_FORMATTER = new Intl.DateTimeFormat("ko-KR", {
     timeZone: "Asia/Seoul",
@@ -17,8 +18,7 @@ type Props = {
 };
 
 export default function EventCard({ event }: Props) {
-    const url = new URL(event.uri.toString());
-    url.searchParams.set("utm_source", "dutyit.net");
+    const url = withUtmSource(event.uri);
 
     return (
         <article className="h-full rounded-lg hover:scale-103 transition-transform drop-shadow-lg bg-white p-5">
@@ -36,7 +36,7 @@ export default function EventCard({ event }: Props) {
             <div className="flex-1">
                 <CategoryTag category={event.eventType} />
                 <Link
-                    href={url.toString()}
+                    href={url}
                     aria-label={`${event.title} 바로가기`}
                     prefetch={false}
                     target="_blank"
