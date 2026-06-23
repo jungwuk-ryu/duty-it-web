@@ -175,10 +175,10 @@ export default async function EventsPage({ searchParams }: Props) {
                     </fieldset>
 
                     <div className="flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 pt-4">
-                        <p className="text-sm text-gray-500">
-                            {hasFilters ? "선택한 조건으로 목록을 다시 불러옵니다." : "기본값은 예정/진행 행사 최신순입니다."}
-                        </p>
-                        <div className="flex gap-2">
+                        {hasFilters ? (
+                            <p className="text-sm text-gray-500">선택한 조건으로 목록을 다시 불러옵니다.</p>
+                        ) : null}
+                        <div className="ml-auto flex gap-2">
                             <Link
                                 className="inline-flex h-10 items-center rounded-lg border border-gray-300 px-4 text-sm font-semibold text-gray-700 transition hover:border-gray-400"
                                 href="/events"
