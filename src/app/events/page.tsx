@@ -1,3 +1,4 @@
+import EventFiltersForm from "@/src/components/EventFiltersForm";
 import EventCard from "@/src/components/ui/EventCard";
 import {
     EVENT_SORT_FIELDS,
@@ -110,89 +111,16 @@ export default async function EventsPage({ searchParams }: Props) {
             </header>
 
             <section className="mb-8 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-                <form action="/events" className="space-y-5">
-                    <div className="grid grid-cols-1 gap-4 md:grid-cols-[minmax(0,1fr)_180px_180px]">
-                        <label className="flex flex-col gap-2 text-sm font-semibold text-gray-700">
-                            검색
-                            <input
-                                className="h-11 rounded-lg border border-gray-300 px-3 text-base font-normal text-gray-900 outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20"
-                                name="q"
-                                defaultValue={filters.searchKeyword}
-                                placeholder="행사명으로 검색"
-                            />
-                        </label>
-
-                        <label className="flex flex-col gap-2 text-sm font-semibold text-gray-700">
-                            정렬
-                            <select
-                                className="h-11 rounded-lg border border-gray-300 px-3 text-base font-normal text-gray-900 outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20"
-                                name="field"
-                                defaultValue={filters.field}
-                            >
-                                {SORT_OPTIONS.map((option) => (
-                                    <option key={option.value} value={option.value}>
-                                        {option.label}
-                                    </option>
-                                ))}
-                            </select>
-                        </label>
-
-                        <label className="flex flex-col gap-2 text-sm font-semibold text-gray-700">
-                            상태
-                            <select
-                                className="h-11 rounded-lg border border-gray-300 px-3 text-base font-normal text-gray-900 outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20"
-                                name="statusGroup"
-                                defaultValue={filters.statusGroup}
-                            >
-                                {PUBLIC_STATUS_GROUP_OPTIONS.map((statusGroup) => (
-                                    <option key={statusGroup} value={statusGroup}>
-                                        {EventStatusGroupLabel[statusGroup]}
-                                    </option>
-                                ))}
-                            </select>
-                        </label>
-                    </div>
-
-                    <fieldset className="space-y-3">
-                        <legend className="text-sm font-semibold text-gray-700">행사 유형</legend>
-                        <div className="flex flex-wrap gap-2">
-                            {EVENT_TYPE_OPTIONS.map((type) => (
-                                <label key={type} className="cursor-pointer">
-                                    <input
-                                        className="peer sr-only"
-                                        type="checkbox"
-                                        name="types"
-                                        value={type}
-                                        defaultChecked={filters.types.includes(type)}
-                                    />
-                                    <span className="inline-flex h-9 items-center rounded-full border border-gray-300 px-3 text-sm font-semibold text-gray-600 transition peer-checked:border-brand peer-checked:bg-brand peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-brand/30 peer-focus-visible:ring-offset-2">
-                                        {EventTypeLabel[type]}
-                                    </span>
-                                </label>
-                            ))}
-                        </div>
-                    </fieldset>
-
-                    <div className="flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 pt-4">
-                        {hasFilters ? (
-                            <p className="text-sm text-gray-500">선택한 조건으로 목록을 다시 불러옵니다.</p>
-                        ) : null}
-                        <div className="ml-auto flex gap-2">
-                            <Link
-                                className="inline-flex h-10 items-center rounded-lg border border-gray-300 px-4 text-sm font-semibold text-gray-700 transition hover:border-gray-400"
-                                href="/events"
-                            >
-                                초기화
-                            </Link>
-                            <button
-                                className="inline-flex h-10 items-center rounded-lg bg-brand px-4 text-sm font-semibold text-white transition hover:bg-brand/90"
-                                type="submit"
-                            >
-                                적용
-                            </button>
-                        </div>
-                    </div>
-                </form>
+                <EventFiltersForm
+                    field={filters.field}
+                    hasFilters={hasFilters}
+                    searchKeyword={filters.searchKeyword}
+                    sortOptions={SORT_OPTIONS}
+                    statusGroup={filters.statusGroup}
+                    statusOptions={PUBLIC_STATUS_GROUP_OPTIONS.map((value) => ({ value, label: EventStatusGroupLabel[value] }))}
+                    typeOptions={EVENT_TYPE_OPTIONS.map((value) => ({ value, label: EventTypeLabel[value] }))}
+                    types={filters.types}
+                />
             </section>
 
             {recoveredFromInvalidCursor && (

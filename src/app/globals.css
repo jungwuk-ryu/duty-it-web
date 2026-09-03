@@ -2,4 +2,19 @@
 
 @theme {
     --color-brand: #C63C33;
-  }
+    --color-accent: #F3F4F6;
+    --color-accent-foreground: #111827;
+    --color-background: #FFFFFF;
+    --color-border: #E5E7EB;
+    --color-destructive: #DC2626;
+    --color-destructive-foreground: #FFFFFF;
+    --color-input: #D1D5DB;
+    --color-muted-foreground: #6B7280;
+    --color-popover: #FFFFFF;
+    --color-popover-foreground: #111827;
+    --color-primary: #C63C33;
+    --color-primary-foreground: #FFFFFF;
+    --color-ring: #C63C33;
+    --color-secondary: #F3F4F6;
+    --color-secondary-foreground: #111827;
+}
