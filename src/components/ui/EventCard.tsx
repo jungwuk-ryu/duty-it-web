@@ -1,6 +1,6 @@
 import Image from "next/image";
-import { Event } from '@/src/lib/schemas/event';
-import CategoryTag from './EventTypeTag';
+import { Event } from "@/src/lib/schemas/event";
+import CategoryTag from "./EventTypeTag";
 import Link from "next/link";
 import { EventStatusLabel } from "@/src/lib/schemas/event-status";
 
@@ -18,54 +18,85 @@ type Props = {
 };
 
 export default function EventCard({ event, eager = false, priority = false }: Props) {
+    const recruitmentStatus = getRecruitmentStatus(event);
+
     return (
-        <article className="h-full rounded-lg hover:scale-103 transition-transform drop-shadow-lg bg-white p-5">
-            <div className="relative aspect-[2/1] w-full content-center overflow-hidden mb-3">
+        <article className="group h-full overflow-hidden rounded-2xl bg-white shadow-[0_8px_22px_rgba(15,23,42,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_16px_30px_rgba(15,23,42,0.16)]">
+            <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
                 <Image
                     src={event.thumbnail ?? "/event-thumbnail-placeholder.svg"}
-                    alt="행사 섬네일"
+                    alt={`${event.title} 행사 섬네일`}
                     fill
                     loading={priority ? undefined : eager ? "eager" : undefined}
                     priority={priority}
-                    className="rounded-lg object-cover"
+                    className="object-cover transition duration-500 group-hover:scale-105"
                     sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 100vw"
                 />
-            </div>
-            <div className="flex-1">
-                <div className="flex flex-wrap items-center gap-2">
-                    <CategoryTag category={event.eventType} />
-                    <span className="rounded-full bg-gray-100 px-3 py-1 text-sm font-semibold text-gray-700">
-                        {EventStatusLabel[event.eventStatus]}
-                    </span>
-                    <span className="ml-auto text-xs text-gray-500">
-                        조회 {event.viewCount.toLocaleString("ko-KR")}
-                    </span>
-                </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
                 <Link
                     href={`/visitEvent/${event.id}`}
                     aria-label={`${event.title} 바로가기`}
                     prefetch={false}
                     target="_blank"
                     rel="noopener noreferrer"
+                    className="absolute inset-x-0 bottom-0 block p-5 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-[-6px]"
                 >
-                    <h3 className='text-xl font-bold mt-3 mb-3'>
+                    <h3 className="line-clamp-3 text-xl font-bold leading-snug drop-shadow-sm">
                         {event.title}
                     </h3>
                 </Link>
-                <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
-                    <p><span className="font-semibold w-16 inline-block">주최</span> {event.host.name}</p>
-                    <p><span className="font-semibold w-16 inline-block">일시</span> {formatDates(event.startAt, event.endAt)}</p>
-                    {!(event.recruitmentStartAt == null && event.recruitmentEndAt == null) &&
-                        <p>
-                            <span className="font-semibold w-16 inline-block">
-                                모집
-                            </span>
-                            {formatDates(event.recruitmentStartAt, event.recruitmentEndAt)}
-                        </p>}
+            </div>
+
+            <div className="p-5">
+                <div className="flex items-center justify-between gap-3">
+                    <CategoryTag category={event.eventType} />
+                    <span className="shrink-0 text-sm font-bold text-brand">
+                        {recruitmentStatus}
+                    </span>
                 </div>
+
+                <p className="mt-5 text-sm font-semibold text-gray-900">
+                    <span className="mr-2 text-gray-400">주최</span>
+                    {event.host.name}
+                </p>
+
+                <dl className="mt-5 grid grid-cols-3 gap-2 border-t border-gray-200 pt-4 text-xs">
+                    <div className="min-w-0">
+                        <dt className="text-gray-500">일시</dt>
+                        <dd className="mt-1 truncate font-semibold text-gray-900" title={formatDates(event.startAt, event.endAt)}>
+                            {formatCompactDate(event.startAt)}
+                        </dd>
+                    </div>
+                    <div className="min-w-0">
+                        <dt className="text-gray-500">마감</dt>
+                        <dd className="mt-1 truncate font-semibold text-gray-900" title={event.recruitmentEndAt == null ? "-" : formatDate(event.recruitmentEndAt)}>
+                            {event.recruitmentEndAt == null ? "-" : formatCompactDate(event.recruitmentEndAt)}
+                        </dd>
+                    </div>
+                    <div>
+                        <dt className="text-gray-500">조회</dt>
+                        <dd className="mt-1 font-semibold text-gray-900">
+                            {event.viewCount.toLocaleString("ko-KR")}
+                        </dd>
+                    </div>
+                </dl>
             </div>
         </article>
     );
+}
+
+function getRecruitmentStatus(event: Event): string {
+    if (event.eventStatus !== "RECRUITING") return EventStatusLabel[event.eventStatus];
+
+    const dDay = getDDay(event.recruitmentEndAt);
+    return dDay == null ? "모집 중" : `모집 중 · ${dDay}`;
+}
+
+function getDDay(recruitmentEndAt: Date | null): string | null {
+    if (recruitmentEndAt == null) return null;
+
+    const remainingDays = Math.floor((getKstDateValue(recruitmentEndAt) - getKstDateValue(new Date())) / 86_400_000);
+    return remainingDays <= 0 ? "D-Day" : `D-${remainingDays}`;
 }
 
 function formatDates(start: Date | null, end: Date | null): string {
@@ -92,4 +123,22 @@ function formatDate(date: Date): string {
     const m = parts.find(p => p.type === "month")?.value;
     const d = parts.find(p => p.type === "day")?.value;
     return `${y}년 ${m}월 ${d}일`;
+}
+
+function formatCompactDate(date: Date | null): string {
+    if (date == null) return "-";
+
+    const parts = KST_FORMATTER.formatToParts(date);
+    const year = parts.find((part) => part.type === "year")?.value;
+    const month = parts.find((part) => part.type === "month")?.value;
+    const day = parts.find((part) => part.type === "day")?.value;
+    return `${year}. ${month}. ${day}.`;
+}
+
+function getKstDateValue(date: Date): number {
+    const parts = KST_FORMATTER.formatToParts(date);
+    const year = Number(parts.find((part) => part.type === "year")?.value);
+    const month = Number(parts.find((part) => part.type === "month")?.value);
+    const day = Number(parts.find((part) => part.type === "day")?.value);
+    return Date.UTC(year, month - 1, day);
 }
