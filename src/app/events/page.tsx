@@ -7,7 +7,6 @@ import {
 } from "@/src/lib/api/events";
 import { EventStatusGroup, EventStatusGroupLabel } from "@/src/lib/schemas/event-status";
 import { EventType, EventTypeLabel } from "@/src/lib/schemas/event-type";
-import { Search } from "lucide-react";
 import { Metadata } from "next";
 import Link from "next/link";
 
@@ -102,155 +101,152 @@ export default async function EventsPage({ searchParams }: Props) {
     const hasFilters = hasActiveFilters(filters);
 
     return (
-        <div className="paper-glow min-h-[calc(100vh-73px)]">
-            <div className="mx-auto max-w-[1440px] px-5 py-11 sm:px-8 sm:py-14 lg:px-11 lg:py-16">
-                <header className="mb-9 max-w-xl">
-                    <h1 className="text-4xl font-extrabold tracking-[-0.075em] text-ink sm:text-5xl">행사 목록</h1>
-                    <p className="mt-4 text-[16px] leading-7 tracking-[-0.035em] text-muted">
-                        간호의 성장과 전문성을 넓혀줄 다양한 행사 정보를 한곳에서 찾아봐요.
-                    </p>
-                </header>
+        <div className="container mx-auto px-4 mb-5 py-10">
+            <header className="mb-6 text-center">
+                <h1 className="text-3xl font-bold">행사 목록</h1>
+                <p className="mt-3 text-gray-600">
+                    관심 분야와 일정에 맞는 행사만 골라 확인해보세요.
+                </p>
+            </header>
 
-                <section className="mb-8 rounded-[18px] border border-line bg-surface/85 p-4 shadow-[0_16px_38px_rgba(65,45,31,0.04)] sm:p-5">
-                    <form action="/events" className="space-y-5">
-                        <div className="grid grid-cols-1 gap-3 lg:grid-cols-[minmax(0,1fr)_190px_190px]">
-                            <label className="relative block">
-                                <span className="sr-only">검색</span>
-                                <Search className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-muted" strokeWidth={2} aria-hidden="true" />
-                                <input
-                                    className="h-[52px] w-full rounded-xl border border-line bg-white px-4 pl-12 text-[15px] font-medium text-ink outline-none transition placeholder:text-muted/70 focus:border-brand focus:ring-4 focus:ring-brand/10"
-                                    name="q"
-                                    defaultValue={filters.searchKeyword}
-                                    placeholder="행사명으로 검색해요"
-                                />
-                            </label>
+            <section className="mb-8 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+                <form action="/events" className="space-y-5">
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-[minmax(0,1fr)_180px_180px]">
+                        <label className="flex flex-col gap-2 text-sm font-semibold text-gray-700">
+                            검색
+                            <input
+                                className="h-11 rounded-lg border border-gray-300 px-3 text-base font-normal text-gray-900 outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20"
+                                name="q"
+                                defaultValue={filters.searchKeyword}
+                                placeholder="행사명으로 검색"
+                            />
+                        </label>
 
-                            <label className="block">
-                                <span className="sr-only">정렬</span>
-                                <select
-                                    className="h-[52px] w-full rounded-xl border border-line bg-white px-4 text-[15px] font-semibold text-ink outline-none transition focus:border-brand focus:ring-4 focus:ring-brand/10"
-                                    name="field"
-                                    defaultValue={filters.field}
-                                >
-                                    {SORT_OPTIONS.map((option) => (
-                                        <option key={option.value} value={option.value}>
-                                            {option.label}
-                                        </option>
-                                    ))}
-                                </select>
-                            </label>
-
-                            <label className="block">
-                                <span className="sr-only">상태</span>
-                                <select
-                                    className="h-[52px] w-full rounded-xl border border-line bg-white px-4 text-[15px] font-semibold text-ink outline-none transition focus:border-brand focus:ring-4 focus:ring-brand/10"
-                                    name="statusGroup"
-                                    defaultValue={filters.statusGroup}
-                                >
-                                    {PUBLIC_STATUS_GROUP_OPTIONS.map((statusGroup) => (
-                                        <option key={statusGroup} value={statusGroup}>
-                                            {EventStatusGroupLabel[statusGroup]}
-                                        </option>
-                                    ))}
-                                </select>
-                            </label>
-                        </div>
-
-                        <fieldset className="border-t border-line pt-4">
-                            <legend className="sr-only">행사 유형</legend>
-                            <div className="flex flex-wrap gap-2">
-                                {EVENT_TYPE_OPTIONS.map((type) => (
-                                    <label key={type} className="cursor-pointer">
-                                        <input
-                                            className="peer sr-only"
-                                            type="checkbox"
-                                            name="types"
-                                            value={type}
-                                            defaultChecked={filters.types.includes(type)}
-                                        />
-                                        <span className="inline-flex h-9 items-center rounded-lg border border-line bg-white px-3 text-sm font-semibold tracking-[-0.035em] text-muted transition hover:border-brand/50 hover:text-brand peer-checked:border-brand peer-checked:bg-brand peer-checked:text-white peer-focus-visible:ring-4 peer-focus-visible:ring-brand/15">
-                                            {EventTypeLabel[type]}
-                                        </span>
-                                    </label>
+                        <label className="flex flex-col gap-2 text-sm font-semibold text-gray-700">
+                            정렬
+                            <select
+                                className="h-11 rounded-lg border border-gray-300 px-3 text-base font-normal text-gray-900 outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20"
+                                name="field"
+                                defaultValue={filters.field}
+                            >
+                                {SORT_OPTIONS.map((option) => (
+                                    <option key={option.value} value={option.value}>
+                                        {option.label}
+                                    </option>
                                 ))}
-                            </div>
-                        </fieldset>
+                            </select>
+                        </label>
 
-                        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-4">
-                            {hasFilters ? (
-                                <p className="text-sm tracking-[-0.03em] text-muted">선택한 조건으로 행사를 다시 찾아봐요.</p>
-                            ) : <span />}
-                            <div className="ml-auto flex gap-2">
-                                <Link
-                                    className="inline-flex h-10 items-center rounded-lg border border-line bg-white px-4 text-sm font-semibold text-ink transition hover:border-ink/30"
-                                    href="/events"
-                                >
-                                    초기화
-                                </Link>
-                                <button
-                                    className="inline-flex h-10 items-center rounded-lg bg-brand px-5 text-sm font-bold text-white transition hover:bg-brand-deep focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
-                                    type="submit"
-                                >
-                                    적용
-                                </button>
-                            </div>
+                        <label className="flex flex-col gap-2 text-sm font-semibold text-gray-700">
+                            상태
+                            <select
+                                className="h-11 rounded-lg border border-gray-300 px-3 text-base font-normal text-gray-900 outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20"
+                                name="statusGroup"
+                                defaultValue={filters.statusGroup}
+                            >
+                                {PUBLIC_STATUS_GROUP_OPTIONS.map((statusGroup) => (
+                                    <option key={statusGroup} value={statusGroup}>
+                                        {EventStatusGroupLabel[statusGroup]}
+                                    </option>
+                                ))}
+                            </select>
+                        </label>
+                    </div>
+
+                    <fieldset className="space-y-3">
+                        <legend className="text-sm font-semibold text-gray-700">행사 유형</legend>
+                        <div className="flex flex-wrap gap-2">
+                            {EVENT_TYPE_OPTIONS.map((type) => (
+                                <label key={type} className="cursor-pointer">
+                                    <input
+                                        className="peer sr-only"
+                                        type="checkbox"
+                                        name="types"
+                                        value={type}
+                                        defaultChecked={filters.types.includes(type)}
+                                    />
+                                    <span className="inline-flex h-9 items-center rounded-full border border-gray-300 px-3 text-sm font-semibold text-gray-600 transition peer-checked:border-brand peer-checked:bg-brand peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-brand/30 peer-focus-visible:ring-offset-2">
+                                        {EventTypeLabel[type]}
+                                    </span>
+                                </label>
+                            ))}
                         </div>
-                    </form>
-                </section>
+                    </fieldset>
 
-                {recoveredFromInvalidCursor ? (
-                    <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900" role="alert">
-                        페이지 정보가 만료되어 첫 페이지를 보여줘요.{" "}
-                        <Link className="font-semibold underline" href={getEventsHref(filters, null)}>
-                            정리된 주소로 보기
-                        </Link>
+                    <div className="flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 pt-4">
+                        {hasFilters ? (
+                            <p className="text-sm text-gray-500">선택한 조건으로 목록을 다시 불러옵니다.</p>
+                        ) : null}
+                        <div className="ml-auto flex gap-2">
+                            <Link
+                                className="inline-flex h-10 items-center rounded-lg border border-gray-300 px-4 text-sm font-semibold text-gray-700 transition hover:border-gray-400"
+                                href="/events"
+                            >
+                                초기화
+                            </Link>
+                            <button
+                                className="inline-flex h-10 items-center rounded-lg bg-brand px-4 text-sm font-semibold text-white transition hover:bg-brand/90"
+                                type="submit"
+                            >
+                                적용
+                            </button>
+                        </div>
                     </div>
-                ) : null}
+                </form>
+            </section>
 
-                <div className="mb-5 flex flex-wrap items-center justify-between gap-3 border-b border-line pb-4">
-                    <p className="text-sm font-semibold tracking-[-0.035em] text-ink">
-                        {getSortLabel(filters.field)} · {EventStatusGroupLabel[filters.statusGroup]} · {pageInfo.pageSize}개 표시
-                    </p>
-                    {cursor ? (
-                        <Link className="text-sm font-semibold text-brand underline underline-offset-4" href={getEventsHref(filters, null)}>
-                            첫 페이지로
-                        </Link>
-                    ) : null}
+            {recoveredFromInvalidCursor && (
+                <div className="mb-6 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900" role="alert">
+                    페이지 정보가 만료되어 첫 페이지를 보여드려요.{" "}
+                    <Link className="font-semibold underline" href={getEventsHref(filters, null)}>
+                        정리된 주소로 보기
+                    </Link>
                 </div>
+            )}
 
-                {content.length > 0 ? (
-                    <ul className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                        {content.map((event, index) => (
-                            <li key={event.id}>
-                                <EventCard event={event} eager={index < 3} priority={index === 0} />
-                            </li>
-                        ))}
-                    </ul>
-                ) : (
-                    <div className="rounded-[18px] border border-dashed border-line bg-surface px-6 py-14 text-center">
-                        <h2 className="text-xl font-bold text-ink">조건에 맞는 행사가 없어요</h2>
-                        <p className="mt-2 text-muted">검색어를 줄이거나 행사 유형을 다시 골라봐요.</p>
-                        <Link
-                            className="mt-5 inline-flex h-10 items-center rounded-lg bg-brand px-4 text-sm font-semibold text-white transition hover:bg-brand-deep"
-                            href="/events"
-                        >
-                            전체 행사 보기
-                        </Link>
-                    </div>
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                <p className="text-sm text-gray-600">
+                    {getSortLabel(filters.field)} · {EventStatusGroupLabel[filters.statusGroup]} · {pageInfo.pageSize}개 표시
+                </p>
+                {cursor && (
+                    <Link className="text-sm font-semibold text-brand underline" href={getEventsHref(filters, null)}>
+                        첫 페이지로
+                    </Link>
                 )}
-
-                <nav className="mt-9 flex items-center justify-center gap-3">
-                    {nextHref ? (
-                        <Link href={nextHref} className="inline-flex h-12 items-center rounded-xl border border-brand bg-surface px-7 text-sm font-bold text-brand transition hover:bg-brand hover:text-white">
-                            다음 행사 보기
-                        </Link>
-                    ) : (
-                        <span className="inline-flex h-12 items-center rounded-xl border border-line bg-surface px-7 text-sm font-semibold text-muted/70">
-                            마지막 목록입니다
-                        </span>
-                    )}
-                </nav>
             </div>
+
+            {content.length > 0 ? (
+                <ul className="grid grid-cols-1 gap-7 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                    {content.map((event, index) => (
+                        <li key={event.id}>
+                            <EventCard event={event} eager={index < 4} priority={index === 0} />
+                        </li>
+                    ))}
+                </ul>
+            ) : (
+                <div className="rounded-lg border border-dashed border-gray-300 bg-white px-6 py-14 text-center">
+                    <h2 className="text-xl font-bold text-gray-900">조건에 맞는 행사가 없어요</h2>
+                    <p className="mt-2 text-gray-600">검색어를 줄이거나 행사 유형을 다시 선택해보세요.</p>
+                    <Link
+                        className="mt-5 inline-flex h-10 items-center rounded-lg bg-brand px-4 text-sm font-semibold text-white"
+                        href="/events"
+                    >
+                        전체 행사 보기
+                    </Link>
+                </div>
+            )}
+
+            <nav className="mt-8 flex items-center justify-center gap-3">
+                {nextHref ? (
+                    <Link href={nextHref} className="rounded-lg border border-gray-300 bg-white px-5 py-2 text-sm font-semibold text-gray-800 shadow-sm transition hover:border-brand hover:text-brand">
+                        다음 행사 보기
+                    </Link>
+                ) : (
+                    <span className="rounded-lg border border-gray-200 bg-white px-5 py-2 text-sm font-semibold text-gray-400">
+                        마지막 목록입니다
+                    </span>
+                )}
+            </nav>
         </div>
     );
 }
