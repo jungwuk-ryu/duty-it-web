@@ -63,7 +63,7 @@ export default function RootLayout({
         className={"antialiased min-h-screen flex flex-col"}
       >
         <Header />
-        <main className="flex-1 pt-20 bg-[#F8F9FA] ">
+        <main className="flex-1 bg-[#F8F9FA]">
           {children}
         </main>
         <Footer />

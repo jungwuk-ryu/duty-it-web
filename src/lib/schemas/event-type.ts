@@ -10,6 +10,7 @@ export const EventTypeSchema = z.enum([
     "EDUCATION",
     "VOLUNTEER",
     "TRAINING",
+    "SUPPORTERS",
     "ETC",
   ]).catch("ETC");
 
@@ -25,5 +26,6 @@ export const EventTypeSchema = z.enum([
     EDUCATION: "교육",
     VOLUNTEER: "봉사",
     TRAINING: "연수",
+    SUPPORTERS: "서포터즈",
     ETC: "기타",
   };
