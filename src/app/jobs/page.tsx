@@ -78,7 +78,7 @@ export default async function JobsPage({ searchParams }: Props) {
             <header className="mb-6 text-center">
                 <p className="text-sm font-bold tracking-wide text-brand">NURSING CAREERS</p>
                 <h1 className="mt-1 text-3xl font-bold text-gray-950">간호 채용 공고</h1>
-                <p className="mt-3 text-gray-600">간호·보건 분야의 새로운 일자리를 한눈에 확인해보세요.</p>
+                <p className="mt-3 text-gray-600">간호 분야의 새로운 일자리를 한눈에 확인해보세요.</p>
             </header>
 
             <section className="mb-8 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-[0_16px_40px_rgba(15,23,42,0.08),0_2px_8px_rgba(15,23,42,0.04)] md:p-5" aria-label="채용 공고 필터">
