@@ -99,8 +99,6 @@ export default async function EventsPage({ searchParams }: Props) {
     const nextHref = pageInfo.hasNext && pageInfo.nextCursor
         ? getEventsHref(filters, pageInfo.nextCursor)
         : null;
-    const hasFilters = hasActiveFilters(filters);
-
     return (
         <div className="container mx-auto px-4 mb-5 py-10">
             <header className="mb-6 text-center">
@@ -110,10 +108,9 @@ export default async function EventsPage({ searchParams }: Props) {
                 </p>
             </header>
 
-            <section className="mb-8 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+            <section className="mb-8 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-[0_16px_40px_rgba(15,23,42,0.08),0_2px_8px_rgba(15,23,42,0.04)] md:p-5">
                 <EventFiltersForm
                     field={filters.field}
-                    hasFilters={hasFilters}
                     searchKeyword={filters.searchKeyword}
                     sortOptions={SORT_OPTIONS}
                     statusGroup={filters.statusGroup}
@@ -244,13 +241,6 @@ function getFirstValue(value: string | string[] | null | undefined): string | nu
 function getValues(value: string | string[] | null | undefined): string[] {
     if (Array.isArray(value)) return value;
     return value == null ? [] : [value];
-}
-
-function hasActiveFilters(filters: EventFilters): boolean {
-    return filters.field !== "CREATED_AT"
-        || filters.searchKeyword !== ""
-        || filters.statusGroup !== "ACTIVE"
-        || filters.types.length > 0;
 }
 
 function getSortLabel(field: EventSortField): string {

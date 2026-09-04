@@ -20,7 +20,6 @@ type Option<T extends string> = { value: T; label: string };
 
 type Props = {
     field: EventSortField;
-    hasFilters: boolean;
     searchKeyword: string;
     sortOptions: readonly Option<EventSortField>[];
     statusGroup: EventStatusGroup;
@@ -31,7 +30,6 @@ type Props = {
 
 export default function EventFiltersForm({
     field,
-    hasFilters,
     searchKeyword,
     sortOptions,
     statusGroup,
@@ -39,6 +37,8 @@ export default function EventFiltersForm({
     typeOptions,
     types,
 }: Props) {
+    const [selectedTypes, setSelectedTypes] = useState<EventType[]>(types);
+
     return (
         <form action="/events" className="space-y-5">
             <div className="grid grid-cols-1 gap-4 md:grid-cols-[minmax(0,1fr)_180px_180px]">
@@ -61,7 +61,18 @@ export default function EventFiltersForm({
                 <div className="flex flex-wrap gap-2">
                     {typeOptions.map((type) => (
                         <label key={type.value} className="cursor-pointer">
-                            <input className="peer sr-only" type="checkbox" name="types" value={type.value} defaultChecked={types.includes(type.value)} />
+                            <input
+                                className="peer sr-only"
+                                type="checkbox"
+                                name="types"
+                                value={type.value}
+                                checked={selectedTypes.includes(type.value)}
+                                onChange={(event) => {
+                                    setSelectedTypes((currentTypes) => event.target.checked
+                                        ? [...currentTypes, type.value]
+                                        : currentTypes.filter((currentType) => currentType !== type.value));
+                                }}
+                            />
                             <span className="inline-flex h-9 items-center rounded-full border border-gray-300 px-3 text-sm font-semibold text-gray-600 transition peer-checked:border-brand peer-checked:bg-brand peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-brand/30 peer-focus-visible:ring-offset-2">
                                 {type.label}
                             </span>
@@ -70,10 +81,13 @@ export default function EventFiltersForm({
                 </div>
             </fieldset>
 
-            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 pt-4">
-                {hasFilters ? <p className="text-sm text-gray-500">선택한 조건으로 목록을 다시 불러옵니다.</p> : null}
-                <div className="ml-auto flex gap-2">
-                    <Link className="inline-flex h-10 items-center rounded-lg border border-gray-300 px-4 text-sm font-semibold text-gray-700 transition hover:border-gray-400" href="/events">
+            <div className="flex flex-wrap items-center justify-end gap-2 border-t border-gray-100 pt-4">
+                <div className="flex gap-2">
+                    <Link
+                        className="inline-flex h-10 items-center rounded-lg border border-gray-300 px-4 text-sm font-semibold text-gray-700 transition hover:border-gray-400"
+                        href="/events"
+                        onClick={() => setSelectedTypes([])}
+                    >
                         초기화
                     </Link>
                     <button className="inline-flex h-10 items-center rounded-lg bg-brand px-4 text-sm font-semibold text-white transition hover:bg-brand/90" type="submit">
