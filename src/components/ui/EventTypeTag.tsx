@@ -4,7 +4,7 @@ export default function CategoryTag({category} : CategoryTagProps) {
     const color: string = CATEGORY_STYLE[category];
 
     return (
-        <span className={`text-sm font-semibold ${color} px-3 py-1 rounded-full `}>
+        <span className={`inline-flex h-8 shrink-0 items-center whitespace-nowrap rounded-full px-2.5 text-xs font-semibold ${color}`}>
             {EventTypeLabel[category]}
         </span>
     );

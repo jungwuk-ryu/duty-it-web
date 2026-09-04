@@ -21,7 +21,7 @@ export default function EventCard({ event, eager = false, priority = false }: Pr
     const recruitmentStatus = getRecruitmentStatus(event);
 
     return (
-        <article className="group h-full overflow-hidden rounded-2xl bg-white shadow-[0_8px_22px_rgba(15,23,42,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_16px_30px_rgba(15,23,42,0.16)]">
+        <article className="group flex h-full flex-col overflow-hidden rounded-2xl bg-white shadow-[0_8px_22px_rgba(15,23,42,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_16px_30px_rgba(15,23,42,0.16)]">
             <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
                 <Image
                     src={event.thumbnail ?? "/event-thumbnail-placeholder.svg"}
@@ -47,33 +47,33 @@ export default function EventCard({ event, eager = false, priority = false }: Pr
                 </Link>
             </div>
 
-            <div className="p-5">
-                <div className="flex items-center justify-between gap-3">
+            <div className="flex flex-1 flex-col p-5">
+                <div className="flex min-h-8 items-center justify-between gap-2">
                     <CategoryTag category={event.eventType} />
-                    <span className="shrink-0 text-sm font-bold text-brand">
+                    <span className="shrink-0 whitespace-nowrap text-sm font-bold text-brand">
                         {recruitmentStatus}
                     </span>
                 </div>
 
-                <p className="mt-5 text-sm font-semibold text-gray-900">
+                <p className="mt-5 min-h-10 line-clamp-2 text-sm font-semibold leading-5 text-gray-900">
                     <span className="mr-2 text-gray-400">주최</span>
                     {event.host.name}
                 </p>
 
-                <dl className="mt-5 grid grid-cols-3 gap-2 border-t border-gray-200 pt-4 text-xs">
+                <dl className="mt-auto grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] gap-x-1.5 border-t border-gray-200 pt-4 text-xs">
                     <div className="min-w-0">
                         <dt className="text-gray-500">일시</dt>
-                        <dd className="mt-1 truncate font-semibold text-gray-900" title={formatDates(event.startAt, event.endAt)}>
+                        <dd className="mt-1 whitespace-nowrap font-semibold text-gray-900" title={formatDates(event.startAt, event.endAt)}>
                             {formatCompactDate(event.startAt)}
                         </dd>
                     </div>
                     <div className="min-w-0">
                         <dt className="text-gray-500">마감</dt>
-                        <dd className="mt-1 truncate font-semibold text-gray-900" title={event.recruitmentEndAt == null ? "-" : formatDate(event.recruitmentEndAt)}>
+                        <dd className="mt-1 whitespace-nowrap font-semibold text-gray-900" title={event.recruitmentEndAt == null ? "-" : formatDate(event.recruitmentEndAt)}>
                             {event.recruitmentEndAt == null ? "-" : formatCompactDate(event.recruitmentEndAt)}
                         </dd>
                     </div>
-                    <div>
+                    <div className="min-w-7">
                         <dt className="text-gray-500">조회</dt>
                         <dd className="mt-1 font-semibold text-gray-900">
                             {event.viewCount.toLocaleString("ko-KR")}

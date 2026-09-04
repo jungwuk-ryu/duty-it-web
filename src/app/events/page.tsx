@@ -141,9 +141,9 @@ export default async function EventsPage({ searchParams }: Props) {
             </div>
 
             {content.length > 0 ? (
-                <ul className="grid grid-cols-1 gap-7 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                <ul className="grid grid-cols-1 gap-7 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                     {content.map((event, index) => (
-                        <li key={event.id}>
+                        <li key={event.id} className="h-full">
                             <EventCard event={event} eager={index < 4} priority={index === 0} />
                         </li>
                     ))}
