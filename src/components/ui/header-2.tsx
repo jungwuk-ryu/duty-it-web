@@ -9,7 +9,6 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 const links = [
-    { label: "주요 기능", href: "/#features" },
     { label: "행사 목록", href: "/events" },
     { label: "채용 공고", href: "/jobs" },
 ] as const;

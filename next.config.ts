@@ -14,15 +14,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  async redirects() {
-    return [
-      {
-        source: '/submit-event',
-        destination: process.env['SUBMIT_FORM_URL']!,
-        permanent: false,
-      },
-    ]
-  },
   async headers() {
     return [
       {
