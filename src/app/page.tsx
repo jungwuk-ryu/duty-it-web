@@ -5,6 +5,7 @@ import AppStore from "@/src/assets/home/images/apple_app_store.svg";
 import GooglePlay from "@/src/assets/home/images/google_play.svg";
 import { Metadata } from "next";
 import HomeEvents from "@/src/components/HomeEvents";
+import HomeCategoryExplore from "@/src/components/HomeCategoryExplore";
 
 export const metadata: Metadata = {
   title: "간호의 미래를 여는 의미 있는 여정 | 듀잇",
@@ -46,6 +47,7 @@ export default function Home() {
             <PrimaryCard title="캘린더에서 한눈에" content="관심 있는 행사를 캘린더에서 한눈에 확인할 수 있습니다." />
           </div>
         </section>
+        <HomeCategoryExplore />
         <HomeEvents />
       </div>
       <section id="download">
