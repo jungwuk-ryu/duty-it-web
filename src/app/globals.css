@@ -18,3 +18,26 @@
     --color-secondary: #F3F4F6;
     --color-secondary-foreground: #111827;
 }
+
+@theme inline {
+    --animate-marquee: marquee var(--duration, 40s) linear infinite;
+    --animate-marquee-vertical: marquee-vertical var(--duration, 40s) linear infinite;
+}
+
+@keyframes marquee {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(calc(-100% - var(--gap)));
+    }
+}
+
+@keyframes marquee-vertical {
+    from {
+        transform: translateY(0);
+    }
+    to {
+        transform: translateY(calc(-100% - var(--gap)));
+    }
+}
