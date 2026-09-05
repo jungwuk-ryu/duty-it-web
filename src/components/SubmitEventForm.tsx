@@ -1,16 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { type FormEvent, useState } from "react";
-import { Send, Upload } from "lucide-react";
+import { type ChangeEvent, type FocusEvent, type FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { ChevronDown, Upload } from "lucide-react";
 
 import { Button } from "@/src/components/ui/button";
+import { DateTimePicker } from "@/src/components/ui/date-time-picker";
 import {
     EVENT_SUBMISSION_TYPES,
     EVENT_SUBMISSION_TYPE_LABEL,
     formatDateTimeForApi,
     getEventSubmissionIssues,
     getImageFileIssue,
+    isEventSubmissionEventType,
     MAX_TOTAL_UPLOAD_BYTES,
     type EventSubmissionField,
     type EventSubmissionInput,
@@ -19,6 +21,13 @@ import {
 import { cn } from "@/src/lib/utils";
 
 type HostMethod = "name" | "id";
+
+type HostOption = {
+    id: number;
+    name: string;
+};
+
+type HostOptionsStatus = "idle" | "loading" | "ready" | "error";
 
 type FormValues = {
     title: string;
@@ -50,13 +59,44 @@ const INITIAL_VALUES: FormValues = {
     hostId: "",
 };
 
+const MAX_HOST_SUGGESTIONS = 8;
+
 export default function SubmitEventForm() {
     const [values, setValues] = useState<FormValues>(INITIAL_VALUES);
     const [hostMethod, setHostMethod] = useState<HostMethod>("name");
     const [eventThumbnail, setEventThumbnail] = useState<File | null>(null);
+    const [eventThumbnailPreviewUrl, setEventThumbnailPreviewUrl] = useState<string | null>(null);
     const [hostThumbnail, setHostThumbnail] = useState<File | null>(null);
+    const [selectedHost, setSelectedHost] = useState<HostOption | null>(null);
+    const [hostOptions, setHostOptions] = useState<HostOption[]>([]);
+    const [hostOptionsStatus, setHostOptionsStatus] = useState<HostOptionsStatus>("idle");
+    const [isHostOptionsOpen, setIsHostOptionsOpen] = useState(false);
     const [issues, setIssues] = useState<EventSubmissionIssues>({});
     const [submission, setSubmission] = useState<SubmissionState>({ status: "idle" });
+    const hostOptionsRequestedRef = useRef(false);
+    const hostNameInputRef = useRef<HTMLInputElement>(null);
+    const eventThumbnailPreviewUrlRef = useRef<string | null>(null);
+
+    useEffect(() => () => {
+        if (eventThumbnailPreviewUrlRef.current) {
+            URL.revokeObjectURL(eventThumbnailPreviewUrlRef.current);
+        }
+    }, []);
+
+    const filteredHostOptions = useMemo(() => {
+        const query = values.hostName.trim().toLowerCase();
+        if (!query) return hostOptions;
+
+        return hostOptions.filter((host) => host.name.toLowerCase().includes(query));
+    }, [hostOptions, values.hostName]);
+    const suggestedHostOptions = filteredHostOptions.slice(0, MAX_HOST_SUGGESTIONS);
+    const selectedExistingHost = hostMethod === "name" && selectedHost?.name === values.hostName
+        ? selectedHost
+        : null;
+    const hostNameDescribedBy = [
+        "host-name-help",
+        issues.hostName ? "host-name-error" : undefined,
+    ].filter(Boolean).join(" ") || undefined;
 
     if (submission.status === "success") {
         return (
@@ -87,16 +127,11 @@ export default function SubmitEventForm() {
     return (
         <div className="rounded-[2rem] border border-gray-200 bg-white p-5 shadow-[0_24px_80px_rgba(15,23,42,0.12)] sm:p-8 lg:p-10">
             <div className="flex flex-col gap-6 border-b border-gray-200 pb-7 sm:flex-row sm:items-start sm:justify-between">
-                <div className="flex gap-4">
-                    <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-brand text-lg font-bold text-white" aria-hidden>
-                        듀
-                    </span>
-                    <div className="flex flex-col gap-2">
-                        <h1 className="text-2xl font-bold tracking-tight text-slate-900">행사 제보하기</h1>
-                        <p className="max-w-xl text-sm leading-6 text-slate-600">
-                            알고 계신 간호 행사를 알려 주세요. 확인을 거쳐 듀잇 행사 목록에 반영합니다.
-                        </p>
-                    </div>
+                <div className="flex flex-col gap-2">
+                    <h1 className="text-2xl font-bold tracking-tight text-slate-900">행사 제보하기</h1>
+                    <p className="max-w-xl text-sm leading-6 text-slate-600">
+                        알고 계신 간호 행사를 알려 주세요. 확인을 거쳐 듀잇 행사 목록에 반영합니다.
+                    </p>
                 </div>
                 <span className="w-fit rounded-full bg-red-50 px-3 py-1.5 text-xs font-semibold text-brand">
                     검토 후 공개
@@ -168,51 +203,44 @@ export default function SubmitEventForm() {
                         <p className="text-xs leading-5 text-slate-500">행사 시작 일시는 필수이고, 나머지 일정은 알 수 있을 때만 입력해 주세요.</p>
                     </div>
                     <div className="grid gap-5 sm:grid-cols-2">
-                        <FormField label="행사 시작 일시" required error={issues.startAt}>
-                            <input
+                        <FormField label="행사 시작 일시" required error={issues.startAt} controlId="event-start-at">
+                            <DateTimePicker
                                 id="event-start-at"
-                                type="datetime-local"
                                 value={values.startAt}
-                                onChange={(event) => updateValue("startAt", event.target.value)}
-                                aria-invalid={Boolean(issues.startAt)}
-                                aria-describedby={issues.startAt ? "event-start-at-error" : undefined}
-                                className={inputClassName(issues.startAt)}
+                                onChange={(value) => updateValue("startAt", value)}
+                                canClear={false}
+                                hasError={Boolean(issues.startAt)}
+                                describedBy={issues.startAt ? "event-start-at-error" : undefined}
                             />
                         </FormField>
-                        <FormField label="행사 종료 일시" error={issues.endAt}>
-                            <input
+                        <FormField label="행사 종료 일시" error={issues.endAt} controlId="event-end-at">
+                            <DateTimePicker
                                 id="event-end-at"
-                                type="datetime-local"
                                 value={values.endAt}
                                 min={values.startAt || undefined}
-                                onChange={(event) => updateValue("endAt", event.target.value)}
-                                aria-invalid={Boolean(issues.endAt)}
-                                aria-describedby={issues.endAt ? "event-end-at-error" : undefined}
-                                className={inputClassName(issues.endAt)}
+                                onChange={(value) => updateValue("endAt", value)}
+                                hasError={Boolean(issues.endAt)}
+                                describedBy={issues.endAt ? "event-end-at-error" : undefined}
                             />
                         </FormField>
-                        <FormField label="모집 시작 일시" error={issues.recruitmentStartAt}>
-                            <input
+                        <FormField label="모집 시작 일시" error={issues.recruitmentStartAt} controlId="recruitment-start-at">
+                            <DateTimePicker
                                 id="recruitment-start-at"
-                                type="datetime-local"
                                 value={values.recruitmentStartAt}
                                 max={values.startAt || undefined}
-                                onChange={(event) => updateValue("recruitmentStartAt", event.target.value)}
-                                aria-invalid={Boolean(issues.recruitmentStartAt)}
-                                aria-describedby={issues.recruitmentStartAt ? "recruitment-start-at-error" : undefined}
-                                className={inputClassName(issues.recruitmentStartAt)}
+                                onChange={(value) => updateValue("recruitmentStartAt", value)}
+                                hasError={Boolean(issues.recruitmentStartAt)}
+                                describedBy={issues.recruitmentStartAt ? "recruitment-start-at-error" : undefined}
                             />
                         </FormField>
-                        <FormField label="모집 종료 일시" error={issues.recruitmentEndAt}>
-                            <input
+                        <FormField label="모집 종료 일시" error={issues.recruitmentEndAt} controlId="recruitment-end-at">
+                            <DateTimePicker
                                 id="recruitment-end-at"
-                                type="datetime-local"
                                 value={values.recruitmentEndAt}
                                 max={values.startAt || undefined}
-                                onChange={(event) => updateValue("recruitmentEndAt", event.target.value)}
-                                aria-invalid={Boolean(issues.recruitmentEndAt)}
-                                aria-describedby={issues.recruitmentEndAt ? "recruitment-end-at-error" : undefined}
-                                className={inputClassName(issues.recruitmentEndAt)}
+                                onChange={(value) => updateValue("recruitmentEndAt", value)}
+                                hasError={Boolean(issues.recruitmentEndAt)}
+                                describedBy={issues.recruitmentEndAt ? "recruitment-end-at-error" : undefined}
                             />
                         </FormField>
                     </div>
@@ -221,7 +249,7 @@ export default function SubmitEventForm() {
                 <fieldset className="flex flex-col gap-5">
                     <div className="flex flex-col gap-1">
                         <legend className="text-base font-bold text-slate-900">주최 기관</legend>
-                        <p className="text-xs leading-5 text-slate-500">기관명으로 입력하면 등록된 기관을 찾아 연결하고, 없으면 새 기관으로 등록합니다.</p>
+                        <p className="text-xs leading-5 text-slate-500">기관명을 입력해 기존 주최 기관을 선택하거나, 목록에 없으면 새 기관으로 등록할 수 있습니다.</p>
                     </div>
 
                     <div className="grid grid-cols-2 rounded-xl bg-slate-100 p-1" role="radiogroup" aria-label="주최 기관 입력 방식">
@@ -261,25 +289,122 @@ export default function SubmitEventForm() {
 
                     {hostMethod === "name" ? (
                         <div className="flex flex-col gap-5">
-                            <FormField label="주최 기관명" required error={issues.hostName}>
-                                <input
-                                    id="host-name"
-                                    value={values.hostName}
-                                    onChange={(event) => updateValue("hostName", event.target.value)}
-                                    aria-invalid={Boolean(issues.hostName)}
-                                    aria-describedby={issues.hostName ? "host-name-error" : undefined}
-                                    className={inputClassName(issues.hostName)}
-                                    placeholder="예: 대한간호협회"
-                                />
+                            <FormField label="주최 기관명" required error={issues.hostName} controlId="host-name">
+                                <div className="relative" onBlur={closeHostOptionsOnBlur}>
+                                    <input
+                                        ref={hostNameInputRef}
+                                        id="host-name"
+                                        value={values.hostName}
+                                        onChange={handleHostNameChange}
+                                        onFocus={openHostOptions}
+                                        role="combobox"
+                                        aria-autocomplete="list"
+                                        aria-controls="existing-host-options"
+                                        aria-expanded={isHostOptionsOpen}
+                                        aria-invalid={Boolean(issues.hostName)}
+                                        aria-describedby={hostNameDescribedBy}
+                                        className={cn(inputClassName(issues.hostName), "pr-11")}
+                                        placeholder="예: 대한간호협회"
+                                    />
+                                    <button
+                                        type="button"
+                                        className="absolute inset-y-1 right-1 flex size-10 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand/50"
+                                        aria-label="등록된 주최 기관 목록 열기"
+                                        aria-expanded={isHostOptionsOpen}
+                                        aria-controls="existing-host-options"
+                                        onMouseDown={(event) => event.preventDefault()}
+                                        onClick={() => changeHostOptionsOpen(!isHostOptionsOpen)}
+                                    >
+                                        <ChevronDown
+                                            className={cn("size-4 transition-transform", isHostOptionsOpen && "rotate-180")}
+                                            aria-hidden
+                                        />
+                                    </button>
+                                    {isHostOptionsOpen && (
+                                        <div
+                                            id="existing-host-options"
+                                            role="listbox"
+                                            aria-label="등록된 주최 기관"
+                                            className="absolute left-0 top-[calc(100%+0.375rem)] z-20 max-h-80 w-full overflow-y-auto rounded-lg border border-gray-200 bg-white p-1 text-gray-900 shadow-lg shadow-black/5"
+                                        >
+                                            {hostOptionsStatus === "loading" || hostOptionsStatus === "idle" ? (
+                                                <p className="px-3 py-3 text-sm text-slate-500" role="status">
+                                                    등록된 주최 기관을 불러오는 중이에요.
+                                                </p>
+                                            ) : hostOptionsStatus === "error" ? (
+                                                <button
+                                                    type="button"
+                                                    className="w-full cursor-pointer rounded-md px-3 py-3 text-left text-sm leading-5 text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 focus:bg-slate-100 focus:text-slate-900 focus:outline-none"
+                                                    onClick={() => void loadHostOptions(true)}
+                                                >
+                                                    목록을 불러오지 못했어요. 다시 시도해 주세요.
+                                                </button>
+                                            ) : suggestedHostOptions.length === 0 ? (
+                                                <p className="px-3 py-3 text-sm leading-5 text-slate-500">
+                                                    일치하는 주최 기관이 없어요. 입력한 이름으로 새 기관을 등록할 수 있습니다.
+                                                </p>
+                                            ) : (
+                                                <>
+                                                    <p className="px-3 py-2 text-xs font-medium text-slate-500">
+                                                        {values.hostName.trim()
+                                                            ? `“${values.hostName.trim()}”와 일치하는 주최 기관`
+                                                            : "등록된 주최 기관"}
+                                                    </p>
+                                                    <div className="mx-1 h-px bg-gray-100" />
+                                                    {suggestedHostOptions.map((host) => {
+                                                        const isSelected = selectedExistingHost?.id === host.id;
+
+                                                        return (
+                                                            <button
+                                                                key={host.id}
+                                                                type="button"
+                                                                role="option"
+                                                                aria-selected={isSelected}
+                                                                className={cn(
+                                                                    "relative flex w-full cursor-pointer items-center rounded-md py-2 pl-8 pr-3 text-left text-sm font-medium leading-5 text-slate-800 transition-colors hover:bg-gray-100 focus:bg-gray-100 focus:text-slate-900 focus:outline-none",
+                                                                    isSelected && "bg-gray-100 text-slate-900",
+                                                                )}
+                                                                onClick={() => selectHost(host)}
+                                                            >
+                                                                <span className="absolute left-2 flex size-4 items-center justify-center text-brand" aria-hidden>
+                                                                    {isSelected ? "✓" : ""}
+                                                                </span>
+                                                                {host.name}
+                                                            </button>
+                                                        );
+                                                    })}
+                                                    {filteredHostOptions.length > MAX_HOST_SUGGESTIONS && (
+                                                        <>
+                                                            <div className="mx-1 h-px bg-gray-100" />
+                                                            <p className="px-3 py-2 text-xs leading-5 text-slate-500">
+                                                                상위 {MAX_HOST_SUGGESTIONS}개만 표시합니다. 기관명을 더 입력해 주세요.
+                                                            </p>
+                                                        </>
+                                                    )}
+                                                </>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                                <p id="host-name-help" className="text-xs leading-5 text-slate-500">
+                                    목록에서 선택하면 해당 기관에 연결됩니다.
+                                </p>
                             </FormField>
-                            <FileField
-                                id="host-thumbnail"
-                                label="주최 기관 로고"
-                                description="새 주최 기관이면 로고를 함께 첨부할 수 있어요."
-                                file={hostThumbnail}
-                                error={issues.hostThumbnail}
-                                onChange={(file) => updateFile("hostThumbnail", file)}
-                            />
+                            {selectedExistingHost ? (
+                                <p className="rounded-xl border border-brand/20 bg-red-50 px-4 py-3 text-sm leading-6 text-slate-700">
+                                    <span className="mr-2 font-semibold text-brand">선택됨</span>
+                                    {selectedExistingHost.name}에 행사 정보를 연결합니다.
+                                </p>
+                            ) : (
+                                <FileField
+                                    id="host-thumbnail"
+                                    label="주최 기관 로고"
+                                    description="새 주최 기관이면 로고를 함께 첨부할 수 있어요."
+                                    file={hostThumbnail}
+                                    error={issues.hostThumbnail}
+                                    onChange={(file) => updateFile("hostThumbnail", file)}
+                                />
+                            )}
                         </div>
                     ) : (
                         <FormField label="등록된 주최 기관 ID" required error={issues.hostId}>
@@ -322,11 +447,16 @@ export default function SubmitEventForm() {
                     </p>
                 )}
 
+                <EventSubmissionPreview
+                    values={values}
+                    selectedHostName={selectedExistingHost?.name}
+                    thumbnailUrl={eventThumbnailPreviewUrl}
+                />
+
                 <div className="flex flex-col gap-3 border-t border-gray-200 pt-6 sm:flex-row sm:items-center sm:justify-between">
                     <p className="text-xs leading-5 text-slate-500">제보 내용은 검토 후 공개되며, 필요하면 주최 페이지 정보가 우선 반영됩니다.</p>
                     <Button type="submit" size="lg" className="h-12 shrink-0 rounded-xl px-6" disabled={isSubmitting}>
                         {isSubmitting ? "제보 보내는 중…" : "행사 제보 보내기"}
-                        {!isSubmitting && <Send data-icon="inline-end" aria-hidden />}
                     </Button>
                 </div>
             </form>
@@ -341,6 +471,8 @@ export default function SubmitEventForm() {
 
     function changeHostMethod(nextMethod: HostMethod) {
         setHostMethod(nextMethod);
+        setSelectedHost(null);
+        setIsHostOptionsOpen(false);
         setIssues((current) => {
             const next = { ...current };
             delete next.hostId;
@@ -352,9 +484,64 @@ export default function SubmitEventForm() {
         setSubmission({ status: "idle" });
     }
 
+    function handleHostNameChange(event: ChangeEvent<HTMLInputElement>) {
+        updateValue("hostName", event.target.value);
+        setSelectedHost(null);
+        setHostThumbnail(null);
+        setIsHostOptionsOpen(true);
+        void loadHostOptions();
+    }
+
+    function openHostOptions() {
+        setIsHostOptionsOpen(true);
+        void loadHostOptions();
+    }
+
+    function changeHostOptionsOpen(nextOpen: boolean) {
+        setIsHostOptionsOpen(nextOpen);
+        if (nextOpen) void loadHostOptions();
+    }
+
+    function closeHostOptionsOnBlur(event: FocusEvent<HTMLDivElement>) {
+        if (event.currentTarget.contains(event.relatedTarget)) return;
+
+        setIsHostOptionsOpen(false);
+    }
+
+    async function loadHostOptions(retry = false) {
+        if (hostOptionsRequestedRef.current && !retry) return;
+
+        hostOptionsRequestedRef.current = true;
+        setHostOptionsStatus("loading");
+
+        try {
+            const response = await fetch("/api/hosts");
+            const body: unknown = await response.json().catch(() => null);
+            if (!response.ok || !isHostListResponse(body)) {
+                throw new Error("Failed to load hosts");
+            }
+
+            setHostOptions(body.hosts);
+            setHostOptionsStatus("ready");
+        } catch {
+            hostOptionsRequestedRef.current = false;
+            setHostOptionsStatus("error");
+        }
+    }
+
+    function selectHost(host: HostOption) {
+        setValues((current) => ({ ...current, hostName: host.name }));
+        setSelectedHost(host);
+        setHostThumbnail(null);
+        setIsHostOptionsOpen(false);
+        clearIssue("hostName");
+        setSubmission({ status: "idle" });
+    }
+
     function updateFile(field: "eventThumbnail" | "hostThumbnail", file: File | null) {
         if (field === "eventThumbnail") {
             setEventThumbnail(file);
+            replaceEventThumbnailPreview(file);
         } else {
             setHostThumbnail(file);
         }
@@ -362,6 +549,16 @@ export default function SubmitEventForm() {
         const issue = file ? getImageFileIssue(file) : undefined;
         setIssues((current) => ({ ...current, [field]: issue }));
         setSubmission({ status: "idle" });
+    }
+
+    function replaceEventThumbnailPreview(file: File | null) {
+        if (eventThumbnailPreviewUrlRef.current) {
+            URL.revokeObjectURL(eventThumbnailPreviewUrlRef.current);
+        }
+
+        const nextUrl = file ? URL.createObjectURL(file) : null;
+        eventThumbnailPreviewUrlRef.current = nextUrl;
+        setEventThumbnailPreviewUrl(nextUrl);
     }
 
     function clearIssue(field: EventSubmissionField) {
@@ -376,6 +573,9 @@ export default function SubmitEventForm() {
     function getPayloadAndIssues(): { payload: EventSubmissionInput; nextIssues: EventSubmissionIssues } {
         const rawHostId = values.hostId.trim();
         const parsedHostId = /^\d+$/.test(rawHostId) ? Number(rawHostId) : undefined;
+        const linkedHost = hostMethod === "name" && selectedHost?.name === values.hostName
+            ? selectedHost
+            : null;
         const payload: EventSubmissionInput = {
             title: values.title,
             startAt: formatDateTimeForApi(values.startAt),
@@ -388,11 +588,13 @@ export default function SubmitEventForm() {
                 : undefined,
             uri: values.uri,
             eventType: values.eventType,
-            ...(hostMethod === "name" ? { hostName: values.hostName } : { hostId: parsedHostId }),
+            ...(hostMethod === "name"
+                ? linkedHost ? { hostId: linkedHost.id } : { hostName: values.hostName }
+                : { hostId: parsedHostId }),
         };
         const nextIssues = getEventSubmissionIssues(payload);
 
-        if (hostMethod === "name" && !values.hostName.trim()) {
+        if (hostMethod === "name" && !linkedHost && !values.hostName.trim()) {
             nextIssues.hostName = "주최 기관명을 입력해 주세요.";
             delete nextIssues.form;
         }
@@ -401,7 +603,7 @@ export default function SubmitEventForm() {
             delete nextIssues.form;
         }
 
-        const visibleUploads = [eventThumbnail, hostMethod === "name" ? hostThumbnail : null].filter(
+        const visibleUploads = [eventThumbnail, hostMethod === "name" && !linkedHost ? hostThumbnail : null].filter(
             (file): file is File => file !== null,
         );
         const totalUploadBytes = visibleUploads.reduce((total, file) => total + file.size, 0);
@@ -428,7 +630,10 @@ export default function SubmitEventForm() {
         const formData = new FormData();
         formData.set("data", new Blob([JSON.stringify(payload)], { type: "application/json" }), "event.json");
         if (eventThumbnail) formData.set("eventThumbnail", eventThumbnail, eventThumbnail.name);
-        if (hostMethod === "name" && hostThumbnail) {
+        const linkedHost = hostMethod === "name" && selectedHost?.name === values.hostName
+            ? selectedHost
+            : null;
+        if (hostMethod === "name" && !linkedHost && hostThumbnail) {
             formData.set("hostThumbnail", hostThumbnail, hostThumbnail.name);
         }
 
@@ -448,6 +653,7 @@ export default function SubmitEventForm() {
                 status: "success",
                 message: message ?? "행사 제보가 접수되었습니다. 검토 후 목록에 반영됩니다.",
             });
+            replaceEventThumbnailPreview(null);
         } catch (error) {
             setSubmission({
                 status: "error",
@@ -460,7 +666,10 @@ export default function SubmitEventForm() {
         setValues(INITIAL_VALUES);
         setHostMethod("name");
         setEventThumbnail(null);
+        replaceEventThumbnailPreview(null);
         setHostThumbnail(null);
+        setSelectedHost(null);
+        setIsHostOptionsOpen(false);
         setIssues({});
         setSubmission({ status: "idle" });
     }
@@ -470,15 +679,17 @@ function FormField({
     label,
     required = false,
     error,
+    controlId: explicitControlId,
     children,
 }: {
     label: string;
     required?: boolean;
     error?: string;
+    controlId?: string;
     children: React.ReactNode;
 }) {
     const control = Array.isArray(children) ? children[0] : children;
-    const controlId = isReactElementWithId(control) ? control.props.id : undefined;
+    const controlId = explicitControlId ?? (isReactElementWithId(control) ? control.props.id : undefined);
 
     return (
         <div className="flex flex-col gap-2">
@@ -550,8 +761,111 @@ function inputClassName(hasError?: string) {
     );
 }
 
+function EventSubmissionPreview({
+    values,
+    selectedHostName,
+    thumbnailUrl,
+}: {
+    values: FormValues;
+    selectedHostName?: string;
+    thumbnailUrl: string | null;
+}) {
+    const eventTypeLabel = isEventSubmissionEventType(values.eventType)
+        ? EVENT_SUBMISSION_TYPE_LABEL[values.eventType]
+        : "행사 유형";
+    const hostName = (selectedHostName ?? values.hostName.trim())
+        || (values.hostId.trim() ? "등록된 주최 기관" : "주최 기관명을 입력해 주세요");
+    const title = values.title.trim() || "행사 제목을 입력해 주세요";
+
+    return (
+        <section className="rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:p-5" aria-labelledby="event-preview-title">
+            <div className="flex flex-col gap-1">
+                <h2 id="event-preview-title" className="text-base font-bold text-slate-900">행사 카드 미리보기</h2>
+                <p className="text-xs leading-5 text-slate-500">입력한 내용이 행사 목록에서 이렇게 보입니다.</p>
+            </div>
+
+            <article className="mt-4 flex max-w-sm flex-col overflow-hidden rounded-2xl bg-white shadow-[0_8px_22px_rgba(15,23,42,0.10)]">
+                <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
+                    {/* blob URL은 Next Image 최적화 대상이 아니므로 로컬 미리보기로만 사용합니다. */}
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                        src={thumbnailUrl ?? "/event-thumbnail-placeholder.svg"}
+                        alt=""
+                        className="size-full object-cover"
+                        decoding="async"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
+                    <div className="absolute inset-x-0 bottom-0 p-5 text-white">
+                        <h3 className="line-clamp-3 text-xl font-bold leading-snug drop-shadow-sm">{title}</h3>
+                    </div>
+                </div>
+
+                <div className="flex flex-1 flex-col p-5">
+                    <div className="flex min-h-8 items-center justify-between gap-2">
+                        <span className="inline-flex h-8 shrink-0 items-center whitespace-nowrap rounded-full bg-slate-100 px-2.5 text-xs font-semibold text-slate-700">
+                            {eventTypeLabel}
+                        </span>
+                        <span className="shrink-0 whitespace-nowrap text-sm font-bold text-brand">검토 예정</span>
+                    </div>
+
+                    <p className="mt-5 min-h-10 line-clamp-2 text-sm font-semibold leading-5 text-gray-900">
+                        <span className="mr-2 text-gray-400">주최</span>
+                        {hostName}
+                    </p>
+
+                    <dl className="mt-auto grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] gap-x-1.5 border-t border-gray-200 pt-4 text-xs">
+                        <div className="min-w-0">
+                            <dt className="text-gray-500">일시</dt>
+                            <dd className="mt-1 whitespace-nowrap font-semibold text-gray-900">{formatPreviewDate(values.startAt)}</dd>
+                        </div>
+                        <div className="min-w-0">
+                            <dt className="text-gray-500">마감</dt>
+                            <dd className="mt-1 whitespace-nowrap font-semibold text-gray-900">{formatPreviewDate(values.recruitmentEndAt)}</dd>
+                        </div>
+                        <div className="min-w-7">
+                            <dt className="text-gray-500">조회</dt>
+                            <dd className="mt-1 font-semibold text-gray-900">0</dd>
+                        </div>
+                    </dl>
+                </div>
+            </article>
+        </section>
+    );
+}
+
+function formatPreviewDate(value: string): string {
+    const [date] = value.split("T");
+    const [year, month, day] = date.split("-");
+    if (!year || !month || !day) return "-";
+
+    return `${year}. ${Number(month)}. ${Number(day)}.`;
+}
+
 function isReactElementWithId(
     child: React.ReactNode,
 ): child is React.ReactElement<{ id?: string }> {
     return typeof child === "object" && child !== null && "props" in child;
+}
+
+function isHostListResponse(value: unknown): value is { hosts: HostOption[] } {
+    return (
+        typeof value === "object"
+        && value !== null
+        && "hosts" in value
+        && Array.isArray(value.hosts)
+        && value.hosts.every(isHostOption)
+    );
+}
+
+function isHostOption(value: unknown): value is HostOption {
+    if (typeof value !== "object" || value === null) return false;
+
+    const host = value as Partial<HostOption>;
+    return (
+        typeof host.id === "number"
+        && Number.isSafeInteger(host.id)
+        && host.id > 0
+        && typeof host.name === "string"
+        && Boolean(host.name.trim())
+    );
 }
