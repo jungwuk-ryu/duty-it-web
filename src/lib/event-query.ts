@@ -1,4 +1,3 @@
-import type { EventStatusGroup } from "@/src/lib/schemas/event-status";
 import type { EventType } from "@/src/lib/schemas/event-type";
 
 export const EVENT_SORT_FIELDS = [
@@ -10,11 +9,19 @@ export const EVENT_SORT_FIELDS = [
 
 export type EventSortField = typeof EVENT_SORT_FIELDS[number];
 
+export const PUBLIC_STATUS_GROUP_OPTIONS = [
+    "ALL",
+    "ACTIVE",
+    "FINISHED",
+] as const;
+
+export type EventStatusFilter = typeof PUBLIC_STATUS_GROUP_OPTIONS[number];
+
 export type EventFilters = {
     field: EventSortField;
     hostId: number | null;
     searchKeyword: string;
-    statusGroup: EventStatusGroup;
+    statusGroup: EventStatusFilter;
     types: EventType[];
 };
 
@@ -45,11 +52,6 @@ export const EVENT_TYPE_OPTIONS = [
     "SUPPORTERS",
     "ETC",
 ] as const satisfies readonly EventType[];
-
-export const PUBLIC_STATUS_GROUP_OPTIONS = [
-    "ACTIVE",
-    "FINISHED",
-] as const satisfies readonly EventStatusGroup[];
 
 export const SORT_OPTIONS = [
     { value: "CREATED_AT", label: "최신 등록순" },
@@ -137,10 +139,10 @@ function getHostId(searchParams: EventSearchParams): number | null {
     return Number.isSafeInteger(parsedHostId) ? parsedHostId : null;
 }
 
-function getStatusGroup(searchParams: EventSearchParams): EventStatusGroup {
+function getStatusGroup(searchParams: EventSearchParams): EventStatusFilter {
     const statusGroup = getFirstValue(searchParams.statusGroup);
     return statusGroup != null && PUBLIC_STATUS_GROUP_SET.has(statusGroup)
-        ? statusGroup as EventStatusGroup
+        ? statusGroup as EventStatusFilter
         : "ACTIVE";
 }
 

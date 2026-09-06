@@ -1,9 +1,8 @@
 import "server-only";
 
-import { EVENT_SORT_FIELDS, type EventSortField } from "@/src/lib/event-query";
+import { EVENT_SORT_FIELDS, type EventSortField, type EventStatusFilter } from "@/src/lib/event-query";
 import { EventResponse, EventsResponseSchema } from "../schemas/events-response";
 import { EventType } from "../schemas/event-type";
-import { EventStatusGroup } from "../schemas/event-status";
 
 export { EVENT_SORT_FIELDS };
 export type { EventSortField };
@@ -14,7 +13,7 @@ type FetchOptions = {
     hostId?: number | null;
     searchKeyword?: string | null;
     size?: number;
-    statusGroup?: EventStatusGroup;
+    statusGroup?: EventStatusFilter;
     types?: EventType[];
 }
 

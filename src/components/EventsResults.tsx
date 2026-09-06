@@ -14,7 +14,7 @@ import {
 } from "@/src/lib/event-query";
 import type { Event } from "@/src/lib/schemas/event";
 import type { EventResponse } from "@/src/lib/schemas/events-response";
-import type { EventStatusGroup } from "@/src/lib/schemas/event-status";
+import type { EventStatusFilter } from "@/src/lib/event-query";
 import type { EventType } from "@/src/lib/schemas/event-type";
 import Link from "next/link";
 import { type MouseEvent, useCallback, useEffect, useRef, useState } from "react";
@@ -25,11 +25,11 @@ type Props = {
     initialData: EventResponse;
     initialRequest: EventPageRequest;
     sortOptions: readonly Option<EventSortField>[];
-    statusOptions: readonly Option<EventStatusGroup>[];
+    statusOptions: readonly Option<EventStatusFilter>[];
     typeOptions: readonly Option<EventType>[];
 };
 
-type HistoryMode = "none" | "push";
+type HistoryMode = "none" | "push" | "replace";
 type CachedPage = { data: EventResponse; expiresAt: number };
 type HostOption = { id: number; name: string };
 type EventWire = Omit<Event, "startAt" | "endAt" | "recruitmentStartAt" | "recruitmentEndAt"> & {
@@ -68,6 +68,8 @@ export default function EventsResults({
 
         if (historyMode === "push") {
             window.history.pushState(null, "", getEventsHref(nextRequest, nextRequest.cursor));
+        } else if (historyMode === "replace") {
+            window.history.replaceState(null, "", getEventsHref(nextRequest, nextRequest.cursor));
         }
         document.title = getDocumentTitle(nextRequest);
 
@@ -149,8 +151,8 @@ export default function EventsResults({
         return () => window.removeEventListener("popstate", handlePopState);
     }, [loadPage]);
 
-    const handleApply = (filters: EventFilters) => {
-        void loadPage({ ...filters, cursor: null });
+    const handleFiltersChange = (filters: EventFilters, historyMode: "push" | "replace" = "push") => {
+        void loadPage({ ...filters, cursor: null }, historyMode);
     };
 
     const handleReset = () => {
@@ -195,16 +197,15 @@ export default function EventsResults({
 
     return (
         <>
-            <section className="mb-8 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-[0_16px_40px_rgba(15,23,42,0.08),0_2px_8px_rgba(15,23,42,0.04)] md:p-5">
+            <section className="mb-8">
                 <EventFiltersForm
-                    key={getFiltersKey(request)}
                     field={request.field}
                     hostId={request.hostId}
                     hostOptions={hostOptions}
                     hostsLoadError={hostsLoadError}
                     isHostsLoading={isHostsLoading}
                     isLoading={isLoading}
-                    onApply={handleApply}
+                    onFiltersChange={handleFiltersChange}
                     onReset={handleReset}
                     searchKeyword={request.searchKeyword}
                     sortOptions={sortOptions}
@@ -372,10 +373,6 @@ function toClientFetchError(error: unknown): EventsClientFetchError {
 
 function getRequestKey(request: EventPageRequest): string {
     return getEventsSearchParams(request, request.cursor).toString();
-}
-
-function getFiltersKey(request: EventPageRequest): string {
-    return getEventsSearchParams(request, null).toString();
 }
 
 function getDocumentTitle(request: EventPageRequest): string {

@@ -20,6 +20,8 @@ import Link from "next/link";
 
 const EVENTS_CANONICAL = "https://www.dutyit.net/events";
 const PAGE_SIZE = 12;
+// Re-enable ALL when the public events API supports statusGroup=ALL.
+const FILTER_STATUS_GROUP_OPTIONS = PUBLIC_STATUS_GROUP_OPTIONS.filter((value) => value !== "ALL");
 
 type Props = { searchParams: Promise<EventSearchParams> };
 
@@ -82,7 +84,7 @@ export default async function EventsPage({ searchParams }: Props) {
                 initialData={events}
                 initialRequest={initialRequest}
                 sortOptions={SORT_OPTIONS}
-                statusOptions={PUBLIC_STATUS_GROUP_OPTIONS.map((value) => ({ value, label: EventStatusGroupLabel[value] }))}
+                statusOptions={FILTER_STATUS_GROUP_OPTIONS.map((value) => ({ value, label: EventStatusGroupLabel[value] }))}
                 typeOptions={EVENT_TYPE_OPTIONS.map((value) => ({ value, label: EventTypeLabel[value] }))}
             />
         </div>
