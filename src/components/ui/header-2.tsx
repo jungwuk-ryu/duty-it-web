@@ -31,7 +31,7 @@ export function Header() {
         <header
             className={cn(
                 "sticky top-0 z-50 mx-auto w-full border-b border-transparent bg-white/90 backdrop-blur-md transition-[width,max-width,top,border-radius,background-color,box-shadow,border-color] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] md:max-w-[calc(100%-0px)] md:rounded-none",
-                scrolled && !open && "top-3 w-[calc(100%-1.5rem)] rounded-2xl border border-white/80 bg-white/80 shadow-xl shadow-slate-950/[0.08] backdrop-blur-xl md:top-4 md:w-full md:max-w-5xl md:rounded-3xl",
+                scrolled && !open && "top-3 w-[calc(100%-1.5rem)] rounded-2xl border border-white/80 bg-white/80 shadow-xl shadow-slate-950/[0.08] backdrop-blur-xl md:top-4 md:w-[calc(100%-2rem)] md:max-w-5xl md:rounded-3xl",
                 open && "border-gray-200/80 bg-white/90",
             )}
         >
