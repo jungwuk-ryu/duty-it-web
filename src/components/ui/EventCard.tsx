@@ -1,8 +1,9 @@
 import Image from "next/image";
-import { Event } from "@/src/lib/schemas/event";
+import type { Event } from "@/src/lib/schemas/event";
 import CategoryTag from "./EventTypeTag";
 import Link from "next/link";
-import { EventStatusLabel } from "@/src/lib/schemas/event-status";
+import type { MouseEvent } from "react";
+import { EventStatusLabel } from "@/src/lib/event-labels";
 
 const KST_FORMATTER = new Intl.DateTimeFormat("ko-KR", {
     timeZone: "Asia/Seoul",
@@ -14,10 +15,11 @@ const KST_FORMATTER = new Intl.DateTimeFormat("ko-KR", {
 type Props = {
     event: Event;
     eager?: boolean;
+    onHostClick?: (hostId: number) => void;
     priority?: boolean;
 };
 
-export default function EventCard({ event, eager = false, priority = false }: Props) {
+export default function EventCard({ event, eager = false, onHostClick, priority = false }: Props) {
     const recruitmentStatus = getRecruitmentStatus(event);
 
     return (
@@ -57,7 +59,14 @@ export default function EventCard({ event, eager = false, priority = false }: Pr
 
                 <p className="mt-5 min-h-10 line-clamp-2 text-sm font-semibold leading-5 text-gray-900">
                     <span className="mr-2 text-gray-400">주최</span>
-                    {event.host.name}
+                    <Link
+                        aria-label={`${event.host.name} 주최 행사 보기`}
+                        className="rounded-sm text-gray-700 underline-offset-2 transition hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-slate-700 focus-visible:outline-offset-2"
+                        href={`/events?hostId=${event.host.id}`}
+                        onClick={(clickedEvent) => handleHostClick(clickedEvent, event.host.id, onHostClick)}
+                    >
+                        {event.host.name}
+                    </Link>
                 </p>
 
                 <dl className="mt-auto grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] gap-x-1.5 border-t border-gray-200 pt-4 text-xs">
@@ -83,6 +92,22 @@ export default function EventCard({ event, eager = false, priority = false }: Pr
             </div>
         </article>
     );
+}
+
+function handleHostClick(event: MouseEvent<HTMLAnchorElement>, hostId: number, onHostClick?: (hostId: number) => void) {
+    if (
+        onHostClick == null
+        || event.button !== 0
+        || event.metaKey
+        || event.ctrlKey
+        || event.shiftKey
+        || event.altKey
+    ) {
+        return;
+    }
+
+    event.preventDefault();
+    onHostClick(hostId);
 }
 
 function getRecruitmentStatus(event: Event): string {

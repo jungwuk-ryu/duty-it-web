@@ -1,20 +1,17 @@
 import "server-only";
+
+import { EVENT_SORT_FIELDS, type EventSortField } from "@/src/lib/event-query";
 import { EventResponse, EventsResponseSchema } from "../schemas/events-response";
 import { EventType } from "../schemas/event-type";
 import { EventStatusGroup } from "../schemas/event-status";
 
-export const EVENT_SORT_FIELDS = [
-    "CREATED_AT",
-    "START_DATE",
-    "RECRUITMENT_DEADLINE",
-    "VIEW_COUNT",
-] as const;
-
-export type EventSortField = typeof EVENT_SORT_FIELDS[number];
+export { EVENT_SORT_FIELDS };
+export type { EventSortField };
 
 type FetchOptions = {
     cursor?: string | null;
     field?: EventSortField;
+    hostId?: number | null;
     searchKeyword?: string | null;
     size?: number;
     statusGroup?: EventStatusGroup;
@@ -39,6 +36,7 @@ export async function fetchEvents(opts: FetchOptions = {}): Promise<EventRespons
     const {
         cursor = null,
         field = "CREATED_AT",
+        hostId = null,
         searchKeyword = null,
         size = 12,
         statusGroup = "ACTIVE",
@@ -52,6 +50,7 @@ export async function fetchEvents(opts: FetchOptions = {}): Promise<EventRespons
         statusGroup,
     });
     if (cursor != null) params.set("cursor", `${cursor}`);
+    if (hostId != null) params.set("hostId", `${hostId}`);
     if (types.length > 0) params.set("types", types.join(","));
     if (searchKeyword != null && searchKeyword.trim() !== "") {
         params.set("searchKeyword", searchKeyword.trim());

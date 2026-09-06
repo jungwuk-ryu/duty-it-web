@@ -9,17 +9,24 @@ import {
     DropdownMenuRadioItem,
     DropdownMenuTrigger,
 } from "@/src/components/ui/dropdown-menu";
-import type { EventSortField } from "@/src/lib/api/events";
+import type { EventFilters, EventSortField } from "@/src/lib/event-query";
 import type { EventStatusGroup } from "@/src/lib/schemas/event-status";
 import type { EventType } from "@/src/lib/schemas/event-type";
 import { ChevronDown, Search } from "lucide-react";
 import Link from "next/link";
-import { useId, useState } from "react";
+import { type FormEvent, useId, useState } from "react";
 
 type Option<T extends string> = { value: T; label: string };
 
 type Props = {
     field: EventSortField;
+    hostId: number | null;
+    hostOptions: readonly HostOption[];
+    hostsLoadError?: boolean;
+    isHostsLoading?: boolean;
+    isLoading?: boolean;
+    onApply?: (filters: EventFilters) => void;
+    onReset?: () => void;
     searchKeyword: string;
     sortOptions: readonly Option<EventSortField>[];
     statusGroup: EventStatusGroup;
@@ -30,6 +37,13 @@ type Props = {
 
 export default function EventFiltersForm({
     field,
+    hostId,
+    hostOptions,
+    hostsLoadError = false,
+    isHostsLoading = false,
+    isLoading = false,
+    onApply,
+    onReset,
     searchKeyword,
     sortOptions,
     statusGroup,
@@ -38,10 +52,30 @@ export default function EventFiltersForm({
     types,
 }: Props) {
     const [selectedTypes, setSelectedTypes] = useState<EventType[]>(types);
+    const [selectedHostId, setSelectedHostId] = useState(hostId == null ? "" : `${hostId}`);
+
+    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+        if (onApply == null) return;
+
+        event.preventDefault();
+        const formData = new FormData(event.currentTarget);
+        const nextSearchKeyword = formData.get("q");
+        const nextField = formData.get("field");
+        const nextHostId = formData.get("hostId");
+        const nextStatusGroup = formData.get("statusGroup");
+
+        onApply({
+            field: getOptionValue(nextField, sortOptions, field),
+            hostId: getHostId(nextHostId),
+            searchKeyword: typeof nextSearchKeyword === "string" ? nextSearchKeyword.trim().slice(0, 80) : "",
+            statusGroup: getOptionValue(nextStatusGroup, statusOptions, statusGroup),
+            types: selectedTypes,
+        });
+    };
 
     return (
-        <form action="/events" className="space-y-5">
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-[minmax(0,1fr)_180px_180px]">
+        <form action="/events" className="space-y-5" onSubmit={handleSubmit} aria-busy={isLoading || undefined}>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_minmax(0,0.85fr)_180px_180px]">
                 <label className="flex flex-col gap-2 text-sm font-semibold text-gray-700">
                     검색
                     <BorderBeam size="line" colorVariant="sunset" theme="light" duration={3.1} borderRadius={12} strength={0.65}>
@@ -50,6 +84,28 @@ export default function EventFiltersForm({
                             <input className="min-w-0 flex-1 bg-transparent text-base font-normal text-gray-900 outline-none placeholder:text-gray-400" name="q" defaultValue={searchKeyword} placeholder="행사명으로 검색" />
                         </span>
                     </BorderBeam>
+                </label>
+
+                <label className="flex min-w-0 flex-col gap-2 text-sm font-semibold text-gray-700">
+                    주최
+                    <select
+                        className="h-11 w-full rounded-lg border border-gray-300 bg-white px-3 text-base font-normal text-gray-900 shadow-[inset_0_1px_2px_rgba(15,23,42,0.04)] outline-none transition hover:border-gray-400 focus:border-brand focus:ring-2 focus:ring-brand/20 disabled:cursor-wait disabled:bg-gray-50 disabled:text-gray-500"
+                        value={selectedHostId}
+                        disabled={isHostsLoading && hostId == null}
+                        name="hostId"
+                        onChange={(event) => setSelectedHostId(event.target.value)}
+                    >
+                        <option value="">{isHostsLoading ? "주최 기관 불러오는 중…" : "전체 주최"}</option>
+                        {hostId != null && !hostOptions.some((host) => host.id === hostId) && (
+                            <option value={hostId}>선택한 주최</option>
+                        )}
+                        {hostOptions.map((host) => (
+                            <option key={host.id} value={host.id}>{host.name}</option>
+                        ))}
+                    </select>
+                    {hostsLoadError && (
+                        <span className="text-xs font-normal text-amber-700">주최 기관 목록을 불러오지 못했어요. 카드의 주최 링크는 계속 사용할 수 있어요.</span>
+                    )}
                 </label>
 
                 <DropdownField label="정렬" name="field" options={sortOptions} value={field} />
@@ -86,17 +142,40 @@ export default function EventFiltersForm({
                     <Link
                         className="inline-flex h-10 items-center rounded-lg border border-gray-300 px-4 text-sm font-semibold text-gray-700 transition hover:border-gray-400"
                         href="/events"
-                        onClick={() => setSelectedTypes([])}
+                        onClick={(event) => {
+                            setSelectedTypes([]);
+                            if (onReset != null) {
+                                event.preventDefault();
+                                onReset();
+                            }
+                        }}
                     >
                         초기화
                     </Link>
-                    <button className="inline-flex h-10 items-center rounded-lg bg-brand px-4 text-sm font-semibold text-white transition hover:bg-brand/90" type="submit">
+                    <button className="inline-flex h-10 items-center rounded-lg bg-brand px-4 text-sm font-semibold text-white transition hover:bg-brand/90 disabled:cursor-wait disabled:opacity-70" disabled={isLoading} type="submit" aria-busy={isLoading || undefined}>
                         적용
                     </button>
                 </div>
             </div>
         </form>
     );
+}
+
+type HostOption = {
+    id: number;
+    name: string;
+};
+
+function getOptionValue<T extends string>(value: FormDataEntryValue | null, options: readonly Option<T>[], fallback: T): T {
+    if (typeof value !== "string") return fallback;
+    return options.some((option) => option.value === value) ? value as T : fallback;
+}
+
+function getHostId(value: FormDataEntryValue | null): number | null {
+    if (typeof value !== "string" || !/^[1-9]\d{0,15}$/.test(value)) return null;
+
+    const hostId = Number(value);
+    return Number.isSafeInteger(hostId) ? hostId : null;
 }
 
 function DropdownField<T extends string>({ label, name, options, value }: { label: string; name: string; options: readonly Option<T>[]; value: T }) {
