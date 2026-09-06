@@ -33,7 +33,9 @@ export async function POST(request: Request) {
                 Accept: "application/json",
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify(idToken),
+            // The API binds @RequestBody String verbatim, like the native app.
+            // JSON.stringify would make the surrounding quotes part of the JWT.
+            body: idToken,
             cache: "no-store",
         });
     } catch {
