@@ -1,4 +1,5 @@
 import EventsResults from "@/src/components/EventsResults";
+import EventCategoryExplore from "@/src/components/EventCategoryExplore";
 import {
     EventsFetchError,
     fetchEvents,
@@ -11,6 +12,7 @@ import {
     getEventFilters,
     getEventsHref,
     getEventsSearchParams,
+    isEventListView,
     type EventFilters,
     type EventSearchParams,
 } from "@/src/lib/event-query";
@@ -65,13 +67,6 @@ export default async function EventsPage({ searchParams }: Props) {
 
     return (
         <div className="container mx-auto px-4 mb-5 py-10">
-            <header className="mb-6 text-center">
-                <h1 className="text-3xl font-bold">행사 목록</h1>
-                <p className="mt-3 text-gray-600">
-                    관심 분야와 일정에 맞는 행사만 골라 확인해보세요.
-                </p>
-            </header>
-
             {recoveredFromInvalidCursor && (
                 <div className="mb-6 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900" role="alert">
                     페이지 정보가 만료되어 첫 페이지를 보여드려요.{" "}
@@ -81,10 +76,16 @@ export default async function EventsPage({ searchParams }: Props) {
                 </div>
             )}
             <EventsResults
+                key={`${isEventListView(resolvedSearchParams)}:${getEventsHref(initialRequest, initialRequest.cursor)}`}
+                categoryExplore={<EventCategoryExplore />}
                 initialData={events}
+                initialIsListView={isEventListView(resolvedSearchParams)}
                 initialRequest={initialRequest}
                 sortOptions={SORT_OPTIONS}
-                statusOptions={FILTER_STATUS_GROUP_OPTIONS.map((value) => ({ value, label: EventStatusGroupLabel[value] }))}
+                statusOptions={FILTER_STATUS_GROUP_OPTIONS.map((value) => ({
+                    value,
+                    label: EventStatusGroupLabel[value],
+                }))}
                 typeOptions={EVENT_TYPE_OPTIONS.map((value) => ({ value, label: EventTypeLabel[value] }))}
             />
         </div>
@@ -113,8 +114,6 @@ async function fetchEventsSafely(filters: EventFilters, cursor: string | null): 
 function getEventsAbsoluteUrl(filters: EventFilters): string {
     const url = new URL(EVENTS_CANONICAL);
     const params = getEventsSearchParams(filters, null);
-    params.forEach((value, key) => {
-        url.searchParams.set(key, value);
-    });
+    params.forEach((value, key) => url.searchParams.set(key, value));
     return url.toString();
 }

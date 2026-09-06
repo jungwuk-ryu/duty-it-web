@@ -30,6 +30,7 @@ export type EventPageRequest = EventFilters & {
 };
 
 export type EventSearchParams = {
+    view?: string | string[] | null;
     cursor?: string | string[] | null;
     field?: string | string[] | null;
     q?: string | string[] | null;
@@ -107,7 +108,14 @@ export function getSortLabel(field: EventSortField): string {
 
 export function getEventsHref(filters: EventFilters, cursor: string | null): string {
     const query = getEventsSearchParams(filters, cursor).toString();
-    return query ? `/events?${query}` : "/events";
+    return query ? `/events?${query}` : "/events?view=list";
+}
+
+export function isEventListView(searchParams: EventSearchParams): boolean {
+    return getFirstValue(searchParams.view) === "list"
+        || ["cursor", "field", "q", "searchKeyword", "statusGroup", "types", "hostId"].some(
+            (key) => Boolean(getFirstValue(searchParams[key as keyof EventSearchParams])?.trim()),
+        );
 }
 
 export function getEventsSearchParams(filters: EventFilters, cursor: string | null): URLSearchParams {

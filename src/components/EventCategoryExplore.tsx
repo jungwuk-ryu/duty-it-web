@@ -54,21 +54,21 @@ const JOB_CATEGORY = {
     }],
 } as const;
 
-export default function HomeCategoryExplore() {
+export default function EventCategoryExplore() {
     return (
-        <Suspense fallback={<HomeCategoryExploreLoading />}>
-            <HomeCategoryExploreContent />
+        <Suspense fallback={<EventCategoryExploreLoading />}>
+            <EventCategoryExploreContent />
         </Suspense>
     );
 }
 
-async function HomeCategoryExploreContent() {
+async function EventCategoryExploreContent() {
     const categories = await loadEventCategories();
 
     return (
-        <section id="category-explore" aria-labelledby="home-category-explore-title" className="py-2 sm:py-4">
+        <section id="category-explore" aria-labelledby="event-category-explore-title" className="py-2 sm:py-4">
             <header className="max-w-2xl">
-                <h2 id="home-category-explore-title" className="text-3xl font-bold tracking-[-0.04em] text-slate-950 sm:text-4xl">
+                <h2 id="event-category-explore-title" className="text-3xl font-bold tracking-[-0.04em] text-slate-950 sm:text-4xl">
                     관심 분야별로 둘러보기
                 </h2>
                 <p className="mt-3 text-[15px] leading-7 text-slate-600 sm:text-base">
@@ -107,7 +107,7 @@ async function loadEventCategories() {
                 images: getEventImages(content, category.description),
             };
         } catch (error) {
-            console.error("Failed to load home category content", {
+            console.error("Failed to load event category content", {
                 category: category.id,
                 error: getSafeErrorLog(error),
             });
@@ -156,11 +156,11 @@ function isAllowedEventThumbnail(imageUrl: string | undefined): imageUrl is stri
     }
 }
 
-function HomeCategoryExploreLoading() {
+function EventCategoryExploreLoading() {
     return (
-        <section id="category-explore" aria-busy="true" aria-labelledby="home-category-explore-loading-title" className="py-2 sm:py-4">
+        <section id="category-explore" aria-busy="true" aria-labelledby="event-category-explore-loading-title" className="py-2 sm:py-4">
             <header className="max-w-2xl">
-                <h2 id="home-category-explore-loading-title" className="text-3xl font-bold tracking-[-0.04em] text-slate-950 sm:text-4xl">
+                <h2 id="event-category-explore-loading-title" className="text-3xl font-bold tracking-[-0.04em] text-slate-950 sm:text-4xl">
                     관심 분야별로 둘러보기
                 </h2>
                 <p className="mt-3 text-[15px] leading-7 text-slate-600 sm:text-base">

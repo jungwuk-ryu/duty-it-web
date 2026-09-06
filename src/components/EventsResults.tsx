@@ -1,6 +1,7 @@
 "use client";
 
 import EventFiltersForm from "@/src/components/EventFiltersForm";
+import EventsDiscovery from "@/src/components/EventsDiscovery";
 import EventListScaffold from "@/src/components/EventListScaffold";
 import EventCard from "@/src/components/ui/EventCard";
 import {
@@ -8,6 +9,7 @@ import {
     getEventsHref,
     getEventsSearchParams,
     getSortLabel,
+    isEventListView,
     type EventFilters,
     type EventPageRequest,
     type EventSortField,
@@ -18,12 +20,16 @@ import type { EventStatusFilter } from "@/src/lib/event-query";
 import type { EventType } from "@/src/lib/schemas/event-type";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
-import { type MouseEvent, useCallback, useEffect, useRef, useState } from "react";
+import { type MouseEvent, type ReactNode, useCallback, useEffect, useRef, useState } from "react";
+import { flushSync } from "react-dom";
+import { useSearchParams } from "next/navigation";
 
 type Option<T extends string> = { value: T; label: string };
 
 type Props = {
+    categoryExplore: ReactNode;
     initialData: EventResponse;
+    initialIsListView: boolean;
     initialRequest: EventPageRequest;
     sortOptions: readonly Option<EventSortField>[];
     statusOptions: readonly Option<EventStatusFilter>[];
@@ -47,12 +53,16 @@ const pageCache = new Map<string, CachedPage>();
 const PAGINATION_BUTTON_CLASS = "inline-flex h-10 items-center gap-1 rounded-lg border border-gray-300 bg-white px-4 text-sm font-semibold text-gray-800 shadow-sm transition hover:border-brand hover:text-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-50 disabled:text-gray-400 disabled:hover:border-gray-200 disabled:hover:text-gray-400";
 
 export default function EventsResults({
+    categoryExplore,
     initialData,
+    initialIsListView,
     initialRequest,
     sortOptions,
     statusOptions,
     typeOptions,
 }: Props) {
+    const searchParams = useSearchParams();
+    const isListView = isEventListView(Object.fromEntries(searchParams));
     const [request, setRequest] = useState<EventPageRequest>(initialRequest);
     const [events, setEvents] = useState<EventResponse | null>(initialData);
     const [error, setError] = useState<EventsClientFetchError | null>(null);
@@ -66,6 +76,26 @@ export default function EventsResults({
     const eventListRef = useRef<HTMLElement | null>(null);
     const requestRef = useRef(initialRequest);
     const requestVersionRef = useRef(0);
+    const pageTopRef = useRef<HTMLDivElement | null>(null);
+    const viewTransitionRef = useRef<ViewTransition | null>(null);
+
+    const transitionView = useCallback((update: () => void) => {
+        viewTransitionRef.current?.skipTransition();
+        const applyUpdate = () => {
+            flushSync(update);
+            pageTopRef.current?.scrollIntoView({ behavior: "instant", block: "start" });
+            pageTopRef.current?.querySelector<HTMLElement>("h1")?.focus({ preventScroll: true });
+        };
+        if (!document.startViewTransition || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+            applyUpdate();
+            return;
+        }
+        const transition = document.startViewTransition(applyUpdate);
+        viewTransitionRef.current = transition;
+        // A superseded or offscreen transition may skip its animation; the update still runs.
+        void transition.ready.catch(() => {});
+    }, []);
+
     const scrollToEventList = useCallback(() => {
         const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
         window.requestAnimationFrame(() => {
@@ -80,14 +110,13 @@ export default function EventsResults({
         shouldScrollToEventList = false,
     ) => {
         const requestKey = getRequestKey(nextRequest);
-        if (!force && requestKey === activeRequestKeyRef.current) return;
-
         if (historyMode === "push") {
             window.history.pushState(null, "", getEventsHref(nextRequest, nextRequest.cursor));
         } else if (historyMode === "replace") {
             window.history.replaceState(null, "", getEventsHref(nextRequest, nextRequest.cursor));
         }
         document.title = getDocumentTitle(nextRequest);
+        if (!force && requestKey === activeRequestKeyRef.current) return;
 
         activeRequestKeyRef.current = requestKey;
         requestRef.current = nextRequest;
@@ -133,6 +162,7 @@ export default function EventsResults({
     }, [initialData, initialRequest]);
 
     useEffect(() => {
+        if (!isListView) return;
         const controller = new AbortController();
 
         const loadHostOptions = async () => {
@@ -158,7 +188,7 @@ export default function EventsResults({
 
         void loadHostOptions();
         return () => controller.abort();
-    }, []);
+    }, [isListView]);
 
     useEffect(() => {
         const handlePopState = () => {
@@ -172,6 +202,13 @@ export default function EventsResults({
         window.addEventListener("popstate", handlePopState);
         return () => window.removeEventListener("popstate", handlePopState);
     }, [loadPage]);
+
+    const handleExplore = (nextRequest: EventPageRequest) => {
+        transitionView(() => {
+            setPreviousRequests([]);
+            void loadPage(nextRequest);
+        });
+    };
 
     const handleFiltersChange = (filters: EventFilters, historyMode: "push" | "replace" = "push") => {
         setPreviousRequests([]);
@@ -237,116 +274,130 @@ export default function EventsResults({
     const canGoPrevious = previousRequests.length > 0 || request.cursor != null;
 
     return (
-        <>
-            <section className="mb-8">
-                <EventFiltersForm
-                    field={request.field}
-                    hostId={request.hostId}
-                    hostOptions={hostOptions}
-                    hostsLoadError={hostsLoadError}
-                    isHostsLoading={isHostsLoading}
-                    isLoading={isLoading}
-                    onFiltersChange={handleFiltersChange}
-                    onReset={handleReset}
-                    searchKeyword={request.searchKeyword}
-                    sortOptions={sortOptions}
-                    statusGroup={request.statusGroup}
-                    statusOptions={statusOptions}
-                    typeOptions={typeOptions}
-                    types={request.types}
+        <div ref={pageTopRef} className="scroll-mt-24">
+            {!isListView ? (
+                <EventsDiscovery
+                    categoryExplore={categoryExplore}
+                    events={initialIsListView ? (events?.content ?? []) : initialData.content}
+                    onExplore={handleExplore}
                 />
-            </section>
+            ) : (
+                <div data-events-view="list" className="events-list-enter">
+                    <header className="mb-6 text-center">
+                        <h1 tabIndex={-1} className="text-3xl font-bold outline-none">행사 목록</h1>
+                        <p className="mt-3 text-gray-600">관심 분야와 일정에 맞는 행사만 골라 확인해보세요.</p>
+                    </header>
+                    <section className="mb-8">
+                        <EventFiltersForm
+                            field={request.field}
+                            hostId={request.hostId}
+                            hostOptions={hostOptions}
+                            hostsLoadError={hostsLoadError}
+                            isHostsLoading={isHostsLoading}
+                            isLoading={isLoading}
+                            onFiltersChange={handleFiltersChange}
+                            onReset={handleReset}
+                            searchKeyword={request.searchKeyword}
+                            sortOptions={sortOptions}
+                            statusGroup={request.statusGroup}
+                            statusOptions={statusOptions}
+                            typeOptions={typeOptions}
+                            types={request.types}
+                        />
+                    </section>
 
-            <section ref={eventListRef} className="scroll-mt-24">
-                {isLoading ? (
-                    <EventListScaffold />
-                ) : error != null ? (
-                <div className="rounded-lg border border-red-100 bg-white px-6 py-14 text-center" role="alert">
-                    <h2 className="text-xl font-bold text-gray-900">행사 정보를 불러오지 못했어요</h2>
-                    <p className="mt-2 text-gray-600">잠시 후 다시 시도해주세요.</p>
-                    <div className="mt-5 flex flex-wrap justify-center gap-2">
-                        <button
-                            className="inline-flex h-10 items-center rounded-lg bg-brand px-4 text-sm font-semibold text-white transition hover:bg-brand/90"
-                            onClick={() => void loadPage(request, "none", true)}
-                            type="button"
-                        >
-                            다시 불러오기
-                        </button>
-                        {request.cursor != null && (
-                            <Link
-                                className="inline-flex h-10 items-center rounded-lg border border-gray-300 px-4 text-sm font-semibold text-gray-700 transition hover:border-gray-400"
-                                href={getEventsHref(request, null)}
-                                onClick={handleFirstPage}
-                            >
-                                첫 페이지로
-                            </Link>
-                        )}
-                    </div>
-                </div>
-                ) : events != null ? (
-                <>
-                    <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-                        <p className="text-sm text-gray-600">
-                            {getSortLabel(request.field)} · {statusLabel}{hostName != null ? ` · 주최: ${hostName}` : ""} · {events.pageInfo.pageSize}개 표시
-                        </p>
-                        {request.cursor != null && (
-                            <Link className="text-sm font-semibold text-brand underline" href={getEventsHref(request, null)} onClick={handleFirstPage}>
-                                첫 페이지로
-                            </Link>
-                        )}
-                    </div>
-
-                    {events.content.length > 0 ? (
-                        <ul className="grid grid-cols-1 gap-7 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                            {events.content.map((event, index) => (
-                                <li key={event.id} className="h-full">
-                                    <EventCard event={event} eager={index < 4} onHostClick={handleHostClick} priority={index === 0} />
-                                </li>
-                            ))}
-                        </ul>
-                    ) : (
-                        <div className="rounded-lg border border-dashed border-gray-300 bg-white px-6 py-14 text-center">
-                            <h2 className="text-xl font-bold text-gray-900">조건에 맞는 행사가 없어요</h2>
-                            <p className="mt-2 text-gray-600">검색어를 줄이거나 행사 유형을 다시 선택해보세요.</p>
-                            <Link
-                                className="mt-5 inline-flex h-10 items-center rounded-lg bg-brand px-4 text-sm font-semibold text-white"
-                                href="/events"
-                                onClick={(event) => {
-                                    event.preventDefault();
-                                    handleReset();
-                                }}
-                            >
-                                전체 행사 보기
-                            </Link>
+                    <section ref={eventListRef} className="scroll-mt-24">
+                        {isLoading ? (
+                            <EventListScaffold />
+                        ) : error != null ? (
+                        <div className="rounded-lg border border-red-100 bg-white px-6 py-14 text-center" role="alert">
+                            <h2 className="text-xl font-bold text-gray-900">행사 정보를 불러오지 못했어요</h2>
+                            <p className="mt-2 text-gray-600">잠시 후 다시 시도해주세요.</p>
+                            <div className="mt-5 flex flex-wrap justify-center gap-2">
+                                <button
+                                    className="inline-flex h-10 items-center rounded-lg bg-brand px-4 text-sm font-semibold text-white transition hover:bg-brand/90"
+                                    onClick={() => void loadPage(request, "none", true)}
+                                    type="button"
+                                >
+                                    다시 불러오기
+                                </button>
+                                {request.cursor != null && (
+                                    <Link
+                                        className="inline-flex h-10 items-center rounded-lg border border-gray-300 px-4 text-sm font-semibold text-gray-700 transition hover:border-gray-400"
+                                        href={getEventsHref(request, null)}
+                                        onClick={handleFirstPage}
+                                    >
+                                        첫 페이지로
+                                    </Link>
+                                )}
+                            </div>
                         </div>
-                    )}
+                        ) : events != null ? (
+                        <>
+                            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                                <p className="text-sm text-gray-600">
+                                    {getSortLabel(request.field)} · {statusLabel}{hostName != null ? ` · 주최: ${hostName}` : ""} · {events.pageInfo.pageSize}개 표시
+                                </p>
+                                {request.cursor != null && (
+                                    <Link className="text-sm font-semibold text-brand underline" href={getEventsHref(request, null)} onClick={handleFirstPage}>
+                                        첫 페이지로
+                                    </Link>
+                                )}
+                            </div>
 
-                    <nav aria-label="행사 페이지 탐색" className="mt-8 flex items-center justify-center gap-3">
-                        <button
-                            aria-label="이전 행사 페이지"
-                            className={PAGINATION_BUTTON_CLASS}
-                            disabled={!canGoPrevious}
-                            onClick={handlePreviousPage}
-                            type="button"
-                        >
-                            <ChevronLeft aria-hidden="true" className="size-4" />
-                            이전
-                        </button>
-                        <button
-                            aria-label="다음 행사 페이지"
-                            className={PAGINATION_BUTTON_CLASS}
-                            disabled={nextCursor == null}
-                            onClick={handleNextPage}
-                            type="button"
-                        >
-                            다음
-                            <ChevronRight aria-hidden="true" className="size-4" />
-                        </button>
-                    </nav>
-                </>
-                ) : null}
-            </section>
-        </>
+                            {events.content.length > 0 ? (
+                                <ul className="grid grid-cols-1 gap-7 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                                    {events.content.map((event, index) => (
+                                        <li key={event.id} className="h-full">
+                                            <EventCard event={event} eager={index < 4} onHostClick={handleHostClick} priority={index === 0} />
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <div className="rounded-lg border border-dashed border-gray-300 bg-white px-6 py-14 text-center">
+                                    <h2 className="text-xl font-bold text-gray-900">조건에 맞는 행사가 없어요</h2>
+                                    <p className="mt-2 text-gray-600">검색어를 줄이거나 행사 유형을 다시 선택해보세요.</p>
+                                    <Link
+                                        className="mt-5 inline-flex h-10 items-center rounded-lg bg-brand px-4 text-sm font-semibold text-white"
+                                        href="/events?view=list"
+                                        onClick={(event) => {
+                                            event.preventDefault();
+                                            handleReset();
+                                        }}
+                                    >
+                                        전체 행사 보기
+                                    </Link>
+                                </div>
+                            )}
+
+                            <nav aria-label="행사 페이지 탐색" className="mt-8 flex items-center justify-center gap-3">
+                                <button
+                                    aria-label="이전 행사 페이지"
+                                    className={PAGINATION_BUTTON_CLASS}
+                                    disabled={!canGoPrevious}
+                                    onClick={handlePreviousPage}
+                                    type="button"
+                                >
+                                    <ChevronLeft aria-hidden="true" className="size-4" />
+                                    이전
+                                </button>
+                                <button
+                                    aria-label="다음 행사 페이지"
+                                    className={PAGINATION_BUTTON_CLASS}
+                                    disabled={nextCursor == null}
+                                    onClick={handleNextPage}
+                                    type="button"
+                                >
+                                    다음
+                                    <ChevronRight aria-hidden="true" className="size-4" />
+                                </button>
+                            </nav>
+                        </>
+                        ) : null}
+                    </section>
+                </div>
+            )}
+        </div>
     );
 }
 

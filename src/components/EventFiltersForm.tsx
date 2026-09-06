@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/src/components/ui/button";
+import EventSearch from "@/src/components/ui/EventSearch";
 import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
@@ -17,7 +18,7 @@ import {
 import type { EventFilters, EventSortField, EventStatusFilter } from "@/src/lib/event-query";
 import type { EventType } from "@/src/lib/schemas/event-type";
 import { SearchField, useFilter } from "@heroui/react";
-import { ChevronDown, ListFilter, Search, X } from "lucide-react";
+import { ChevronDown, ListFilter, X } from "lucide-react";
 import { type ReactNode, useState } from "react";
 
 type Option<T extends string> = { value: T; label: string };
@@ -92,28 +93,10 @@ export default function EventFiltersForm({
 
     return (
         <section className="space-y-3" aria-busy={isLoading || undefined}>
-            <label className="sr-only" htmlFor="event-search">행사 검색</label>
-            <div className="flex h-12 w-full items-center rounded-xl border border-slate-300 bg-white px-3 shadow-sm shadow-slate-950/[0.04] transition focus-within:border-brand focus-within:ring-2 focus-within:ring-brand/15">
-                <Search aria-hidden="true" className="size-5 shrink-0 text-slate-400" strokeWidth={2} />
-                <input
-                    id="event-search"
-                    className="min-w-0 flex-1 bg-transparent px-3 text-base text-slate-950 outline-none placeholder:text-slate-400"
-                    name="q"
-                    onChange={(event) => updateFilters({ searchKeyword: normalizeSearchKeyword(event.target.value) }, "replace")}
-                    placeholder="행사명 또는 주최로 검색"
-                    value={searchKeyword}
-                />
-                {searchKeyword !== "" && (
-                    <button
-                        aria-label="검색어 지우기"
-                        className="inline-flex size-7 shrink-0 items-center justify-center rounded-md text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand"
-                        onClick={() => updateFilters({ searchKeyword: "" }, "replace")}
-                        type="button"
-                    >
-                        <X aria-hidden="true" className="size-4" />
-                    </button>
-                )}
-            </div>
+            <EventSearch
+                value={searchKeyword}
+                onChange={(value) => updateFilters({ searchKeyword: normalizeSearchKeyword(value) }, "replace")}
+            />
 
             <div className="flex flex-wrap items-center gap-2 border-b border-slate-200 pb-4">
                 <FilterMenu
