@@ -39,4 +39,5 @@
 
 - `npm test`: 암호화·변조·장기 유지, 토큰 갱신/폐기, 계정 연결, 쿠키 속성, CSRF 및 기존 조회수 제한 테스트.
 - `npm run lint`, `npm run build`.
+- 의존성 점검에서 발견한 기존 경고도 수정했습니다. Next.js와 관련 패키지를 16.3.4로 올려 수정된 sharp 0.35.4를 사용하고, PostCSS 8.5.28 및 호환되는 하위 보안 패치를 lockfile에 반영했습니다. `npm audit`와 `npm audit --omit=dev` 모두 알려진 취약점 0건을 확인합니다. 참고: [Next.js 보안 공지](https://github.com/vercel/next.js/security/advisories/GHSA-6gpp-xcg3-4w24), [sharp 보안 공지](https://github.com/lovell/sharp/security/advisories/GHSA-f88m-g3jw-g9cj).
 - 브라우저에서는 실제 비로그인 API 접근/CSRF 차단과 테스트 응답을 이용한 로그인 복원, 자동 갱신, 북마크 저장·해제, 오류 재확인, 탭 간 로그아웃과 모바일 메뉴를 확인합니다. 실제 Google/Apple 인증부터 운영 서버 저장까지의 최종 확인은 운영 환경 변수 설정 후 테스트 계정으로 수행해야 합니다.
