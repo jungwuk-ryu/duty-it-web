@@ -16,6 +16,7 @@ import type { Event } from "@/src/lib/schemas/event";
 import type { EventResponse } from "@/src/lib/schemas/events-response";
 import type { EventStatusFilter } from "@/src/lib/event-query";
 import type { EventType } from "@/src/lib/schemas/event-type";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { type MouseEvent, useCallback, useEffect, useRef, useState } from "react";
 
@@ -43,6 +44,7 @@ type EventsResponseWire = Omit<EventResponse, "content"> & { content: EventWire[
 const CLIENT_PAGE_CACHE_TTL = 30_000;
 const MAX_CLIENT_PAGE_CACHE_ENTRIES = 24;
 const pageCache = new Map<string, CachedPage>();
+const PAGINATION_BUTTON_CLASS = "inline-flex h-10 items-center gap-1 rounded-lg border border-gray-300 bg-white px-4 text-sm font-semibold text-gray-800 shadow-sm transition hover:border-brand hover:text-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-50 disabled:text-gray-400 disabled:hover:border-gray-200 disabled:hover:text-gray-400";
 
 export default function EventsResults({
     initialData,
@@ -58,11 +60,25 @@ export default function EventsResults({
     const [hostsLoadError, setHostsLoadError] = useState(false);
     const [isHostsLoading, setIsHostsLoading] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
+    const [previousRequests, setPreviousRequests] = useState<EventPageRequest[]>([]);
     const activeRequestKeyRef = useRef(getRequestKey(initialRequest));
     const controllerRef = useRef<AbortController | null>(null);
+    const eventListRef = useRef<HTMLElement | null>(null);
+    const requestRef = useRef(initialRequest);
     const requestVersionRef = useRef(0);
+    const scrollToEventList = useCallback(() => {
+        const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+        window.requestAnimationFrame(() => {
+            eventListRef.current?.scrollIntoView({ behavior, block: "start" });
+        });
+    }, []);
 
-    const loadPage = useCallback(async (nextRequest: EventPageRequest, historyMode: HistoryMode = "push", force = false) => {
+    const loadPage = useCallback(async (
+        nextRequest: EventPageRequest,
+        historyMode: HistoryMode = "push",
+        force = false,
+        shouldScrollToEventList = false,
+    ) => {
         const requestKey = getRequestKey(nextRequest);
         if (!force && requestKey === activeRequestKeyRef.current) return;
 
@@ -74,12 +90,14 @@ export default function EventsResults({
         document.title = getDocumentTitle(nextRequest);
 
         activeRequestKeyRef.current = requestKey;
+        requestRef.current = nextRequest;
         controllerRef.current?.abort();
         const requestVersion = ++requestVersionRef.current;
         const cached = getCachedPage(requestKey);
 
         setRequest(nextRequest);
         setError(null);
+        if (shouldScrollToEventList) scrollToEventList();
 
         if (cached != null) {
             setEvents(cached);
@@ -107,7 +125,7 @@ export default function EventsResults({
                 setIsLoading(false);
             }
         }
-    }, []);
+    }, [scrollToEventList]);
 
     useEffect(() => {
         cachePage(getRequestKey(initialRequest), initialData);
@@ -144,7 +162,11 @@ export default function EventsResults({
 
     useEffect(() => {
         const handlePopState = () => {
-            void loadPage(getEventPageRequestFromUrlSearchParams(new URLSearchParams(window.location.search)), "none");
+            const params = new URLSearchParams(window.location.search);
+            const nextRequest = getEventPageRequestFromUrlSearchParams(params);
+            const shouldScrollToEventList = nextRequest.cursor !== requestRef.current.cursor;
+            setPreviousRequests([]);
+            void loadPage(nextRequest, "none", false, shouldScrollToEventList);
         };
 
         window.addEventListener("popstate", handlePopState);
@@ -152,10 +174,12 @@ export default function EventsResults({
     }, [loadPage]);
 
     const handleFiltersChange = (filters: EventFilters, historyMode: "push" | "replace" = "push") => {
+        setPreviousRequests([]);
         void loadPage({ ...filters, cursor: null }, historyMode);
     };
 
     const handleReset = () => {
+        setPreviousRequests([]);
         void loadPage({
             cursor: null,
             field: "CREATED_AT",
@@ -166,17 +190,35 @@ export default function EventsResults({
         });
     };
 
-    const handleNextPage = (event: MouseEvent<HTMLAnchorElement>, nextCursor: string) => {
-        event.preventDefault();
-        void loadPage({ ...request, cursor: nextCursor });
+    const handleNextPage = () => {
+        const nextCursor = events?.pageInfo.hasNext ? events.pageInfo.nextCursor : null;
+        if (nextCursor == null) return;
+
+        setPreviousRequests((currentPreviousRequests) => [...currentPreviousRequests, request]);
+        void loadPage({ ...request, cursor: nextCursor }, "push", false, true);
+    };
+
+    const handlePreviousPage = () => {
+        const previousRequest = previousRequests[previousRequests.length - 1];
+        if (previousRequest != null) {
+            setPreviousRequests((currentPreviousRequests) => currentPreviousRequests.slice(0, -1));
+            void loadPage(previousRequest, "replace", false, true);
+            return;
+        }
+
+        if (request.cursor != null) {
+            void loadPage({ ...request, cursor: null }, "push", false, true);
+        }
     };
 
     const handleFirstPage = (event: MouseEvent<HTMLAnchorElement>) => {
         event.preventDefault();
-        void loadPage({ ...request, cursor: null });
+        setPreviousRequests([]);
+        void loadPage({ ...request, cursor: null }, "push", false, true);
     };
 
     const handleHostClick = (hostId: number) => {
+        setPreviousRequests([]);
         void loadPage({
             cursor: null,
             field: "CREATED_AT",
@@ -191,9 +233,8 @@ export default function EventsResults({
     const hostName = request.hostId == null
         ? null
         : hostOptions.find((host) => host.id === request.hostId)?.name ?? "선택한 주최";
-    const nextHref = events?.pageInfo.hasNext && events.pageInfo.nextCursor
-        ? getEventsHref(request, events.pageInfo.nextCursor)
-        : null;
+    const nextCursor = events?.pageInfo.hasNext ? events.pageInfo.nextCursor : null;
+    const canGoPrevious = previousRequests.length > 0 || request.cursor != null;
 
     return (
         <>
@@ -216,9 +257,10 @@ export default function EventsResults({
                 />
             </section>
 
-            {isLoading ? (
-                <EventListScaffold />
-            ) : error != null ? (
+            <section ref={eventListRef} className="scroll-mt-24">
+                {isLoading ? (
+                    <EventListScaffold />
+                ) : error != null ? (
                 <div className="rounded-lg border border-red-100 bg-white px-6 py-14 text-center" role="alert">
                     <h2 className="text-xl font-bold text-gray-900">행사 정보를 불러오지 못했어요</h2>
                     <p className="mt-2 text-gray-600">잠시 후 다시 시도해주세요.</p>
@@ -241,7 +283,7 @@ export default function EventsResults({
                         )}
                     </div>
                 </div>
-            ) : events != null ? (
+                ) : events != null ? (
                 <>
                     <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
                         <p className="text-sm text-gray-600">
@@ -279,23 +321,31 @@ export default function EventsResults({
                         </div>
                     )}
 
-                    <nav className="mt-8 flex items-center justify-center gap-3">
-                        {nextHref ? (
-                            <Link
-                                href={nextHref}
-                                className="rounded-lg border border-gray-300 bg-white px-5 py-2 text-sm font-semibold text-gray-800 shadow-sm transition hover:border-brand hover:text-brand"
-                                onClick={(event) => handleNextPage(event, events.pageInfo.nextCursor!)}
-                            >
-                                다음 행사 보기
-                            </Link>
-                        ) : (
-                            <span className="rounded-lg border border-gray-200 bg-white px-5 py-2 text-sm font-semibold text-gray-400">
-                                마지막 목록입니다
-                            </span>
-                        )}
+                    <nav aria-label="행사 페이지 탐색" className="mt-8 flex items-center justify-center gap-3">
+                        <button
+                            aria-label="이전 행사 페이지"
+                            className={PAGINATION_BUTTON_CLASS}
+                            disabled={!canGoPrevious}
+                            onClick={handlePreviousPage}
+                            type="button"
+                        >
+                            <ChevronLeft aria-hidden="true" className="size-4" />
+                            이전
+                        </button>
+                        <button
+                            aria-label="다음 행사 페이지"
+                            className={PAGINATION_BUTTON_CLASS}
+                            disabled={nextCursor == null}
+                            onClick={handleNextPage}
+                            type="button"
+                        >
+                            다음
+                            <ChevronRight aria-hidden="true" className="size-4" />
+                        </button>
                     </nav>
                 </>
-            ) : null}
+                ) : null}
+            </section>
         </>
     );
 }
