@@ -2,6 +2,7 @@ import { getJobDday, getJobDeadlineLabel, getJobTitle } from "@/src/lib/jobs";
 import type { JobPosting } from "@/src/lib/schemas/job";
 import { ArrowRight, Building2, CalendarClock, MapPin, UsersRound, WalletCards } from "lucide-react";
 import Link from "next/link";
+import { BookmarkIconButton } from "./bookmark-icon-button";
 
 type Props = { job: JobPosting };
 
@@ -10,11 +11,12 @@ export default function JobPostingCard({ job }: Props) {
     const dday = job.isActive ? getJobDday(job.receiptCloseDt) : null;
 
     return (
-        <article className="group h-full overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-[0_12px_32px_rgba(15,23,42,0.06),0_2px_6px_rgba(15,23,42,0.03)] transition duration-200 hover:-translate-y-0.5 hover:border-brand/30 hover:shadow-[0_18px_40px_rgba(15,23,42,0.10),0_4px_10px_rgba(198,60,51,0.06)]">
+        <article className="group relative h-full overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-[0_12px_32px_rgba(15,23,42,0.06),0_2px_6px_rgba(15,23,42,0.03)] transition duration-200 hover:-translate-y-0.5 hover:border-brand/30 hover:shadow-[0_18px_40px_rgba(15,23,42,0.10),0_4px_10px_rgba(198,60,51,0.06)]">
+            <BookmarkIconButton kind="jobs" itemId={job.id} title={getJobTitle(job)} initialSaved={job.isBookmarked} className="absolute right-3 top-3 rounded-full bg-white" />
             <Link href={`/jobs/${job.id}`} className="block h-full p-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2">
                 <div className="grid h-full gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(19rem,0.9fr)] lg:items-center">
                     <div className="min-w-0">
-                        <div className="mb-3 flex flex-wrap items-center gap-2">
+                        <div className="mb-3 flex flex-wrap items-center gap-2 pr-12">
                             <span className={job.isActive ? "inline-flex h-7 items-center rounded-full bg-brand/10 px-2.5 text-xs font-bold text-brand" : "inline-flex h-7 items-center rounded-full bg-gray-100 px-2.5 text-xs font-bold text-gray-500"}>
                                 {job.isActive ? "모집 중" : "마감"}
                             </span>

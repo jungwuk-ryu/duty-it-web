@@ -6,3 +6,5 @@
 
 # [듀잇 웹](https://www.dutyit.net/) [![Better Stack Badge](https://uptime.betterstack.com/status-badges/v3/monitor/280lw.svg)](https://status.dutyit.net/)
 듀잇 웹은 [듀잇](https://github.com/jungwuk-ryu/duty-it)을 소개하고 간단한 행사 목록을 웹에서 제공합니다.
+
+로그인 유지에 필요한 환경 변수와 북마크 구현은 [로그인·북마크 운영 지침](docs/auth-and-bookmarks.md)을 참고하세요.

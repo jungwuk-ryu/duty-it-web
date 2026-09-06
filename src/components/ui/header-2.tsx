@@ -7,11 +7,12 @@ import { cn } from "@/src/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import AccountMenu from "../AccountMenu";
 
 const links = [
     { label: "행사 목록", href: "/events" },
     { label: "채용 공고", href: "/jobs" },
-    { label: "로그인", href: "/login" },
+    { label: "내 북마크", href: "/bookmarks" },
 ] as const;
 
 export function Header() {
@@ -47,6 +48,7 @@ export function Header() {
                             {link.label}
                         </Link>
                     ))}
+                    <AccountMenu />
                     <Link href="/#download" className={buttonVariants({ className: "ml-2 bg-brand text-white hover:bg-brand/90" })}>
                         앱 다운로드
                     </Link>
@@ -81,6 +83,7 @@ export function Header() {
                                 {link.label}
                             </Link>
                         ))}
+                        <AccountMenu onNavigate={closeMenu} />
                     </div>
                     <Link
                         href="/#download"

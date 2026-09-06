@@ -5,6 +5,7 @@ import { Noto_Sans_KR } from "next/font/google";
 import Footer from "../components/Footer";
 import { GoogleAnalytics } from '@next/third-parties/google'
 import AndroidOnlySmartBanner from "../components/AndroidOnlySmartBanner";
+import SessionProvider from "../components/SessionProvider";
 
 const notoSansKR = Noto_Sans_KR({
   subsets: ["latin"],
@@ -62,12 +63,14 @@ export default function RootLayout({
       <body
         className={"antialiased min-h-screen flex flex-col"}
       >
+        <SessionProvider>
         <Header />
         <main className="flex-1 bg-[#F8F9FA]">
           {children}
         </main>
         <Footer />
         <AndroidOnlySmartBanner />
+        </SessionProvider>
       </body>
       <GoogleAnalytics gaId={process.env.GA_ID ?? ""} />
     </html>

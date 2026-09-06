@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "tsx --conditions=react-server --test src/lib/auth/*.test.ts src/lib/api/*.test.ts"
   },
   "dependencies": {
     "@heroui/react": "^3.2.4",
@@ -19,10 +20,12 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "firebase": "^12.18.0",
+    "framer-motion": "^13.2.0",
     "lucide-react": "^1.40.0",
     "next": "^16.2.9",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
+    "server-only": "^0.0.1",
     "smartbanner-tsx": "^1.1.1",
     "tailwind-merge": "^3.6.0",
     "zod": "^4.1.12"
@@ -39,6 +42,7 @@
     "postcss": "^8.5.15",
     "tailwindcss": "^4.1.14",
     "tailwindcss-cli": "^0.1.2",
+    "tsx": "^4.23.13",
     "typescript": "^5"
   },
   "overrides": {

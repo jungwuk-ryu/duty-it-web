@@ -4,7 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, LoaderCircle } from "lucide-react";
 import { type ComponentProps, useState } from "react";
-import { signInWithPopup } from "firebase/auth";
+import { inMemoryPersistence, setPersistence, signInWithPopup, signOut } from "firebase/auth";
+import { safeReturnTo, signInSession, useAuth } from "@/src/lib/auth/client";
 
 import { Button } from "@/src/components/ui/button";
 import {
@@ -22,13 +23,6 @@ type AuthState =
     | { kind: "success"; nickname: string; isNewUser: boolean }
     | { kind: "error"; message: string };
 
-type SocialLoginResponse = {
-    user: {
-        nickname?: string;
-    };
-    isNewUser: boolean;
-};
-
 const BACKGROUND_DOTS = [
     [5, 13, "brand"], [10, 31, "slate"], [7, 63, "brand"], [13, 78, "slate"], [18, 20, "slate"],
     [20, 48, "brand"], [24, 87, "slate"], [29, 10, "brand"], [31, 35, "slate"], [34, 70, "brand"],
@@ -40,6 +34,7 @@ const BACKGROUND_DOTS = [
 export default function LoginForm() {
     const [authState, setAuthState] = useState<AuthState>({ kind: "idle" });
     const isLoading = authState.kind === "loading";
+    const session = useAuth();
 
     async function handleSignIn(provider: Provider) {
         if (isLoading) return;
@@ -47,21 +42,12 @@ export default function LoginForm() {
         setAuthState({ kind: "loading", provider });
 
         try {
+            await setPersistence(firebaseAuth, inMemoryPersistence);
             const credential = await signInWithPopup(
                 firebaseAuth,
                 provider === "google" ? googleAuthProvider : appleAuthProvider,
             );
-            const idToken = await credential.user.getIdToken();
-            const response = await fetch("/api/auth/social", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(idToken),
-            });
-            const body: unknown = await response.json().catch(() => null);
-
-            if (!response.ok || !isSocialLoginResponse(body)) {
-                throw new Error(getServerErrorMessage(body));
-            }
+            const body = await signInSession(credential.user.refreshToken);
 
             setAuthState({
                 kind: "success",
@@ -70,6 +56,8 @@ export default function LoginForm() {
             });
         } catch (error) {
             setAuthState({ kind: "error", message: getLoginErrorMessage(error) });
+        } finally {
+            await signOut(firebaseAuth).catch(() => undefined);
         }
     }
 
@@ -88,8 +76,8 @@ export default function LoginForm() {
                             priority
                         />
 
-                        {authState.kind === "success" ? (
-                            <LoginSuccess nickname={authState.nickname} isNewUser={authState.isNewUser} />
+                        {authState.kind === "success" || session.user ? (
+                            <LoginSuccess nickname={authState.kind === "success" ? authState.nickname : session.user?.nickname ?? ""} isNewUser={authState.kind === "success" && authState.isNewUser} />
                         ) : (
                             <>
                                 <h1 className="text-3xl font-bold tracking-[-0.04em] text-slate-950 sm:text-[2.25rem]">
@@ -164,8 +152,9 @@ function LoginSuccess({ nickname, isNewUser }: { nickname: string; isNewUser: bo
                 듀잇에서 나에게 맞는 행사와 채용 정보를 찾아보세요.
             </p>
             <Button asChild className="mt-9 h-12 w-full rounded-xl px-6 text-[15px] font-semibold">
-                <Link href="/events">행사 둘러보기</Link>
+                <Link href={typeof window === "undefined" ? "/events" : safeReturnTo(new URLSearchParams(window.location.search).get("next"))}>계속 둘러보기</Link>
             </Button>
+            <Link href="/bookmarks" className="mt-4 text-sm font-semibold text-brand">내 북마크 보기</Link>
         </div>
     );
 }
@@ -207,27 +196,8 @@ function AppleMark(props: ComponentProps<"svg">) {
     );
 }
 
-function isSocialLoginResponse(value: unknown): value is SocialLoginResponse {
-    return (
-        typeof value === "object"
-        && value !== null
-        && "user" in value
-        && typeof value.user === "object"
-        && value.user !== null
-        && "isNewUser" in value
-        && typeof value.isNewUser === "boolean"
-    );
-}
-
-function getServerErrorMessage(value: unknown): string {
-    if (typeof value === "object" && value !== null && "message" in value && typeof value.message === "string") {
-        return value.message;
-    }
-
-    return "로그인을 완료하지 못했습니다. 잠시 뒤 다시 시도해 주세요.";
-}
-
 function getLoginErrorMessage(error: unknown): string {
+    if (error instanceof Error && error.name === "SessionRequestError") return error.message;
     if (typeof error === "object" && error !== null && "code" in error && typeof error.code === "string") {
         if (error.code === "auth/popup-closed-by-user") {
             return "로그인 창이 닫혔어요. 다시 선택해 주세요.";
