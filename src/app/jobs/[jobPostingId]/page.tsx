@@ -5,6 +5,7 @@ import type { JobPosting } from "@/src/lib/schemas/job";
 import { isHttpUrl } from "@/src/lib/url";
 import { ArrowLeft, BriefcaseBusiness, Building2, CalendarClock, ExternalLink, FileText, GraduationCap, HeartPulse, Landmark, MapPin, Phone, Send, UsersRound, WalletCards } from "lucide-react";
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -121,6 +122,16 @@ export default async function JobPostingPage({ params }: Props) {
                             </dl>
                         </section>
                     )}
+
+                    <section className="border-t border-slate-100 pt-7" aria-label="채용 정보 출처">
+                        <Image
+                            src="/job-information-source-work24.svg"
+                            alt="고용24 제공 채용 정보 출처"
+                            width={360}
+                            height={77}
+                            className="h-auto w-full max-w-[360px]"
+                        />
+                    </section>
                 </div>
             </article>
         </div>

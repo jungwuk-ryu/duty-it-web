@@ -1,35 +1,59 @@
 "use client";
 
-import { BorderBeam } from "@/src/components/ui/border-beam-search";
 import { Button } from "@/src/components/ui/button";
+import EventSearch from "@/src/components/ui/EventSearch";
 import {
     DropdownMenu,
+    DropdownMenuCheckboxItem,
     DropdownMenuContent,
+    DropdownMenuLabel,
     DropdownMenuRadioGroup,
     DropdownMenuRadioItem,
+    DropdownMenuSeparator,
+    DropdownMenuSub,
+    DropdownMenuSubContent,
+    DropdownMenuSubTrigger,
     DropdownMenuTrigger,
 } from "@/src/components/ui/dropdown-menu";
-import type { EventSortField } from "@/src/lib/api/events";
-import type { EventStatusGroup } from "@/src/lib/schemas/event-status";
+import type { EventFilters, EventSortField, EventStatusFilter } from "@/src/lib/event-query";
 import type { EventType } from "@/src/lib/schemas/event-type";
-import { ChevronDown, Search } from "lucide-react";
-import Link from "next/link";
-import { useId, useState } from "react";
+import { SearchField, useFilter } from "@heroui/react";
+import { ChevronDown, ListFilter, X } from "lucide-react";
+import { type ReactNode, useState } from "react";
 
 type Option<T extends string> = { value: T; label: string };
 
 type Props = {
     field: EventSortField;
+    hostId: number | null;
+    hostOptions: readonly HostOption[];
+    hostsLoadError?: boolean;
+    isHostsLoading?: boolean;
+    isLoading?: boolean;
+    onFiltersChange?: (filters: EventFilters, historyMode?: "push" | "replace") => void;
+    onReset?: () => void;
     searchKeyword: string;
     sortOptions: readonly Option<EventSortField>[];
-    statusGroup: EventStatusGroup;
-    statusOptions: readonly Option<EventStatusGroup>[];
+    statusGroup: EventStatusFilter;
+    statusOptions: readonly Option<EventStatusFilter>[];
     typeOptions: readonly Option<EventType>[];
     types: EventType[];
 };
 
+type HostOption = {
+    id: number;
+    name: string;
+};
+
 export default function EventFiltersForm({
     field,
+    hostId,
+    hostOptions,
+    hostsLoadError = false,
+    isHostsLoading = false,
+    isLoading = false,
+    onFiltersChange,
+    onReset,
     searchKeyword,
     sortOptions,
     statusGroup,
@@ -37,94 +61,289 @@ export default function EventFiltersForm({
     typeOptions,
     types,
 }: Props) {
-    const [selectedTypes, setSelectedTypes] = useState<EventType[]>(types);
+    const selectedHost = hostId == null
+        ? null
+        : hostOptions.find((host) => host.id === hostId) ?? { id: hostId, name: "선택한 주최" };
+    const selectedSort = sortOptions.find((option) => option.value === field);
+    const selectedStatus = statusOptions.find((option) => option.value === statusGroup);
+    const hasFilters = searchKeyword !== ""
+        || hostId != null
+        || field !== "CREATED_AT"
+        || statusGroup !== "ACTIVE"
+        || types.length > 0;
+
+    const updateFilters = (nextFilters: Partial<EventFilters>, historyMode: "push" | "replace" = "push") => {
+        onFiltersChange?.({
+            field,
+            hostId,
+            searchKeyword,
+            statusGroup,
+            types,
+            ...nextFilters,
+        }, historyMode);
+    };
+
+    const toggleType = (type: EventType) => {
+        updateFilters({
+            types: types.includes(type)
+                ? types.filter((currentType) => currentType !== type)
+                : [...types, type],
+        });
+    };
 
     return (
-        <form action="/events" className="space-y-5">
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-[minmax(0,1fr)_180px_180px]">
-                <label className="flex flex-col gap-2 text-sm font-semibold text-gray-700">
-                    검색
-                    <BorderBeam size="line" colorVariant="sunset" theme="light" duration={3.1} borderRadius={12} strength={0.65}>
-                        <span className="flex h-11 items-center gap-2 rounded-xl border border-gray-300 bg-white px-3 text-gray-500 shadow-[inset_0_1px_2px_rgba(15,23,42,0.04)] transition focus-within:border-brand focus-within:ring-2 focus-within:ring-brand/20">
-                            <Search aria-hidden="true" className="size-5 shrink-0 text-gray-400" strokeWidth={2} />
-                            <input className="min-w-0 flex-1 bg-transparent text-base font-normal text-gray-900 outline-none placeholder:text-gray-400" name="q" defaultValue={searchKeyword} placeholder="행사명으로 검색" />
-                        </span>
-                    </BorderBeam>
-                </label>
+        <section className="space-y-3" aria-busy={isLoading || undefined}>
+            <EventSearch
+                value={searchKeyword}
+                onChange={(value) => updateFilters({ searchKeyword: normalizeSearchKeyword(value) }, "replace")}
+            />
 
-                <DropdownField label="정렬" name="field" options={sortOptions} value={field} />
-                <DropdownField label="상태" name="statusGroup" options={statusOptions} value={statusGroup} />
-            </div>
+            <div className="flex flex-wrap items-center gap-2 border-b border-slate-200 pb-4">
+                <FilterMenu
+                    hostId={hostId}
+                    hostOptions={hostOptions}
+                    isHostsLoading={isHostsLoading}
+                    selectedField={field}
+                    selectedStatusGroup={statusGroup}
+                    selectedTypes={types}
+                    setHostId={(nextHostId) => updateFilters({ hostId: nextHostId })}
+                    setSelectedField={(nextField) => updateFilters({ field: nextField })}
+                    setSelectedStatusGroup={(nextStatusGroup) => updateFilters({ statusGroup: nextStatusGroup })}
+                    sortOptions={sortOptions}
+                    statusOptions={statusOptions}
+                    toggleType={toggleType}
+                    typeOptions={typeOptions}
+                />
 
-            <fieldset className="space-y-3">
-                <legend className="text-sm font-semibold text-gray-700">행사 유형</legend>
-                <div className="flex flex-wrap gap-2">
-                    {typeOptions.map((type) => (
-                        <label key={type.value} className="cursor-pointer">
-                            <input
-                                className="peer sr-only"
-                                type="checkbox"
-                                name="types"
-                                value={type.value}
-                                checked={selectedTypes.includes(type.value)}
-                                onChange={(event) => {
-                                    setSelectedTypes((currentTypes) => event.target.checked
-                                        ? [...currentTypes, type.value]
-                                        : currentTypes.filter((currentType) => currentType !== type.value));
-                                }}
-                            />
-                            <span className="inline-flex h-9 items-center rounded-full border border-gray-300 px-3 text-sm font-semibold text-gray-600 transition peer-checked:border-brand peer-checked:bg-brand peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-brand/30 peer-focus-visible:ring-offset-2">
-                                {type.label}
-                            </span>
-                        </label>
-                    ))}
-                </div>
-            </fieldset>
+                {selectedHost != null && (
+                    <FilterChip label="주최" onRemove={() => updateFilters({ hostId: null })}>
+                        {selectedHost.name}
+                    </FilterChip>
+                )}
+                {field !== "CREATED_AT" && selectedSort != null && (
+                    <FilterChip label="정렬" onRemove={() => updateFilters({ field: "CREATED_AT" })}>
+                        {selectedSort.label}
+                    </FilterChip>
+                )}
+                {statusGroup !== "ACTIVE" && selectedStatus != null && (
+                    <FilterChip label="상태" onRemove={() => updateFilters({ statusGroup: "ACTIVE" })}>
+                        {selectedStatus.label}
+                    </FilterChip>
+                )}
+                {types.map((type) => (
+                    <FilterChip key={type} label="유형" onRemove={() => toggleType(type)}>
+                        {typeOptions.find((option) => option.value === type)?.label ?? type}
+                    </FilterChip>
+                ))}
 
-            <div className="flex flex-wrap items-center justify-end gap-2 border-t border-gray-100 pt-4">
-                <div className="flex gap-2">
-                    <Link
-                        className="inline-flex h-10 items-center rounded-lg border border-gray-300 px-4 text-sm font-semibold text-gray-700 transition hover:border-gray-400"
-                        href="/events"
-                        onClick={() => setSelectedTypes([])}
+                {hasFilters && (
+                    <button
+                        className="ml-auto inline-flex h-8 items-center gap-1 rounded-lg px-2 text-sm font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand"
+                        onClick={onReset}
+                        type="button"
                     >
+                        <X className="size-3.5" aria-hidden="true" />
                         초기화
-                    </Link>
-                    <button className="inline-flex h-10 items-center rounded-lg bg-brand px-4 text-sm font-semibold text-white transition hover:bg-brand/90" type="submit">
-                        적용
                     </button>
-                </div>
+                )}
             </div>
-        </form>
+
+            {hostsLoadError && (
+                <p className="text-xs text-amber-700" role="status">
+                    주최 기관 목록을 불러오지 못했어요. 카드의 주최 링크는 계속 사용할 수 있어요.
+                </p>
+            )}
+        </section>
     );
 }
 
-function DropdownField<T extends string>({ label, name, options, value }: { label: string; name: string; options: readonly Option<T>[]; value: T }) {
-    const [selectedValue, setSelectedValue] = useState<T>(value);
-    const labelId = useId();
-    const selectedOption = options.find((option) => option.value === selectedValue) ?? options[0];
+type HostSearchMenuProps = {
+    hostId: number | null;
+    hostOptions: readonly HostOption[];
+    isHostsLoading: boolean;
+    onHostIdChange: (hostId: number | null) => void;
+};
+
+function HostSearchMenu({
+    hostId,
+    hostOptions,
+    isHostsLoading,
+    onHostIdChange,
+}: HostSearchMenuProps) {
+    const [searchKeyword, setSearchKeyword] = useState("");
+    const { contains } = useFilter({ sensitivity: "base" });
+    const matchingHosts = hostOptions.filter((host) => contains(host.name, searchKeyword));
 
     return (
-        <div className="flex flex-col gap-2 text-sm font-semibold text-gray-700">
-            <span id={labelId}>{label}</span>
-            <input type="hidden" name={name} value={selectedValue} />
-            <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <Button type="button" variant="outline" aria-labelledby={labelId} className="h-11 w-full justify-between rounded-lg border-gray-300 px-3 text-base font-normal text-gray-900 hover:border-gray-400 hover:bg-gray-50 focus-visible:outline-brand">
-                        {selectedOption.label}
-                        <ChevronDown className="-mr-1 ml-2 size-4 text-gray-500" strokeWidth={2} aria-hidden="true" />
-                    </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-[--radix-dropdown-menu-trigger-width] border-gray-200 bg-white p-1 text-gray-900">
-                    <DropdownMenuRadioGroup value={selectedValue} onValueChange={(nextValue) => setSelectedValue(nextValue as T)}>
-                        {options.map((option) => (
-                            <DropdownMenuRadioItem key={option.value} value={option.value} className="cursor-pointer rounded-md py-2 pl-8 pr-3 text-sm font-medium focus:bg-gray-100 focus:text-gray-900">
-                                {option.label}
-                            </DropdownMenuRadioItem>
-                        ))}
-                    </DropdownMenuRadioGroup>
-                </DropdownMenuContent>
-            </DropdownMenu>
+        <div className="space-y-2">
+            <SearchField autoFocus name="host-search" variant="secondary">
+                <SearchField.Group>
+                    <SearchField.SearchIcon />
+                    <SearchField.Input
+                        onChange={(event) => setSearchKeyword(event.target.value)}
+                        onKeyDown={(event) => event.stopPropagation()}
+                        placeholder="주최 기관 검색"
+                    />
+                    <SearchField.ClearButton />
+                </SearchField.Group>
+            </SearchField>
+            {isHostsLoading ? (
+                <p className="px-2 py-3 text-sm text-slate-500">주최 기관을 불러오는 중…</p>
+            ) : matchingHosts.length === 0 ? (
+                <p className="px-2 py-3 text-sm text-slate-500">검색 결과가 없어요</p>
+            ) : (
+                <DropdownMenuRadioGroup
+                    className="max-h-72 overflow-y-auto"
+                    value={hostId == null ? "" : String(hostId)}
+                    onValueChange={(value) => onHostIdChange(getHostId(value))}
+                >
+                    <DropdownMenuRadioItem value="" className="cursor-pointer rounded-md py-2 pl-8 text-sm focus:bg-slate-100">
+                        전체 주최
+                    </DropdownMenuRadioItem>
+                    {matchingHosts.map((host) => (
+                        <DropdownMenuRadioItem key={host.id} value={String(host.id)} className="cursor-pointer rounded-md py-2 pl-8 text-sm focus:bg-slate-100">
+                            {host.name}
+                        </DropdownMenuRadioItem>
+                    ))}
+                </DropdownMenuRadioGroup>
+            )}
         </div>
     );
+}
+
+type FilterMenuProps = {
+    hostId: number | null;
+    hostOptions: readonly HostOption[];
+    isHostsLoading: boolean;
+    selectedField: EventSortField;
+    selectedStatusGroup: EventStatusFilter;
+    selectedTypes: EventType[];
+    setHostId: (hostId: number | null) => void;
+    setSelectedField: (field: EventSortField) => void;
+    setSelectedStatusGroup: (status: EventStatusFilter) => void;
+    sortOptions: readonly Option<EventSortField>[];
+    statusOptions: readonly Option<EventStatusFilter>[];
+    toggleType: (type: EventType) => void;
+    typeOptions: readonly Option<EventType>[];
+};
+
+function FilterMenu({
+    hostId,
+    hostOptions,
+    isHostsLoading,
+    selectedField,
+    selectedStatusGroup,
+    selectedTypes,
+    setHostId,
+    setSelectedField,
+    setSelectedStatusGroup,
+    sortOptions,
+    statusOptions,
+    toggleType,
+    typeOptions,
+}: FilterMenuProps) {
+    return (
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button type="button" variant="outline" className="h-8 gap-1.5 rounded-lg border-slate-300 px-3 text-slate-700 hover:border-slate-400 hover:bg-slate-50">
+                    <ListFilter className="size-4" aria-hidden="true" />
+                    필터 추가
+                    <ChevronDown className="size-3.5 text-slate-400" aria-hidden="true" />
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-52 border-slate-200 bg-white p-1.5 text-slate-900">
+                <DropdownMenuLabel className="px-2 py-1 text-xs font-medium text-slate-500">필터 선택</DropdownMenuLabel>
+                <DropdownMenuSeparator className="bg-slate-100" />
+                <DropdownMenuSub>
+                    <DropdownMenuSubTrigger className="cursor-pointer rounded-md py-2 text-sm font-medium focus:bg-slate-100 data-[state=open]:bg-slate-100">
+                        주최
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuSubContent className="w-72 border-slate-200 bg-white p-2">
+                        <HostSearchMenu
+                            hostId={hostId}
+                            hostOptions={hostOptions}
+                            isHostsLoading={isHostsLoading}
+                            onHostIdChange={setHostId}
+                        />
+                    </DropdownMenuSubContent>
+                </DropdownMenuSub>
+                <DropdownMenuSub>
+                    <DropdownMenuSubTrigger className="cursor-pointer rounded-md py-2 text-sm font-medium focus:bg-slate-100 data-[state=open]:bg-slate-100">
+                        정렬
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuSubContent className="w-44 border-slate-200 bg-white p-1.5">
+                        <DropdownMenuRadioGroup value={selectedField} onValueChange={(value) => setSelectedField(value as EventSortField)}>
+                            {sortOptions.map((option) => (
+                                <DropdownMenuRadioItem key={option.value} value={option.value} className="cursor-pointer rounded-md py-2 pl-8 text-sm focus:bg-slate-100">
+                                    {option.label}
+                                </DropdownMenuRadioItem>
+                            ))}
+                        </DropdownMenuRadioGroup>
+                    </DropdownMenuSubContent>
+                </DropdownMenuSub>
+                <DropdownMenuSub>
+                    <DropdownMenuSubTrigger className="cursor-pointer rounded-md py-2 text-sm font-medium focus:bg-slate-100 data-[state=open]:bg-slate-100">
+                        상태
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuSubContent className="w-40 border-slate-200 bg-white p-1.5">
+                        <DropdownMenuRadioGroup value={selectedStatusGroup} onValueChange={(value) => setSelectedStatusGroup(value as EventStatusFilter)}>
+                            {statusOptions.map((option) => (
+                                <DropdownMenuRadioItem key={option.value} value={option.value} className="cursor-pointer rounded-md py-2 pl-8 text-sm focus:bg-slate-100">
+                                    {option.label}
+                                </DropdownMenuRadioItem>
+                            ))}
+                        </DropdownMenuRadioGroup>
+                    </DropdownMenuSubContent>
+                </DropdownMenuSub>
+                <DropdownMenuSub>
+                    <DropdownMenuSubTrigger className="cursor-pointer rounded-md py-2 text-sm font-medium focus:bg-slate-100 data-[state=open]:bg-slate-100">
+                        행사 유형
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuSubContent className="w-52 border-slate-200 bg-white p-1.5">
+                        <div className="max-h-72 overflow-y-auto">
+                            {typeOptions.map((option) => (
+                                <DropdownMenuCheckboxItem
+                                    key={option.value}
+                                    checked={selectedTypes.includes(option.value)}
+                                    className="cursor-pointer rounded-md py-2 pl-8 text-sm focus:bg-slate-100"
+                                    onCheckedChange={() => toggleType(option.value)}
+                                    onSelect={(event) => event.preventDefault()}
+                                >
+                                    {option.label}
+                                </DropdownMenuCheckboxItem>
+                            ))}
+                        </div>
+                    </DropdownMenuSubContent>
+                </DropdownMenuSub>
+            </DropdownMenuContent>
+        </DropdownMenu>
+    );
+}
+
+function FilterChip({ children, label, onRemove }: { children: ReactNode; label: string; onRemove: () => void }) {
+    return (
+        <span className="inline-flex h-8 max-w-full items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 py-1 pl-2.5 pr-1 text-sm text-slate-700">
+            <span className="shrink-0 text-xs font-medium text-slate-400">{label}</span>
+            <span className="truncate font-medium">{children}</span>
+            <button
+                className="inline-flex size-6 shrink-0 items-center justify-center rounded-md text-slate-400 transition hover:bg-white hover:text-slate-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand"
+                onClick={onRemove}
+                type="button"
+                aria-label={label + " 필터 삭제"}
+            >
+                <X className="size-3.5" aria-hidden="true" />
+            </button>
+        </span>
+    );
+}
+
+function getHostId(value: string): number | null {
+    if (!/^[1-9]\d{0,15}$/.test(value)) return null;
+
+    const hostId = Number(value);
+    return Number.isSafeInteger(hostId) ? hostId : null;
+}
+
+function normalizeSearchKeyword(value: string): string {
+    return value.trim().slice(0, 80);
 }

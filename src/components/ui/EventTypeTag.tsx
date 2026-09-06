@@ -1,4 +1,5 @@
-import { EventType, EventTypeLabel } from "@/src/lib/schemas/event-type";
+import { EventTypeLabel } from "@/src/lib/event-labels";
+import type { EventType } from "@/src/lib/schemas/event-type";
 
 export default function CategoryTag({category} : CategoryTagProps) {
     const color: string = CATEGORY_STYLE[category];

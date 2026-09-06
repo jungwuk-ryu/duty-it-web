@@ -58,7 +58,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko" className={`${notoSansKR.className} scroll-smooth`} data-scroll-behavior="smooth">
+    <html lang="ko" className={`${notoSansKR.className} scroll-smooth motion-reduce:scroll-auto`} data-scroll-behavior="smooth">
       <body
         className={"antialiased min-h-screen flex flex-col"}
       >

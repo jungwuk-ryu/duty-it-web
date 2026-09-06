@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
     root: process.cwd(),
   },
   images: {
+    qualities: [70, 75],
     remotePatterns: [
       {
         protocol: 'https',
@@ -12,15 +13,6 @@ const nextConfig: NextConfig = {
         pathname: '/uploads/**',
       },
     ],
-  },
-  async redirects() {
-    return [
-      {
-        source: '/submit-event',
-        destination: process.env['SUBMIT_FORM_URL']!,
-        permanent: false,
-      },
-    ]
   },
   async headers() {
     return [

@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "@heroui/styles";
 
 @theme {
     --color-brand: #C63C33;
@@ -17,4 +18,93 @@
     --color-ring: #C63C33;
     --color-secondary: #F3F4F6;
     --color-secondary-foreground: #111827;
+}
+
+@theme inline {
+    --animate-marquee: marquee var(--duration, 40s) linear infinite;
+    --animate-marquee-vertical: marquee-vertical var(--duration, 40s) linear infinite;
+}
+
+@keyframes marquee {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(calc(-100% - var(--gap)));
+    }
+}
+
+@keyframes marquee-vertical {
+    from {
+        transform: translateY(0);
+    }
+    to {
+        transform: translateY(calc(-100% - var(--gap)));
+    }
+}
+
+@keyframes category-image-fade {
+    from {
+        opacity: 0;
+        transform: scale(1.015);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.event-search-transition {
+    view-transition-name: event-search;
+}
+
+::view-transition-group(event-search) {
+    animation-duration: 480ms;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+::view-transition-old(event-search),
+::view-transition-new(event-search) {
+    height: 100%;
+    mix-blend-mode: normal;
+}
+
+.events-list-enter {
+    animation: events-list-enter 400ms ease-out both;
+}
+
+@keyframes events-list-enter {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Match the full event grid while showing exactly its first responsive row. */
+.events-preview-grid > li:nth-child(n + 2) { display: none; }
+@media (min-width: 640px) {
+    .events-preview-grid > li:nth-child(2) { display: block; }
+}
+@media (min-width: 1024px) {
+    .events-preview-grid > li:nth-child(3) { display: block; }
+}
+@media (min-width: 1280px) {
+    .events-preview-grid > li:nth-child(4) { display: block; }
+}
+
+.event-search-transition input::-webkit-search-cancel-button {
+    display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .events-list-enter { animation: none; }
+    .event-search-beam,
+    .event-search-beam::before,
+    .event-search-beam::after,
+    .event-search-beam [data-beam-bloom] {
+        animation: none !important;
+    }
+    ::view-transition-group(event-search),
+    ::view-transition-old(event-search),
+    ::view-transition-new(event-search) {
+        animation: none;
+    }
 }

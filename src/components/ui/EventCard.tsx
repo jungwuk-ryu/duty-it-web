@@ -1,8 +1,9 @@
-import Image from "next/image";
-import { Event } from "@/src/lib/schemas/event";
+import type { Event } from "@/src/lib/schemas/event";
+import EventThumbnail from "./EventThumbnail";
 import CategoryTag from "./EventTypeTag";
 import Link from "next/link";
-import { EventStatusLabel } from "@/src/lib/schemas/event-status";
+import type { MouseEvent } from "react";
+import { EventStatusLabel } from "@/src/lib/event-labels";
 
 const KST_FORMATTER = new Intl.DateTimeFormat("ko-KR", {
     timeZone: "Asia/Seoul",
@@ -14,23 +15,22 @@ const KST_FORMATTER = new Intl.DateTimeFormat("ko-KR", {
 type Props = {
     event: Event;
     eager?: boolean;
+    onHostClick?: (hostId: number) => void;
     priority?: boolean;
 };
 
-export default function EventCard({ event, eager = false, priority = false }: Props) {
+export default function EventCard({ event, eager = false, onHostClick, priority = false }: Props) {
     const recruitmentStatus = getRecruitmentStatus(event);
 
     return (
         <article className="group flex h-full flex-col overflow-hidden rounded-2xl bg-white shadow-[0_8px_22px_rgba(15,23,42,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_16px_30px_rgba(15,23,42,0.16)]">
             <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
-                <Image
-                    src={event.thumbnail ?? "/event-thumbnail-placeholder.svg"}
+                <EventThumbnail
+                    src={event.thumbnail}
                     alt={`${event.title} 행사 섬네일`}
-                    fill
-                    loading={priority ? undefined : eager ? "eager" : undefined}
                     priority={priority}
+                    eager={eager}
                     className="object-cover transition duration-500 group-hover:scale-105"
-                    sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 100vw"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
                 <Link
@@ -57,7 +57,14 @@ export default function EventCard({ event, eager = false, priority = false }: Pr
 
                 <p className="mt-5 min-h-10 line-clamp-2 text-sm font-semibold leading-5 text-gray-900">
                     <span className="mr-2 text-gray-400">주최</span>
-                    {event.host.name}
+                    <Link
+                        aria-label={`${event.host.name} 주최 행사 보기`}
+                        className="rounded-sm text-gray-700 underline-offset-2 transition hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-slate-700 focus-visible:outline-offset-2"
+                        href={`/events?hostId=${event.host.id}`}
+                        onClick={(clickedEvent) => handleHostClick(clickedEvent, event.host.id, onHostClick)}
+                    >
+                        {event.host.name}
+                    </Link>
                 </p>
 
                 <dl className="mt-auto grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] gap-x-1.5 border-t border-gray-200 pt-4 text-xs">
@@ -83,6 +90,22 @@ export default function EventCard({ event, eager = false, priority = false }: Pr
             </div>
         </article>
     );
+}
+
+function handleHostClick(event: MouseEvent<HTMLAnchorElement>, hostId: number, onHostClick?: (hostId: number) => void) {
+    if (
+        onHostClick == null
+        || event.button !== 0
+        || event.metaKey
+        || event.ctrlKey
+        || event.shiftKey
+        || event.altKey
+    ) {
+        return;
+    }
+
+    event.preventDefault();
+    onHostClick(hostId);
 }
 
 function getRecruitmentStatus(event: Event): string {
