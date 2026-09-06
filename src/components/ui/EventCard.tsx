@@ -1,5 +1,5 @@
-import Image from "next/image";
 import type { Event } from "@/src/lib/schemas/event";
+import EventThumbnail from "./EventThumbnail";
 import CategoryTag from "./EventTypeTag";
 import Link from "next/link";
 import type { MouseEvent } from "react";
@@ -25,14 +25,12 @@ export default function EventCard({ event, eager = false, onHostClick, priority 
     return (
         <article className="group flex h-full flex-col overflow-hidden rounded-2xl bg-white shadow-[0_8px_22px_rgba(15,23,42,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_16px_30px_rgba(15,23,42,0.16)]">
             <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
-                <Image
-                    src={event.thumbnail ?? "/event-thumbnail-placeholder.svg"}
+                <EventThumbnail
+                    src={event.thumbnail}
                     alt={`${event.title} 행사 섬네일`}
-                    fill
-                    loading={priority ? undefined : eager ? "eager" : undefined}
                     priority={priority}
+                    eager={eager}
                     className="object-cover transition duration-500 group-hover:scale-105"
-                    sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 100vw"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
                 <Link
