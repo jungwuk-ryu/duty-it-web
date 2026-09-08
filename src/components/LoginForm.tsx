@@ -74,7 +74,7 @@ export default function LoginForm() {
     }
 
     return (
-        <div className="relative isolate min-h-[calc(100svh-4rem)] overflow-hidden bg-white">
+        <div className="relative isolate min-h-[calc(100svh-4rem)] overflow-hidden bg-background">
             <LoginBackdrop />
             <section className="relative mx-auto flex min-h-[calc(100svh-4rem)] w-full max-w-[30rem] items-center px-5 py-16 sm:px-8 sm:py-24">
                 <div className="w-full -translate-y-4 sm:-translate-y-7">
@@ -92,10 +92,10 @@ export default function LoginForm() {
                             <LoginSuccess nickname={authState.nickname} isNewUser={authState.isNewUser} />
                         ) : (
                             <>
-                                <h1 className="text-3xl font-bold tracking-[-0.04em] text-slate-950 sm:text-[2.25rem]">
+                                <h1 className="text-3xl font-bold tracking-[-0.04em] text-foreground sm:text-[2.25rem]">
                                     듀잇에 로그인하세요
                                 </h1>
-                                <p className="mt-3 text-[15px] leading-6 text-slate-500 sm:text-base">
+                                <p className="mt-3 text-[15px] leading-6 text-muted-foreground sm:text-base">
                                     관심 있는 간호 행사와 채용 소식을 놓치지 마세요.
                                 </p>
 
@@ -103,7 +103,7 @@ export default function LoginForm() {
                                     <Button
                                         type="button"
                                         variant="outline"
-                                        className="h-12 w-full rounded-xl border-gray-300 bg-white text-[15px] font-semibold text-slate-900 shadow-sm shadow-slate-900/5 hover:bg-slate-50"
+                                        className="h-12 w-full rounded-xl border-input bg-background text-[15px] font-semibold text-foreground shadow-sm shadow-slate-900/5 hover:bg-canvas"
                                         disabled={isLoading}
                                         onClick={() => void handleSignIn("google")}
                                     >
@@ -116,7 +116,7 @@ export default function LoginForm() {
                                     </Button>
                                     <Button
                                         type="button"
-                                        className="h-12 w-full rounded-xl bg-black text-[15px] font-semibold text-white shadow-sm shadow-black/15 hover:bg-black/85"
+                                        className="h-12 w-full rounded-xl bg-inverse text-[15px] font-semibold text-inverse-foreground shadow-sm shadow-black/15 hover:bg-inverse/85"
                                         disabled={isLoading}
                                         onClick={() => void handleSignIn("apple")}
                                     >
@@ -130,19 +130,19 @@ export default function LoginForm() {
                                 </div>
 
                                 {authState.kind === "error" && (
-                                    <p className="mt-4 w-full rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-left text-sm leading-6 text-red-700" role="alert">
+                                    <p className="mt-4 w-full rounded-xl border border-destructive/30 bg-danger-surface px-4 py-3 text-left text-sm leading-6 text-destructive" role="alert">
                                         {authState.message}
                                     </p>
                                 )}
 
                                 <Link
                                     href="/"
-                                    className="mt-8 inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 transition-colors hover:text-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand/50"
+                                    className="mt-8 inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand/50"
                                 >
                                     <ArrowLeft className="size-4" aria-hidden />
                                     홈으로 돌아가기
                                 </Link>
-                                <p className="mt-7 text-xs leading-5 text-slate-400">
+                                <p className="mt-7 text-xs leading-5 text-subtle-foreground">
                                     계속하면 듀잇의 이용약관 및 개인정보 처리방침에 동의하게 됩니다.
                                 </p>
                             </>
@@ -159,8 +159,8 @@ function LoginSuccess({ nickname, isNewUser }: { nickname: string; isNewUser: bo
 
     return (
         <div className="flex w-full flex-col items-center">
-            <h1 className="text-3xl font-bold tracking-[-0.04em] text-slate-950 sm:text-[2.25rem]">{greeting}</h1>
-            <p className="mt-3 text-[15px] leading-6 text-slate-500 sm:text-base">
+            <h1 className="text-3xl font-bold tracking-[-0.04em] text-foreground sm:text-[2.25rem]">{greeting}</h1>
+            <p className="mt-3 text-[15px] leading-6 text-muted-foreground sm:text-base">
                 듀잇에서 나에게 맞는 행사와 채용 정보를 찾아보세요.
             </p>
             <Button asChild className="mt-9 h-12 w-full rounded-xl px-6 text-[15px] font-semibold">
@@ -178,7 +178,7 @@ function LoginBackdrop() {
                     key={`${top}-${left}`}
                     className={cn(
                         "absolute rounded-full",
-                        tone === "brand" ? "size-1 bg-brand/30" : "size-0.5 bg-slate-300/70",
+                        tone === "brand" ? "size-1 bg-brand/30" : "size-0.5 bg-input/70",
                         index % 3 === 0 && "hidden sm:block",
                     )}
                     style={{ top: `${top}%`, left: `${left}%` }}

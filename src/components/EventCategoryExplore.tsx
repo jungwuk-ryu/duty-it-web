@@ -68,10 +68,10 @@ async function EventCategoryExploreContent() {
     return (
         <section id="category-explore" aria-labelledby="event-category-explore-title" className="py-2 sm:py-4">
             <header className="max-w-2xl">
-                <h2 id="event-category-explore-title" className="text-3xl font-bold tracking-[-0.04em] text-slate-950 sm:text-4xl">
+                <h2 id="event-category-explore-title" className="text-3xl font-bold tracking-[-0.04em] text-foreground sm:text-4xl">
                     관심 분야별로 둘러보기
                 </h2>
-                <p className="mt-3 text-[15px] leading-7 text-slate-600 sm:text-base">
+                <p className="mt-3 text-[15px] leading-7 text-muted-foreground sm:text-base">
                     내게 맞는 간호 활동과 다음 기회를 찾아보세요.
                 </p>
             </header>
@@ -160,16 +160,16 @@ function EventCategoryExploreLoading() {
     return (
         <section id="category-explore" aria-busy="true" aria-labelledby="event-category-explore-loading-title" className="py-2 sm:py-4">
             <header className="max-w-2xl">
-                <h2 id="event-category-explore-loading-title" className="text-3xl font-bold tracking-[-0.04em] text-slate-950 sm:text-4xl">
+                <h2 id="event-category-explore-loading-title" className="text-3xl font-bold tracking-[-0.04em] text-foreground sm:text-4xl">
                     관심 분야별로 둘러보기
                 </h2>
-                <p className="mt-3 text-[15px] leading-7 text-slate-600 sm:text-base">
+                <p className="mt-3 text-[15px] leading-7 text-muted-foreground sm:text-base">
                     내게 맞는 간호 활동과 다음 기회를 찾아보세요.
                 </p>
             </header>
             <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:gap-5 xl:grid-cols-4" aria-hidden>
                 {Array.from({ length: 4 }, (_, index) => (
-                    <div key={index} className="min-h-[22rem] animate-pulse rounded-[1.5rem] bg-slate-200 sm:min-h-[25rem] xl:min-h-[28rem]" />
+                    <div key={index} className="min-h-[22rem] animate-pulse rounded-[1.5rem] bg-border sm:min-h-[25rem] xl:min-h-[28rem]" />
                 ))}
             </div>
         </section>

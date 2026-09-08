@@ -100,14 +100,14 @@ export default function SubmitEventForm() {
 
     if (submission.status === "success") {
         return (
-            <div className="rounded-[2rem] border border-gray-200 bg-white p-6 shadow-[0_24px_80px_rgba(15,23,42,0.12)] sm:p-10">
+            <div className="rounded-[2rem] border border-border bg-background p-6 shadow-[0_24px_80px_rgba(15,23,42,0.12)] sm:p-10">
                 <div className="mx-auto flex max-w-md flex-col items-center gap-5 text-center">
-                    <span className="flex size-14 items-center justify-center rounded-2xl bg-brand text-xl font-bold text-white" aria-hidden>
+                    <span className="flex size-14 items-center justify-center rounded-2xl bg-primary text-xl font-bold text-white" aria-hidden>
                         듀
                     </span>
                     <div className="flex flex-col gap-2">
-                        <h1 className="text-2xl font-bold tracking-tight text-slate-900">행사 제보가 접수되었어요</h1>
-                        <p className="leading-7 text-slate-600">{submission.message}</p>
+                        <h1 className="text-2xl font-bold tracking-tight text-foreground">행사 제보가 접수되었어요</h1>
+                        <p className="leading-7 text-muted-foreground">{submission.message}</p>
                     </div>
                     <div className="flex w-full flex-col gap-3 sm:flex-row sm:justify-center">
                         <Button type="button" variant="outline" className="h-11 rounded-xl" onClick={resetForm}>
@@ -125,28 +125,28 @@ export default function SubmitEventForm() {
     const isSubmitting = submission.status === "submitting";
 
     return (
-        <div className="rounded-[2rem] border border-gray-200 bg-white p-5 shadow-[0_24px_80px_rgba(15,23,42,0.12)] sm:p-8 lg:p-10">
-            <div className="flex flex-col gap-6 border-b border-gray-200 pb-7 sm:flex-row sm:items-start sm:justify-between">
+        <div className="rounded-[2rem] border border-border bg-background p-5 shadow-[0_24px_80px_rgba(15,23,42,0.12)] sm:p-8 lg:p-10">
+            <div className="flex flex-col gap-6 border-b border-border pb-7 sm:flex-row sm:items-start sm:justify-between">
                 <div className="flex flex-col gap-2">
-                    <h1 className="text-2xl font-bold tracking-tight text-slate-900">행사 제보하기</h1>
-                    <p className="max-w-xl text-sm leading-6 text-slate-600">
+                    <h1 className="text-2xl font-bold tracking-tight text-foreground">행사 제보하기</h1>
+                    <p className="max-w-xl text-sm leading-6 text-muted-foreground">
                         알고 계신 간호 행사를 알려 주세요. 확인을 거쳐 듀잇 행사 목록에 반영합니다.
                     </p>
                 </div>
-                <span className="w-fit rounded-full bg-red-50 px-3 py-1.5 text-xs font-semibold text-brand">
+                <span className="w-fit rounded-full bg-danger-surface px-3 py-1.5 text-xs font-semibold text-brand">
                     검토 후 공개
                 </span>
             </div>
 
             <form className="mt-8 flex flex-col gap-8" noValidate onSubmit={handleSubmit}>
                 {submission.status === "error" && (
-                    <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm leading-6 text-red-700" role="alert">
+                    <p className="rounded-xl border border-destructive/30 bg-danger-surface px-4 py-3 text-sm leading-6 text-destructive" role="alert">
                         {submission.message}
                     </p>
                 )}
 
                 <fieldset className="flex flex-col gap-5">
-                    <legend className="text-base font-bold text-slate-900">기본 정보</legend>
+                    <legend className="text-base font-bold text-foreground">기본 정보</legend>
                     <div className="flex flex-col gap-5">
                         <FormField label="행사 제목" required error={issues.title}>
                             <input
@@ -172,7 +172,7 @@ export default function SubmitEventForm() {
                                 className={inputClassName(issues.uri)}
                                 placeholder="https://example.com/event"
                             />
-                            <p className="text-xs leading-5 text-slate-500">신청 또는 안내 내용을 확인할 수 있는 주소를 입력해 주세요.</p>
+                            <p className="text-xs leading-5 text-muted-foreground">신청 또는 안내 내용을 확인할 수 있는 주소를 입력해 주세요.</p>
                         </FormField>
 
                         <FormField label="행사 유형" required error={issues.eventType}>
@@ -197,10 +197,10 @@ export default function SubmitEventForm() {
                     </div>
                 </fieldset>
 
-                <fieldset className="flex flex-col gap-5 rounded-2xl bg-slate-50 p-4 sm:p-5">
+                <fieldset className="flex flex-col gap-5 rounded-2xl bg-canvas p-4 sm:p-5">
                     <div className="flex flex-col gap-1">
-                        <legend className="text-base font-bold text-slate-900">일정</legend>
-                        <p className="text-xs leading-5 text-slate-500">행사 시작 일시는 필수이고, 나머지 일정은 알 수 있을 때만 입력해 주세요.</p>
+                        <legend className="text-base font-bold text-foreground">일정</legend>
+                        <p className="text-xs leading-5 text-muted-foreground">행사 시작 일시는 필수이고, 나머지 일정은 알 수 있을 때만 입력해 주세요.</p>
                     </div>
                     <div className="grid gap-5 sm:grid-cols-2">
                         <FormField label="행사 시작 일시" required error={issues.startAt} controlId="event-start-at">
@@ -248,15 +248,15 @@ export default function SubmitEventForm() {
 
                 <fieldset className="flex flex-col gap-5">
                     <div className="flex flex-col gap-1">
-                        <legend className="text-base font-bold text-slate-900">주최 기관</legend>
-                        <p className="text-xs leading-5 text-slate-500">기관명을 입력해 기존 주최 기관을 선택하거나, 목록에 없으면 새 기관으로 등록할 수 있습니다.</p>
+                        <legend className="text-base font-bold text-foreground">주최 기관</legend>
+                        <p className="text-xs leading-5 text-muted-foreground">기관명을 입력해 기존 주최 기관을 선택하거나, 목록에 없으면 새 기관으로 등록할 수 있습니다.</p>
                     </div>
 
-                    <div className="grid grid-cols-2 rounded-xl bg-slate-100 p-1" role="radiogroup" aria-label="주최 기관 입력 방식">
+                    <div className="grid grid-cols-2 rounded-xl bg-muted p-1" role="radiogroup" aria-label="주최 기관 입력 방식">
                         <label
                             className={cn(
                                 "flex cursor-pointer items-center justify-center rounded-lg px-3 py-2.5 text-sm font-semibold transition-colors",
-                                hostMethod === "name" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700",
+                                hostMethod === "name" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
                             )}
                         >
                             <input
@@ -272,7 +272,7 @@ export default function SubmitEventForm() {
                         <label
                             className={cn(
                                 "flex cursor-pointer items-center justify-center rounded-lg px-3 py-2.5 text-sm font-semibold transition-colors",
-                                hostMethod === "id" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700",
+                                hostMethod === "id" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
                             )}
                         >
                             <input
@@ -308,7 +308,7 @@ export default function SubmitEventForm() {
                                     />
                                     <button
                                         type="button"
-                                        className="absolute inset-y-1 right-1 flex size-10 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand/50"
+                                        className="absolute inset-y-1 right-1 flex size-10 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand/50"
                                         aria-label="등록된 주최 기관 목록 열기"
                                         aria-expanded={isHostOptionsOpen}
                                         aria-controls="existing-host-options"
@@ -325,32 +325,32 @@ export default function SubmitEventForm() {
                                             id="existing-host-options"
                                             role="listbox"
                                             aria-label="등록된 주최 기관"
-                                            className="absolute left-0 top-[calc(100%+0.375rem)] z-20 max-h-80 w-full overflow-y-auto rounded-lg border border-gray-200 bg-white p-1 text-gray-900 shadow-lg shadow-black/5"
+                                            className="absolute left-0 top-[calc(100%+0.375rem)] z-20 max-h-80 w-full overflow-y-auto rounded-lg border border-border bg-background p-1 text-foreground shadow-lg shadow-black/5"
                                         >
                                             {hostOptionsStatus === "loading" || hostOptionsStatus === "idle" ? (
-                                                <p className="px-3 py-3 text-sm text-slate-500" role="status">
+                                                <p className="px-3 py-3 text-sm text-muted-foreground" role="status">
                                                     등록된 주최 기관을 불러오는 중이에요.
                                                 </p>
                                             ) : hostOptionsStatus === "error" ? (
                                                 <button
                                                     type="button"
-                                                    className="w-full cursor-pointer rounded-md px-3 py-3 text-left text-sm leading-5 text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 focus:bg-slate-100 focus:text-slate-900 focus:outline-none"
+                                                    className="w-full cursor-pointer rounded-md px-3 py-3 text-left text-sm leading-5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus:bg-muted focus:text-foreground focus:outline-none"
                                                     onClick={() => void loadHostOptions(true)}
                                                 >
                                                     목록을 불러오지 못했어요. 다시 시도해 주세요.
                                                 </button>
                                             ) : suggestedHostOptions.length === 0 ? (
-                                                <p className="px-3 py-3 text-sm leading-5 text-slate-500">
+                                                <p className="px-3 py-3 text-sm leading-5 text-muted-foreground">
                                                     일치하는 주최 기관이 없어요. 입력한 이름으로 새 기관을 등록할 수 있습니다.
                                                 </p>
                                             ) : (
                                                 <>
-                                                    <p className="px-3 py-2 text-xs font-medium text-slate-500">
+                                                    <p className="px-3 py-2 text-xs font-medium text-muted-foreground">
                                                         {values.hostName.trim()
                                                             ? `“${values.hostName.trim()}”와 일치하는 주최 기관`
                                                             : "등록된 주최 기관"}
                                                     </p>
-                                                    <div className="mx-1 h-px bg-gray-100" />
+                                                    <div className="mx-1 h-px bg-muted" />
                                                     {suggestedHostOptions.map((host) => {
                                                         const isSelected = selectedExistingHost?.id === host.id;
 
@@ -361,8 +361,8 @@ export default function SubmitEventForm() {
                                                                 role="option"
                                                                 aria-selected={isSelected}
                                                                 className={cn(
-                                                                    "relative flex w-full cursor-pointer items-center rounded-md py-2 pl-8 pr-3 text-left text-sm font-medium leading-5 text-slate-800 transition-colors hover:bg-gray-100 focus:bg-gray-100 focus:text-slate-900 focus:outline-none",
-                                                                    isSelected && "bg-gray-100 text-slate-900",
+                                                                    "relative flex w-full cursor-pointer items-center rounded-md py-2 pl-8 pr-3 text-left text-sm font-medium leading-5 text-foreground transition-colors hover:bg-muted focus:bg-muted focus:text-foreground focus:outline-none",
+                                                                    isSelected && "bg-muted text-foreground",
                                                                 )}
                                                                 onClick={() => selectHost(host)}
                                                             >
@@ -375,8 +375,8 @@ export default function SubmitEventForm() {
                                                     })}
                                                     {filteredHostOptions.length > MAX_HOST_SUGGESTIONS && (
                                                         <>
-                                                            <div className="mx-1 h-px bg-gray-100" />
-                                                            <p className="px-3 py-2 text-xs leading-5 text-slate-500">
+                                                            <div className="mx-1 h-px bg-muted" />
+                                                            <p className="px-3 py-2 text-xs leading-5 text-muted-foreground">
                                                                 상위 {MAX_HOST_SUGGESTIONS}개만 표시합니다. 기관명을 더 입력해 주세요.
                                                             </p>
                                                         </>
@@ -386,12 +386,12 @@ export default function SubmitEventForm() {
                                         </div>
                                     )}
                                 </div>
-                                <p id="host-name-help" className="text-xs leading-5 text-slate-500">
+                                <p id="host-name-help" className="text-xs leading-5 text-muted-foreground">
                                     목록에서 선택하면 해당 기관에 연결됩니다.
                                 </p>
                             </FormField>
                             {selectedExistingHost ? (
-                                <p className="rounded-xl border border-brand/20 bg-red-50 px-4 py-3 text-sm leading-6 text-slate-700">
+                                <p className="rounded-xl border border-brand/20 bg-danger-surface px-4 py-3 text-sm leading-6 text-foreground">
                                     <span className="mr-2 font-semibold text-brand">선택됨</span>
                                     {selectedExistingHost.name}에 행사 정보를 연결합니다.
                                 </p>
@@ -421,15 +421,15 @@ export default function SubmitEventForm() {
                                 className={inputClassName(issues.hostId)}
                                 placeholder="예: 1"
                             />
-                            <p className="text-xs leading-5 text-slate-500">관리자에게 받은 기관 ID가 있는 경우에만 입력해 주세요.</p>
+                            <p className="text-xs leading-5 text-muted-foreground">관리자에게 받은 기관 ID가 있는 경우에만 입력해 주세요.</p>
                         </FormField>
                     )}
                 </fieldset>
 
-                <fieldset className="flex flex-col gap-4 rounded-2xl border border-dashed border-gray-300 p-4 sm:p-5">
+                <fieldset className="flex flex-col gap-4 rounded-2xl border border-dashed border-input p-4 sm:p-5">
                     <div className="flex flex-col gap-1">
-                        <legend className="text-base font-bold text-slate-900">이미지 첨부</legend>
-                        <p className="text-xs leading-5 text-slate-500">선택 사항 · JPG, JPEG, PNG, GIF, WEBP · 파일당 10MB, 전체 20MB까지</p>
+                        <legend className="text-base font-bold text-foreground">이미지 첨부</legend>
+                        <p className="text-xs leading-5 text-muted-foreground">선택 사항 · JPG, JPEG, PNG, GIF, WEBP · 파일당 10MB, 전체 20MB까지</p>
                     </div>
                     <FileField
                         id="event-thumbnail"
@@ -442,7 +442,7 @@ export default function SubmitEventForm() {
                 </fieldset>
 
                 {issues.form && (
-                    <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm leading-6 text-red-700" role="alert">
+                    <p className="rounded-xl border border-destructive/30 bg-danger-surface px-4 py-3 text-sm leading-6 text-destructive" role="alert">
                         {issues.form}
                     </p>
                 )}
@@ -453,8 +453,8 @@ export default function SubmitEventForm() {
                     thumbnailUrl={eventThumbnailPreviewUrl}
                 />
 
-                <div className="flex flex-col gap-3 border-t border-gray-200 pt-6 sm:flex-row sm:items-center sm:justify-between">
-                    <p className="text-xs leading-5 text-slate-500">제보 내용은 검토 후 공개되며, 필요하면 주최 페이지 정보가 우선 반영됩니다.</p>
+                <div className="flex flex-col gap-3 border-t border-border pt-6 sm:flex-row sm:items-center sm:justify-between">
+                    <p className="text-xs leading-5 text-muted-foreground">제보 내용은 검토 후 공개되며, 필요하면 주최 페이지 정보가 우선 반영됩니다.</p>
                     <Button type="submit" size="lg" className="h-12 shrink-0 rounded-xl px-6" disabled={isSubmitting}>
                         {isSubmitting ? "제보 보내는 중…" : "행사 제보 보내기"}
                     </Button>
@@ -693,13 +693,13 @@ function FormField({
 
     return (
         <div className="flex flex-col gap-2">
-            <label htmlFor={controlId} className="text-sm font-semibold text-slate-800">
+            <label htmlFor={controlId} className="text-sm font-semibold text-foreground">
                 {label}
                 {required && <span className="ml-1 text-brand">*</span>}
             </label>
             {children}
             {error && controlId && (
-                <p id={`${controlId}-error`} className="text-xs leading-5 text-red-600" role="alert">
+                <p id={`${controlId}-error`} className="text-xs leading-5 text-destructive" role="alert">
                     {error}
                 </p>
             )}
@@ -724,23 +724,23 @@ function FileField({
 }) {
     return (
         <div className="flex flex-col gap-2">
-            <label htmlFor={id} className="text-sm font-semibold text-slate-800">
+            <label htmlFor={id} className="text-sm font-semibold text-foreground">
                 {label}
             </label>
             <label
                 className={cn(
-                    "flex cursor-pointer items-center gap-3 rounded-xl border border-dashed bg-white px-4 py-3 transition-colors hover:border-brand/60",
-                    error ? "border-red-400" : "border-gray-300",
+                    "flex cursor-pointer items-center gap-3 rounded-xl border border-dashed bg-background px-4 py-3 transition-colors hover:border-brand/60",
+                    error ? "border-destructive" : "border-input",
                 )}
             >
                 <Upload className="size-5 shrink-0 text-brand" aria-hidden />
                 <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-medium text-slate-800">
+                    <span className="block truncate text-sm font-medium text-foreground">
                         {file ? file.name : "이미지 파일 선택"}
                     </span>
-                    <span className="mt-1 block text-xs leading-5 text-slate-500">{description}</span>
+                    <span className="mt-1 block text-xs leading-5 text-muted-foreground">{description}</span>
                 </span>
-                <span className="shrink-0 rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-700">선택</span>
+                <span className="shrink-0 rounded-lg bg-muted px-3 py-1.5 text-xs font-semibold text-foreground">선택</span>
                 <input
                     id={id}
                     type="file"
@@ -749,15 +749,15 @@ function FileField({
                     onChange={(event) => onChange(event.target.files?.[0] ?? null)}
                 />
             </label>
-            {error && <p className="text-xs leading-5 text-red-600" role="alert">{error}</p>}
+            {error && <p className="text-xs leading-5 text-destructive" role="alert">{error}</p>}
         </div>
     );
 }
 
 function inputClassName(hasError?: string) {
     return cn(
-        "h-12 w-full rounded-xl border bg-white px-3 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-400 focus:border-brand focus:ring-2 focus:ring-brand/15",
-        hasError ? "border-red-400" : "border-gray-300",
+        "h-12 w-full rounded-xl border bg-background px-3 text-sm text-foreground outline-none transition-colors placeholder:text-subtle-foreground focus:border-brand focus:ring-2 focus:ring-brand/15",
+        hasError ? "border-destructive" : "border-input",
     );
 }
 
@@ -778,14 +778,14 @@ function EventSubmissionPreview({
     const title = values.title.trim() || "행사 제목을 입력해 주세요";
 
     return (
-        <section className="rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:p-5" aria-labelledby="event-preview-title">
+        <section className="rounded-2xl border border-border bg-canvas p-4 sm:p-5" aria-labelledby="event-preview-title">
             <div className="flex flex-col gap-1">
-                <h2 id="event-preview-title" className="text-base font-bold text-slate-900">행사 카드 미리보기</h2>
-                <p className="text-xs leading-5 text-slate-500">입력한 내용이 행사 목록에서 이렇게 보입니다.</p>
+                <h2 id="event-preview-title" className="text-base font-bold text-foreground">행사 카드 미리보기</h2>
+                <p className="text-xs leading-5 text-muted-foreground">입력한 내용이 행사 목록에서 이렇게 보입니다.</p>
             </div>
 
-            <article className="mt-4 flex max-w-sm flex-col overflow-hidden rounded-2xl bg-white shadow-[0_8px_22px_rgba(15,23,42,0.10)]">
-                <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
+            <article className="mt-4 flex max-w-sm flex-col overflow-hidden rounded-2xl bg-background shadow-[0_8px_22px_rgba(15,23,42,0.10)]">
+                <div className="relative aspect-[4/3] overflow-hidden bg-muted">
                     {/* blob URL은 Next Image 최적화 대상이 아니므로 로컬 미리보기로만 사용합니다. */}
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
@@ -802,29 +802,29 @@ function EventSubmissionPreview({
 
                 <div className="flex flex-1 flex-col p-5">
                     <div className="flex min-h-8 items-center justify-between gap-2">
-                        <span className="inline-flex h-8 shrink-0 items-center whitespace-nowrap rounded-full bg-slate-100 px-2.5 text-xs font-semibold text-slate-700">
+                        <span className="inline-flex h-8 shrink-0 items-center whitespace-nowrap rounded-full bg-muted px-2.5 text-xs font-semibold text-foreground">
                             {eventTypeLabel}
                         </span>
                         <span className="shrink-0 whitespace-nowrap text-sm font-bold text-brand">검토 예정</span>
                     </div>
 
-                    <p className="mt-5 min-h-10 line-clamp-2 text-sm font-semibold leading-5 text-gray-900">
-                        <span className="mr-2 text-gray-400">주최</span>
+                    <p className="mt-5 min-h-10 line-clamp-2 text-sm font-semibold leading-5 text-foreground">
+                        <span className="mr-2 text-subtle-foreground">주최</span>
                         {hostName}
                     </p>
 
-                    <dl className="mt-auto grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] gap-x-1.5 border-t border-gray-200 pt-4 text-xs">
+                    <dl className="mt-auto grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] gap-x-1.5 border-t border-border pt-4 text-xs">
                         <div className="min-w-0">
-                            <dt className="text-gray-500">일시</dt>
-                            <dd className="mt-1 whitespace-nowrap font-semibold text-gray-900">{formatPreviewDate(values.startAt)}</dd>
+                            <dt className="text-muted-foreground">일시</dt>
+                            <dd className="mt-1 whitespace-nowrap font-semibold text-foreground">{formatPreviewDate(values.startAt)}</dd>
                         </div>
                         <div className="min-w-0">
-                            <dt className="text-gray-500">마감</dt>
-                            <dd className="mt-1 whitespace-nowrap font-semibold text-gray-900">{formatPreviewDate(values.recruitmentEndAt)}</dd>
+                            <dt className="text-muted-foreground">마감</dt>
+                            <dd className="mt-1 whitespace-nowrap font-semibold text-foreground">{formatPreviewDate(values.recruitmentEndAt)}</dd>
                         </div>
                         <div className="min-w-7">
-                            <dt className="text-gray-500">조회</dt>
-                            <dd className="mt-1 font-semibold text-gray-900">0</dd>
+                            <dt className="text-muted-foreground">조회</dt>
+                            <dd className="mt-1 font-semibold text-foreground">0</dd>
                         </div>
                     </dl>
                 </div>

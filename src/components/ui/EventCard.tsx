@@ -23,8 +23,8 @@ export default function EventCard({ event, eager = false, onHostClick, priority 
     const recruitmentStatus = getRecruitmentStatus(event);
 
     return (
-        <article className="group flex h-full flex-col overflow-hidden rounded-2xl bg-white shadow-[0_8px_22px_rgba(15,23,42,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_16px_30px_rgba(15,23,42,0.16)]">
-            <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
+        <article className="group flex h-full flex-col overflow-hidden rounded-2xl bg-background shadow-[0_8px_22px_rgba(15,23,42,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_16px_30px_rgba(15,23,42,0.16)]">
+            <div className="relative aspect-[4/3] overflow-hidden bg-muted">
                 <EventThumbnail
                     src={event.thumbnail}
                     alt={`${event.title} 행사 섬네일`}
@@ -55,11 +55,11 @@ export default function EventCard({ event, eager = false, onHostClick, priority 
                     </span>
                 </div>
 
-                <p className="mt-5 min-h-10 line-clamp-2 text-sm font-semibold leading-5 text-gray-900">
-                    <span className="mr-2 text-gray-400">주최</span>
+                <p className="mt-5 min-h-10 line-clamp-2 text-sm font-semibold leading-5 text-foreground">
+                    <span className="mr-2 text-subtle-foreground">주최</span>
                     <Link
                         aria-label={`${event.host.name} 주최 행사 보기`}
-                        className="rounded-sm text-gray-700 underline-offset-2 transition hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-slate-700 focus-visible:outline-offset-2"
+                        className="rounded-sm text-foreground underline-offset-2 transition hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-foreground focus-visible:outline-offset-2"
                         href={`/events?hostId=${event.host.id}`}
                         onClick={(clickedEvent) => handleHostClick(clickedEvent, event.host.id, onHostClick)}
                     >
@@ -67,22 +67,22 @@ export default function EventCard({ event, eager = false, onHostClick, priority 
                     </Link>
                 </p>
 
-                <dl className="mt-auto grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] gap-x-1.5 border-t border-gray-200 pt-4 text-xs">
+                <dl className="mt-auto grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] gap-x-1.5 border-t border-border pt-4 text-xs">
                     <div className="min-w-0">
-                        <dt className="text-gray-500">일시</dt>
-                        <dd className="mt-1 whitespace-nowrap font-semibold text-gray-900" title={formatDates(event.startAt, event.endAt)}>
+                        <dt className="text-muted-foreground">일시</dt>
+                        <dd className="mt-1 whitespace-nowrap font-semibold text-foreground" title={formatDates(event.startAt, event.endAt)}>
                             {formatCompactDate(event.startAt)}
                         </dd>
                     </div>
                     <div className="min-w-0">
-                        <dt className="text-gray-500">마감</dt>
-                        <dd className="mt-1 whitespace-nowrap font-semibold text-gray-900" title={event.recruitmentEndAt == null ? "-" : formatDate(event.recruitmentEndAt)}>
+                        <dt className="text-muted-foreground">마감</dt>
+                        <dd className="mt-1 whitespace-nowrap font-semibold text-foreground" title={event.recruitmentEndAt == null ? "-" : formatDate(event.recruitmentEndAt)}>
                             {event.recruitmentEndAt == null ? "-" : formatCompactDate(event.recruitmentEndAt)}
                         </dd>
                     </div>
                     <div className="min-w-7">
-                        <dt className="text-gray-500">조회</dt>
-                        <dd className="mt-1 font-semibold text-gray-900">
+                        <dt className="text-muted-foreground">조회</dt>
+                        <dd className="mt-1 font-semibold text-foreground">
                             {event.viewCount.toLocaleString("ko-KR")}
                         </dd>
                     </div>

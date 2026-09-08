@@ -77,11 +77,11 @@ export default async function JobsPage({ searchParams }: Props) {
         <div className="container mx-auto mb-5 px-4 py-10">
             <header className="mb-6 text-center">
                 <p className="text-sm font-bold tracking-wide text-brand">NURSING CAREERS</p>
-                <h1 className="mt-1 text-3xl font-bold text-gray-950">간호 채용 공고</h1>
-                <p className="mt-3 text-gray-600">간호 분야의 새로운 일자리를 한눈에 확인해보세요.</p>
+                <h1 className="mt-1 text-3xl font-bold text-foreground">간호 채용 공고</h1>
+                <p className="mt-3 text-muted-foreground">간호 분야의 새로운 일자리를 한눈에 확인해보세요.</p>
             </header>
 
-            <section className="mb-8 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-[0_16px_40px_rgba(15,23,42,0.08),0_2px_8px_rgba(15,23,42,0.04)] md:p-5" aria-label="채용 공고 필터">
+            <section className="mb-8 rounded-2xl border border-border/80 bg-background p-4 shadow-[0_16px_40px_rgba(15,23,42,0.08),0_2px_8px_rgba(15,23,42,0.04)] md:p-5" aria-label="채용 공고 필터">
                 <JobFiltersForm
                     searchKeyword={filters.searchKeyword}
                     workRegion={filters.workRegion ?? ""}
@@ -100,7 +100,7 @@ export default async function JobsPage({ searchParams }: Props) {
             )}
 
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-                <p className="text-sm text-gray-600">{getResultSummary(filters)} · {pageInfo.pageSize}개 표시</p>
+                <p className="text-sm text-muted-foreground">{getResultSummary(filters)} · {pageInfo.pageSize}개 표시</p>
                 {cursor && <Link className="text-sm font-semibold text-brand underline" href={getJobsHref(filters, null)}>첫 페이지로</Link>}
             </div>
 
@@ -109,20 +109,20 @@ export default async function JobsPage({ searchParams }: Props) {
                     {content.map((job) => <li key={job.id}><JobPostingCard job={job} /></li>)}
                 </ul>
             ) : (
-                <section className="rounded-2xl border border-dashed border-gray-300 bg-white px-6 py-14 text-center">
-                    <h2 className="text-xl font-bold text-gray-900">조건에 맞는 채용 공고가 없어요</h2>
-                    <p className="mt-2 text-gray-600">검색어나 필터를 조정해 다시 찾아보세요.</p>
-                    <Link className={`${buttonVariants({ className: "mt-5 bg-brand text-white hover:bg-brand/90" })}`} href="/jobs">전체 채용 공고 보기</Link>
+                <section className="rounded-2xl border border-dashed border-input bg-background px-6 py-14 text-center">
+                    <h2 className="text-xl font-bold text-foreground">조건에 맞는 채용 공고가 없어요</h2>
+                    <p className="mt-2 text-muted-foreground">검색어나 필터를 조정해 다시 찾아보세요.</p>
+                    <Link className={`${buttonVariants({ className: "mt-5 bg-primary text-white hover:bg-primary/90" })}`} href="/jobs">전체 채용 공고 보기</Link>
                 </section>
             )}
 
             <nav className="mt-8 flex items-center justify-center gap-3" aria-label="채용 공고 페이지 이동">
                 {nextHref ? (
-                    <Link href={nextHref} className={buttonVariants({ variant: "outline", className: "h-10 border-gray-300 bg-white px-5 font-semibold text-gray-800 hover:border-brand hover:text-brand" })}>
+                    <Link href={nextHref} className={buttonVariants({ variant: "outline", className: "h-10 border-input bg-background px-5 font-semibold text-foreground hover:border-brand hover:text-brand" })}>
                         다음 채용 공고 보기
                     </Link>
                 ) : (
-                    <span className="inline-flex h-10 items-center rounded-lg border border-gray-200 bg-white px-5 text-sm font-semibold text-gray-400">마지막 목록입니다</span>
+                    <span className="inline-flex h-10 items-center rounded-lg border border-border bg-background px-5 text-sm font-semibold text-subtle-foreground">마지막 목록입니다</span>
                 )}
             </nav>
         </div>

@@ -98,7 +98,7 @@ export default function EventFiltersForm({
                 onChange={(value) => updateFilters({ searchKeyword: normalizeSearchKeyword(value) }, "replace")}
             />
 
-            <div className="flex flex-wrap items-center gap-2 border-b border-slate-200 pb-4">
+            <div className="flex flex-wrap items-center gap-2 border-b border-border pb-4">
                 <FilterMenu
                     hostId={hostId}
                     hostOptions={hostOptions}
@@ -138,7 +138,7 @@ export default function EventFiltersForm({
 
                 {hasFilters && (
                     <button
-                        className="ml-auto inline-flex h-8 items-center gap-1 rounded-lg px-2 text-sm font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand"
+                        className="ml-auto inline-flex h-8 items-center gap-1 rounded-lg px-2 text-sm font-medium text-muted-foreground transition hover:bg-muted hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand"
                         onClick={onReset}
                         type="button"
                     >
@@ -188,20 +188,20 @@ function HostSearchMenu({
                 </SearchField.Group>
             </SearchField>
             {isHostsLoading ? (
-                <p className="px-2 py-3 text-sm text-slate-500">주최 기관을 불러오는 중…</p>
+                <p className="px-2 py-3 text-sm text-muted-foreground">주최 기관을 불러오는 중…</p>
             ) : matchingHosts.length === 0 ? (
-                <p className="px-2 py-3 text-sm text-slate-500">검색 결과가 없어요</p>
+                <p className="px-2 py-3 text-sm text-muted-foreground">검색 결과가 없어요</p>
             ) : (
                 <DropdownMenuRadioGroup
                     className="max-h-72 overflow-y-auto"
                     value={hostId == null ? "" : String(hostId)}
                     onValueChange={(value) => onHostIdChange(getHostId(value))}
                 >
-                    <DropdownMenuRadioItem value="" className="cursor-pointer rounded-md py-2 pl-8 text-sm focus:bg-slate-100">
+                    <DropdownMenuRadioItem value="" className="cursor-pointer rounded-md py-2 pl-8 text-sm focus:bg-muted">
                         전체 주최
                     </DropdownMenuRadioItem>
                     {matchingHosts.map((host) => (
-                        <DropdownMenuRadioItem key={host.id} value={String(host.id)} className="cursor-pointer rounded-md py-2 pl-8 text-sm focus:bg-slate-100">
+                        <DropdownMenuRadioItem key={host.id} value={String(host.id)} className="cursor-pointer rounded-md py-2 pl-8 text-sm focus:bg-muted">
                             {host.name}
                         </DropdownMenuRadioItem>
                     ))}
@@ -245,20 +245,20 @@ function FilterMenu({
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button type="button" variant="outline" className="h-8 gap-1.5 rounded-lg border-slate-300 px-3 text-slate-700 hover:border-slate-400 hover:bg-slate-50">
+                <Button type="button" variant="outline" className="h-8 gap-1.5 rounded-lg border-input px-3 text-foreground hover:border-subtle-foreground hover:bg-canvas">
                     <ListFilter className="size-4" aria-hidden="true" />
                     필터 추가
-                    <ChevronDown className="size-3.5 text-slate-400" aria-hidden="true" />
+                    <ChevronDown className="size-3.5 text-subtle-foreground" aria-hidden="true" />
                 </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-52 border-slate-200 bg-white p-1.5 text-slate-900">
-                <DropdownMenuLabel className="px-2 py-1 text-xs font-medium text-slate-500">필터 선택</DropdownMenuLabel>
-                <DropdownMenuSeparator className="bg-slate-100" />
+            <DropdownMenuContent align="start" className="w-52 border-border bg-background p-1.5 text-foreground">
+                <DropdownMenuLabel className="px-2 py-1 text-xs font-medium text-muted-foreground">필터 선택</DropdownMenuLabel>
+                <DropdownMenuSeparator className="bg-muted" />
                 <DropdownMenuSub>
-                    <DropdownMenuSubTrigger className="cursor-pointer rounded-md py-2 text-sm font-medium focus:bg-slate-100 data-[state=open]:bg-slate-100">
+                    <DropdownMenuSubTrigger className="cursor-pointer rounded-md py-2 text-sm font-medium focus:bg-muted data-[state=open]:bg-muted">
                         주최
                     </DropdownMenuSubTrigger>
-                    <DropdownMenuSubContent className="w-72 border-slate-200 bg-white p-2">
+                    <DropdownMenuSubContent className="w-72 border-border bg-background p-2">
                         <HostSearchMenu
                             hostId={hostId}
                             hostOptions={hostOptions}
@@ -268,13 +268,13 @@ function FilterMenu({
                     </DropdownMenuSubContent>
                 </DropdownMenuSub>
                 <DropdownMenuSub>
-                    <DropdownMenuSubTrigger className="cursor-pointer rounded-md py-2 text-sm font-medium focus:bg-slate-100 data-[state=open]:bg-slate-100">
+                    <DropdownMenuSubTrigger className="cursor-pointer rounded-md py-2 text-sm font-medium focus:bg-muted data-[state=open]:bg-muted">
                         정렬
                     </DropdownMenuSubTrigger>
-                    <DropdownMenuSubContent className="w-44 border-slate-200 bg-white p-1.5">
+                    <DropdownMenuSubContent className="w-44 border-border bg-background p-1.5">
                         <DropdownMenuRadioGroup value={selectedField} onValueChange={(value) => setSelectedField(value as EventSortField)}>
                             {sortOptions.map((option) => (
-                                <DropdownMenuRadioItem key={option.value} value={option.value} className="cursor-pointer rounded-md py-2 pl-8 text-sm focus:bg-slate-100">
+                                <DropdownMenuRadioItem key={option.value} value={option.value} className="cursor-pointer rounded-md py-2 pl-8 text-sm focus:bg-muted">
                                     {option.label}
                                 </DropdownMenuRadioItem>
                             ))}
@@ -282,13 +282,13 @@ function FilterMenu({
                     </DropdownMenuSubContent>
                 </DropdownMenuSub>
                 <DropdownMenuSub>
-                    <DropdownMenuSubTrigger className="cursor-pointer rounded-md py-2 text-sm font-medium focus:bg-slate-100 data-[state=open]:bg-slate-100">
+                    <DropdownMenuSubTrigger className="cursor-pointer rounded-md py-2 text-sm font-medium focus:bg-muted data-[state=open]:bg-muted">
                         상태
                     </DropdownMenuSubTrigger>
-                    <DropdownMenuSubContent className="w-40 border-slate-200 bg-white p-1.5">
+                    <DropdownMenuSubContent className="w-40 border-border bg-background p-1.5">
                         <DropdownMenuRadioGroup value={selectedStatusGroup} onValueChange={(value) => setSelectedStatusGroup(value as EventStatusFilter)}>
                             {statusOptions.map((option) => (
-                                <DropdownMenuRadioItem key={option.value} value={option.value} className="cursor-pointer rounded-md py-2 pl-8 text-sm focus:bg-slate-100">
+                                <DropdownMenuRadioItem key={option.value} value={option.value} className="cursor-pointer rounded-md py-2 pl-8 text-sm focus:bg-muted">
                                     {option.label}
                                 </DropdownMenuRadioItem>
                             ))}
@@ -296,16 +296,16 @@ function FilterMenu({
                     </DropdownMenuSubContent>
                 </DropdownMenuSub>
                 <DropdownMenuSub>
-                    <DropdownMenuSubTrigger className="cursor-pointer rounded-md py-2 text-sm font-medium focus:bg-slate-100 data-[state=open]:bg-slate-100">
+                    <DropdownMenuSubTrigger className="cursor-pointer rounded-md py-2 text-sm font-medium focus:bg-muted data-[state=open]:bg-muted">
                         행사 유형
                     </DropdownMenuSubTrigger>
-                    <DropdownMenuSubContent className="w-52 border-slate-200 bg-white p-1.5">
+                    <DropdownMenuSubContent className="w-52 border-border bg-background p-1.5">
                         <div className="max-h-72 overflow-y-auto">
                             {typeOptions.map((option) => (
                                 <DropdownMenuCheckboxItem
                                     key={option.value}
                                     checked={selectedTypes.includes(option.value)}
-                                    className="cursor-pointer rounded-md py-2 pl-8 text-sm focus:bg-slate-100"
+                                    className="cursor-pointer rounded-md py-2 pl-8 text-sm focus:bg-muted"
                                     onCheckedChange={() => toggleType(option.value)}
                                     onSelect={(event) => event.preventDefault()}
                                 >
@@ -322,11 +322,11 @@ function FilterMenu({
 
 function FilterChip({ children, label, onRemove }: { children: ReactNode; label: string; onRemove: () => void }) {
     return (
-        <span className="inline-flex h-8 max-w-full items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 py-1 pl-2.5 pr-1 text-sm text-slate-700">
-            <span className="shrink-0 text-xs font-medium text-slate-400">{label}</span>
+        <span className="inline-flex h-8 max-w-full items-center gap-1.5 rounded-lg border border-border bg-canvas py-1 pl-2.5 pr-1 text-sm text-foreground">
+            <span className="shrink-0 text-xs font-medium text-subtle-foreground">{label}</span>
             <span className="truncate font-medium">{children}</span>
             <button
-                className="inline-flex size-6 shrink-0 items-center justify-center rounded-md text-slate-400 transition hover:bg-white hover:text-slate-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand"
+                className="inline-flex size-6 shrink-0 items-center justify-center rounded-md text-subtle-foreground transition hover:bg-background hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand"
                 onClick={onRemove}
                 type="button"
                 aria-label={label + " 필터 삭제"}

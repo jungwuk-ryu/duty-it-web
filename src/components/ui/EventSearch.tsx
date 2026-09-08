@@ -30,7 +30,6 @@ export default function EventSearch({ value, onChange, onSearch, hero = false }:
                 colorVariant="colorful"
                 duration={3.1}
                 borderRadius={hero ? 28 : 12}
-                theme="light"
                 active={hero}
             >
                 <div className={cn(

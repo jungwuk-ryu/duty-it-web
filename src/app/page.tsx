@@ -20,7 +20,7 @@ export default function Home() {
             <h1 className="text-4xl md:text-5xl font-bold leading-relaxed tracking-tighter">
               <span className="text-brand">듀잇</span>과 함께,<br className="hidden md:block" /> 간호 대외활동과 행사를 한눈에!
             </h1>
-            <p className="text-gray-600 text-xl">
+            <p className="text-muted-foreground text-xl">
               국내 간호 대외활동과 행사를 한곳에 모아두었어요.
             </p>
           </div>
@@ -49,7 +49,7 @@ export default function Home() {
         <HomeEvents />
       </div>
       <section id="download">
-        <div className="flex flex-col bg-brand py-20 text-center text-white">
+        <div className="flex flex-col bg-primary py-20 text-center text-white">
           <h3 className="text-2xl font-bold">지금 듀잇을 다운로드하세요!</h3>
           <p className="leading-8 text-white/96">언제 어디서든 최신 간호 행사 정보를 확인하고 앞서 나아가세요.</p>
           <div className="flex flex-row pt-10 gap-5 justify-center">
@@ -84,7 +84,7 @@ function SectionDescription({ title, desc }: SectionProps) {
   return (
     <header className="space-y-2">
       <h2 className="text-2xl font-bold leading-relaxed">{title}</h2>
-      <p className="text-gray-500">{desc}</p>
+      <p className="text-muted-foreground">{desc}</p>
     </header>
   );
 }
