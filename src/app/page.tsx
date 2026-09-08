@@ -31,7 +31,7 @@ export default async function Home() {
 
   return (
     <div className={styles.home}>
-      <HomeHero featuredEvents={previewData.events} />
+      <HomeHero />
       <div className={styles.container}>
         <HomeEvents />
       </div>

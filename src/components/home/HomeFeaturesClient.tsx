@@ -1,9 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import { useRef, useState, type KeyboardEvent } from "react";
+import { useState } from "react";
 import { ArrowRight, Bell, CalendarDays } from "lucide-react";
 import EventThumbnail from "@/src/components/ui/EventThumbnail";
+import FeatureCarousel from "@/src/components/ui/feature-carousel";
 import type { HomeEventPreview, HomeJobPreview } from "./home-preview-data";
 import CalendarPreview from "./CalendarPreview";
 import styles from "./home.module.css";
@@ -20,71 +21,49 @@ type HomeFeaturesClientProps = {
 };
 
 export default function HomeFeaturesClient({ events, jobs }: HomeFeaturesClientProps) {
-  const [active, setActive] = useState(0);
-  const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
-
-  function handleKeyDown(event: KeyboardEvent<HTMLButtonElement>, index: number) {
-    let next: number;
-    if (event.key === "ArrowDown" || event.key === "ArrowRight") next = (index + 1) % features.length;
-    else if (event.key === "ArrowUp" || event.key === "ArrowLeft") next = (index - 1 + features.length) % features.length;
-    else if (event.key === "Home") next = 0;
-    else if (event.key === "End") next = features.length - 1;
-    else return;
-
-    event.preventDefault();
-    setActive(next);
-    tabRefs.current[next]?.focus();
-  }
-
   return (
     <section id="features" className={styles.features} aria-labelledby="features-title">
-      <div className={styles.container + " " + styles.featureLayout}>
-        <div className={styles.featureCopy}>
+      <div className={styles.container}>
+        <div className={styles.featureSectionHeading}>
           <p className={styles.featureLabel}>듀잇 앱</p>
           <h2 id="features-title">찾아둔 기회,<br />놓치지 않도록.</h2>
           <p className={styles.featureIntro}>발견한 순간부터 참여하는 날까지 챙겨드려요.</p>
-          <div className={styles.featureTabs} role="tablist" aria-label="듀잇 앱 기능" aria-orientation="vertical">
-            {features.map((feature, index) => (
-              <button
-                key={feature.id}
-                type="button"
-                role="tab"
-                id={"feature-tab-" + feature.id}
-                aria-controls={"feature-panel-" + feature.id}
-                aria-selected={active === index}
-                tabIndex={active === index ? 0 : -1}
-                ref={(element) => { tabRefs.current[index] = element; }}
-                onClick={() => setActive(index)}
-                onKeyDown={(event) => handleKeyDown(event, index)}
-              >
-                <span className={styles.featureNumber}>0{index + 1}</span>
-                <span><strong>{feature.title}</strong>{active === index && <span className={styles.featureDescription}>{feature.description}</span>}</span>
-              </button>
-            ))}
-          </div>
-          <a href="#download" className={styles.textLink + " " + styles.featureLink}>앱에서 만나보기 <ArrowRight size={19} strokeWidth={1.5} aria-hidden /></a>
         </div>
-        <div className={styles.featureDemo}>
-          {features.map((feature, index) => (
-            <div
-              key={feature.id}
-              id={"feature-panel-" + feature.id}
-              role="tabpanel"
-              aria-labelledby={"feature-tab-" + feature.id}
-              hidden={active !== index}
-              tabIndex={0}
-              className={styles.featurePanel}
-            >
-              <div className={styles.demoSurface}>
-                {feature.id === "bookmarks"
-                  ? <BookmarkPreview events={events} jobs={jobs} />
-                  : feature.id === "calendar"
-                    ? <CalendarPreview />
-                    : <NotificationPreview />}
-              </div>
+        <FeatureCarousel
+          ariaLabel="듀잇 앱 기능"
+          idPrefix="home-feature"
+          items={features}
+          initialIndex={2}
+          classNames={{
+            root: styles.featureCarousel,
+            copy: styles.featureCarouselCopy,
+            copyContent: styles.featureCarouselCopyContent,
+            tabList: styles.featureCarouselTabs,
+            tab: styles.featureCarouselTab,
+            viewport: styles.featureCarouselViewport,
+            slide: styles.featureCarouselSlide,
+            controls: styles.featureCarouselControls,
+            control: styles.featureCarouselControl,
+          }}
+          renderCopy={(feature, index) => (
+            <>
+              <span className={styles.featureCarouselStep}>0{index + 1}</span>
+              <h3>{feature.title}</h3>
+              <p>{feature.description}</p>
+            </>
+          )}
+          renderTab={(feature) => feature.title}
+          renderSlide={(feature) => (
+            <div className={styles.demoSurface}>
+              {feature.id === "bookmarks"
+                ? <BookmarkPreview events={events} jobs={jobs} />
+                : feature.id === "calendar"
+                  ? <CalendarPreview />
+                  : <NotificationPreview />}
             </div>
-          ))}
-        </div>
+          )}
+        />
+        <a href="#download" className={styles.textLink + " " + styles.featureLink}>앱에서 만나보기 <ArrowRight size={19} strokeWidth={1.5} aria-hidden /></a>
       </div>
     </section>
   );
