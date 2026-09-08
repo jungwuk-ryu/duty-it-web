@@ -36,9 +36,9 @@ export default function EventsDiscovery({ categoryExplore, events, onExplore }: 
             <section className="flex flex-col items-center gap-7 py-6 text-center sm:gap-9 sm:py-10" aria-labelledby="events-heading">
                 <header className="flex flex-col gap-3">
                     <h1 id="events-heading" tabIndex={-1} className="text-balance text-3xl font-bold tracking-tight text-foreground outline-none sm:text-5xl sm:leading-tight">
-                        나의 다음 <span className="text-brand">간호 경험</span>을 찾아보세요
+                        나의 다음 <span className="text-brand">간호 대외활동</span>을 찾아보세요
                     </h1>
-                    <p className="text-sm leading-7 text-muted-foreground sm:text-base">배움부터 새로운 도전까지, 나에게 맞는 행사를 한곳에서.</p>
+                    <p className="text-sm leading-7 text-muted-foreground sm:text-base">배움부터 새로운 도전까지, 나에게 맞는 행사를 한곳에서 찾아봐요.</p>
                 </header>
                 <EventSearch
                     hero

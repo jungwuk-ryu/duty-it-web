@@ -1,4 +1,5 @@
 import { buttonVariants } from "@/src/components/ui/button";
+import { BookmarkIconButton } from "@/src/components/ui/bookmark-icon-button";
 import { fetchJobPosting, JobPostingsFetchError } from "@/src/lib/api/jobs";
 import { getJobDday, getJobDeadlineLabel, getJobEmploymentSummary, getJobTitle } from "@/src/lib/jobs";
 import type { JobPosting } from "@/src/lib/schemas/job";
@@ -64,6 +65,7 @@ export default async function JobPostingPage({ params }: Props) {
                     </p>
                     <h1 className="mt-2 text-2xl font-bold leading-snug text-foreground md:text-3xl">{getJobTitle(job)}</h1>
                     <div className="mt-6 flex flex-wrap gap-2">
+                        <BookmarkIconButton kind="jobs" itemId={job.id} title={getJobTitle(job)} initialSaved={job.isBookmarked} />
                         {applicationUrl && (
                             <a href={applicationUrl} target="_blank" rel="noreferrer" className={buttonVariants({ className: "h-10 bg-primary text-white hover:bg-primary/90" })}>
                                 고용24에서 지원하기

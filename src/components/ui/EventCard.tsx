@@ -4,6 +4,7 @@ import CategoryTag from "./EventTypeTag";
 import Link from "next/link";
 import type { MouseEvent } from "react";
 import { EventStatusLabel } from "@/src/lib/event-labels";
+import { BookmarkIconButton } from "./bookmark-icon-button";
 
 const KST_FORMATTER = new Intl.DateTimeFormat("ko-KR", {
     timeZone: "Asia/Seoul",
@@ -33,6 +34,7 @@ export default function EventCard({ event, eager = false, onHostClick, priority 
                     className="object-cover transition duration-500 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
+                <BookmarkIconButton kind="events" itemId={event.id} title={event.title} initialSaved={event.isBookmarked} className="absolute right-3 top-3 rounded-full bg-white/95 text-slate-800 shadow-sm" />
                 <Link
                     href={`/visitEvent/${event.id}`}
                     aria-label={`${event.title} 바로가기`}

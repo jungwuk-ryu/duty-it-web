@@ -4,22 +4,13 @@ import {
   getApp,
   getApps,
   initializeApp,
-  type FirebaseOptions,
 } from "firebase/app";
 import {
   getAuth,
   GoogleAuthProvider,
   OAuthProvider,
 } from "firebase/auth";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyCQNadOPVyW9ly6JCP7hEqQz7Az_0Srrdo",
-  authDomain: "duty-it.firebaseapp.com",
-  projectId: "duty-it",
-  storageBucket: "duty-it.firebasestorage.app",
-  messagingSenderId: "348194173787",
-  appId: "1:348194173787:web:351a6728a7c86facd2e07e",
-} satisfies FirebaseOptions;
+import { firebaseConfig } from "./config";
 
 export const firebaseApp =
   getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);

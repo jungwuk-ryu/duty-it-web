@@ -2,27 +2,19 @@
 
 import { BorderBeam } from "@/src/components/ui/border-beam-search";
 import { Button } from "@/src/components/ui/button";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuRadioGroup,
-    DropdownMenuRadioItem,
-    DropdownMenuTrigger,
-} from "@/src/components/ui/dropdown-menu";
-import { ChevronDown, Search } from "lucide-react";
+import { SelectDropdown, type SelectDropdownOption } from "@/src/components/ui/select-dropdown";
+import { Search } from "lucide-react";
 import Link from "next/link";
-import { useId, useState } from "react";
-
-type Option = { value: string; label: string };
+import { useState } from "react";
 
 type Props = {
     searchKeyword: string;
     workRegion: string;
     employmentType: string;
     closeType: string;
-    workRegionOptions: readonly Option[];
-    employmentTypeOptions: readonly Option[];
-    closeTypeOptions: readonly Option[];
+    workRegionOptions: readonly SelectDropdownOption[];
+    employmentTypeOptions: readonly SelectDropdownOption[];
+    closeTypeOptions: readonly SelectDropdownOption[];
 };
 
 export default function JobFiltersForm({
@@ -34,6 +26,10 @@ export default function JobFiltersForm({
     employmentTypeOptions,
     closeTypeOptions,
 }: Props) {
+    const [selectedWorkRegion, setSelectedWorkRegion] = useState(workRegion);
+    const [selectedEmploymentType, setSelectedEmploymentType] = useState(employmentType);
+    const [selectedCloseType, setSelectedCloseType] = useState(closeType);
+
     return (
         <form action="/jobs" className="flex flex-col gap-5">
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_160px_160px_160px]">
@@ -46,9 +42,9 @@ export default function JobFiltersForm({
                         </span>
                     </BorderBeam>
                 </label>
-                <DropdownField label="근무 지역" name="region" options={workRegionOptions} value={workRegion} />
-                <DropdownField label="고용 형태" name="employmentType" options={employmentTypeOptions} value={employmentType} />
-                <DropdownField label="마감 방식" name="closeType" options={closeTypeOptions} value={closeType} />
+                <SelectDropdown label="근무 지역" name="region" options={workRegionOptions} value={selectedWorkRegion} onValueChange={setSelectedWorkRegion} />
+                <SelectDropdown label="고용 형태" name="employmentType" options={employmentTypeOptions} value={selectedEmploymentType} onValueChange={setSelectedEmploymentType} />
+                <SelectDropdown label="마감 방식" name="closeType" options={closeTypeOptions} value={selectedCloseType} onValueChange={setSelectedCloseType} />
             </div>
 
             <div className="flex flex-wrap items-center justify-end gap-2 border-t border-border/60 pt-4">
@@ -60,35 +56,5 @@ export default function JobFiltersForm({
                 </Button>
             </div>
         </form>
-    );
-}
-
-function DropdownField({ label, name, options, value }: { label: string; name: string; options: readonly Option[]; value: string }) {
-    const [selectedValue, setSelectedValue] = useState(value);
-    const labelId = useId();
-    const selectedOption = options.find((option) => option.value === selectedValue) ?? options[0];
-
-    return (
-        <div className="flex flex-col gap-2 text-sm font-semibold text-foreground">
-            <span id={labelId}>{label}</span>
-            <input type="hidden" name={name} value={selectedValue} />
-            <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <Button type="button" variant="outline" aria-labelledby={labelId} className="h-11 w-full justify-between rounded-lg border-input px-3 text-base font-normal text-foreground hover:border-subtle-foreground hover:bg-canvas focus-visible:outline-brand">
-                        {selectedOption.label}
-                        <ChevronDown className="-mr-1 ml-2 size-4 text-muted-foreground" strokeWidth={2} aria-hidden="true" />
-                    </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-[--radix-dropdown-menu-trigger-width] border-border bg-background p-1 text-foreground">
-                    <DropdownMenuRadioGroup value={selectedValue} onValueChange={setSelectedValue}>
-                        {options.map((option) => (
-                            <DropdownMenuRadioItem key={option.value || "all"} value={option.value} className="cursor-pointer rounded-md py-2 pl-8 pr-3 text-sm font-medium focus:bg-muted focus:text-foreground">
-                                {option.label}
-                            </DropdownMenuRadioItem>
-                        ))}
-                    </DropdownMenuRadioGroup>
-                </DropdownMenuContent>
-            </DropdownMenu>
-        </div>
     );
 }
