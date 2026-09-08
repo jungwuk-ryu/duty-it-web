@@ -40,7 +40,7 @@ export function BookmarkIconButton({ kind, itemId, title, className, initialSave
 
     return (
         <div className={cn("relative flex shrink-0 items-center justify-center", className)}>
-            <Button type="button" variant="ghost" size="icon" className="size-11" onClick={() => void handleClick()}
+            <Button type="button" variant="ghost" size="icon" className="size-11 rounded-full" onClick={() => void handleClick()}
                 disabled={pending} aria-pressed={saved} aria-label={label} aria-busy={pending} title={entry?.error ?? label}>
                 <motion.span className="relative flex items-center justify-center" initial={false}
                     animate={{ scale: reducedMotion ? 1 : saved ? 1.1 : 1 }}
