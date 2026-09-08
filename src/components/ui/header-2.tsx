@@ -45,12 +45,12 @@ export function Header() {
     return (
         <header
             className={cn(
-                "sticky top-0 z-50 mx-auto w-full border-b border-transparent bg-white/90 backdrop-blur-md transition-[width,max-width,top,border-radius,background-color,box-shadow,border-color] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] md:max-w-[calc(100%-0px)] md:rounded-none",
+                "sticky top-0 z-50 mx-auto w-full border border-transparent bg-white/90 backdrop-blur-md transition-[width,max-width,top,border-radius,background-color,box-shadow,border-color] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] md:max-w-[calc(100%-0px)] md:rounded-none",
                 scrolled && !open && "top-3 w-[calc(100%-1.5rem)] rounded-2xl border border-white/80 bg-white/80 shadow-xl shadow-slate-950/[0.08] backdrop-blur-xl md:top-4 md:w-[calc(100%-2rem)] md:max-w-5xl md:rounded-3xl",
                 open && "border-gray-200/80 bg-white/90",
             )}
         >
-            <nav className={cn("relative z-10 mx-auto flex h-16 w-full max-w-[1280px] items-center justify-between px-5 transition-all md:h-20 md:px-8 lg:px-10", scrolled && "md:h-16 lg:px-8")} aria-label="주요 메뉴">
+            <nav className="relative z-10 mx-auto flex h-16 w-full max-w-[1280px] items-center justify-between px-5 transition-[padding] duration-500 md:h-20 md:px-8 lg:px-10" aria-label="주요 메뉴">
                 <Link href="/" className="flex items-center gap-1.5 text-xl font-bold tracking-tight text-[#242323]" onClick={closeMenu}>
                     <Image src="/app-icon-transparent.png" alt="" width={36} height={36} className="size-9" priority />
                     듀잇

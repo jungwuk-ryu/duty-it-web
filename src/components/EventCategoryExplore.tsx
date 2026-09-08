@@ -10,7 +10,7 @@ type EventCategory = {
     description: string;
     eventType: EventType;
     href: string;
-    id: "volunteer" | "supporters" | "conference";
+    id: "volunteer" | "supporters" | "conference" | "continuing-education";
     title: string;
 };
 
@@ -42,17 +42,15 @@ const EVENT_CATEGORIES = [
         href: "/events?types=CONFERENCE",
         eventType: "CONFERENCE",
     },
+    {
+        id: "continuing-education",
+        title: "보수교육",
+        description: "실무 역량을 채우는 시간",
+        actionLabel: "행사 보기",
+        href: "/events?types=CONTINUING_EDUCATION",
+        eventType: "CONTINUING_EDUCATION",
+    },
 ] as const satisfies readonly EventCategory[];
-
-const JOB_CATEGORY = {
-    title: "채용",
-    actionLabel: "채용 보기",
-    href: "/jobs",
-    images: [{
-        src: "/images/home/category-jobs.webp",
-        title: "나에게 맞는 간호 일자리",
-    }],
-} as const;
 
 export default function EventCategoryExplore() {
     return (
@@ -86,7 +84,6 @@ async function EventCategoryExploreContent() {
                         title={category.title}
                     />
                 ))}
-                <CategoryExploreCard {...JOB_CATEGORY} />
             </div>
         </section>
     );

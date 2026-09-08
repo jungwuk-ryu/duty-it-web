@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { type ChangeEvent, type FocusEvent, type FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { type ChangeEvent, type DragEvent, type FocusEvent, type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { Check, ChevronDown, Upload } from "lucide-react";
 
 import { Button } from "@/src/components/ui/button";
@@ -722,6 +722,39 @@ function FileField({
     error?: string;
     onChange: (file: File | null) => void;
 }) {
+    const [isDragging, setIsDragging] = useState(false);
+
+    function hasFiles(event: DragEvent<HTMLLabelElement>) {
+        return Array.from(event.dataTransfer.types).includes("Files");
+    }
+
+    function handleDragEnter(event: DragEvent<HTMLLabelElement>) {
+        if (!hasFiles(event)) return;
+        event.preventDefault();
+        setIsDragging(true);
+    }
+
+    function handleDragOver(event: DragEvent<HTMLLabelElement>) {
+        if (!hasFiles(event)) return;
+        event.preventDefault();
+        event.dataTransfer.dropEffect = "copy";
+        setIsDragging(true);
+    }
+
+    function handleDragLeave(event: DragEvent<HTMLLabelElement>) {
+        if (!hasFiles(event)) return;
+        const nextTarget = event.relatedTarget;
+        if (nextTarget instanceof Node && event.currentTarget.contains(nextTarget)) return;
+        setIsDragging(false);
+    }
+
+    function handleDrop(event: DragEvent<HTMLLabelElement>) {
+        if (!hasFiles(event)) return;
+        event.preventDefault();
+        setIsDragging(false);
+        onChange(event.dataTransfer.files.item(0));
+    }
+
     return (
         <div className="flex flex-col gap-2">
             <label htmlFor={id} className="text-sm font-semibold text-slate-800">
@@ -731,14 +764,21 @@ function FileField({
                 className={cn(
                     "flex cursor-pointer items-center gap-3 rounded-xl border border-dashed bg-white px-4 py-3 transition-colors hover:border-brand/60",
                     error ? "border-red-400" : "border-gray-300",
+                    isDragging && "border-brand bg-red-50 ring-2 ring-brand/15",
                 )}
+                onDragEnter={handleDragEnter}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
             >
                 <Upload className="size-5 shrink-0 text-brand" aria-hidden />
                 <span className="min-w-0 flex-1">
                     <span className="block truncate text-sm font-medium text-slate-800">
                         {file ? file.name : "이미지 파일 선택"}
                     </span>
-                    <span className="mt-1 block text-xs leading-5 text-slate-500">{description}</span>
+                    <span className="mt-1 block text-xs leading-5 text-slate-500" aria-live="polite">
+                        {isDragging ? "여기에 놓아 추가하세요." : description}
+                    </span>
                 </span>
                 <span className="shrink-0 rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-700">선택</span>
                 <input
@@ -784,7 +824,7 @@ function EventSubmissionPreview({
                 <p className="text-xs leading-5 text-slate-500">입력한 내용이 행사 목록에서 이렇게 보입니다.</p>
             </div>
 
-            <article className="mt-4 flex max-w-sm flex-col overflow-hidden rounded-2xl bg-white shadow-[0_8px_22px_rgba(15,23,42,0.10)]">
+            <article className="mx-auto mt-4 flex max-w-sm flex-col overflow-hidden rounded-2xl bg-white shadow-[0_8px_22px_rgba(15,23,42,0.10)]">
                 <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
                     {/* blob URL은 Next Image 최적화 대상이 아니므로 로컬 미리보기로만 사용합니다. */}
                     {/* eslint-disable-next-line @next/next/no-img-element */}

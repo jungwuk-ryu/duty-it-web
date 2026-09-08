@@ -6,14 +6,17 @@ import HomeHeroCta from "./HomeHeroCta";
 import styles from "./home.module.css";
 
 type HomeHeroProps = {
-  featuredEvent: HomeEventPreview | null;
+  featuredEvents: HomeEventPreview[];
 };
 
-export default function HomeHero({ featuredEvent }: HomeHeroProps) {
-  const eventTitle = featuredEvent?.title ?? "최근 등록된 행사";
-  const eventType = featuredEvent?.eventType ?? "간호 행사";
-  const eventHost = featuredEvent?.hostName ?? "듀잇";
-  const eventDate = featuredEvent?.date ?? "행사 정보를 불러오는 중";
+const FALLBACK_PHONE_EVENTS: HomeEventPreview[] = [
+  { id: -1, title: "2026 간호 실무 심포지엄", thumbnail: null, eventType: "학술대회", hostName: "듀잇", date: "일정 확인" },
+  { id: -2, title: "간호사를 위한 보수교육", thumbnail: null, eventType: "보수교육", hostName: "듀잇", date: "일정 확인" },
+  { id: -3, title: "함께하는 의료 봉사", thumbnail: null, eventType: "봉사", hostName: "듀잇", date: "일정 확인" },
+];
+
+export default function HomeHero({ featuredEvents }: HomeHeroProps) {
+  const phoneEvents = featuredEvents.length > 0 ? featuredEvents.slice(0, 3) : FALLBACK_PHONE_EVENTS;
 
   return (
     <section className={styles.hero} aria-labelledby="home-title">
@@ -61,24 +64,27 @@ export default function HomeHero({ featuredEvent }: HomeHeroProps) {
                     <span><Image src="/images/app-ui/filter.png" alt="" width={16} height={16} />필터</span>
                     <span className={styles.phoneSort}>최신순<Image src="/images/app-ui/filter_sort.png" alt="" width={16} height={16} /></span>
                   </div>
-                  <article className={styles.phoneEvent}>
-                    <div className={styles.phonePoster}>
-                      <EventThumbnail src={featuredEvent?.thumbnail ?? null} alt="" eager className={styles.phoneEventThumbnail} />
-                      <Image src="/images/app-ui/bookmark_red.png" alt="" width={18} height={18} className={styles.phoneEventBookmark} />
-                    </div>
-                    <div className={styles.phoneEventCopy}>
-                      <strong>{eventTitle}</strong>
-                      <p><span>카테고리</span>{eventType}</p>
-                      <p><span>주최</span>{eventHost}</p>
-                      <p><span>일시</span>{eventDate}</p>
-                    </div>
-                  </article>
+                  <div className={styles.phoneEventList}>
+                    {phoneEvents.map((event, index) => (
+                      <article className={styles.phoneEvent} key={event.id}>
+                        <div className={styles.phonePoster}>
+                          <EventThumbnail src={event.thumbnail} alt="" eager={index === 0} className={styles.phoneEventThumbnail} />
+                        </div>
+                        <div className={styles.phoneEventCopy}>
+                          <strong>{event.title}</strong>
+                          <p><span>{event.eventType}</span>{event.hostName}</p>
+                          <time className={styles.phoneEventDate}>{event.date}</time>
+                        </div>
+                        <Image src="/images/app-ui/bookmark_red.png" alt="" width={14} height={14} className={styles.phoneEventBookmark} />
+                      </article>
+                    ))}
+                  </div>
                 </div>
                 <nav className={styles.phoneNav} aria-label="듀잇 앱 하단 메뉴">
-                  <span data-selected="true"><Image src="/images/app-ui/paper.png" alt="" width={20} height={20} />행사</span>
-                  <span><Image src="/images/app-ui/job.png" alt="" width={20} height={20} />채용</span>
-                  <span><Image src="/images/app-ui/bookmark.png" alt="" width={20} height={20} />북마크</span>
-                  <span><Image src="/images/app-ui/calendar.png" alt="" width={20} height={20} />캘린더</span>
+                  <span data-selected="true"><Image src="/images/app-ui/paper.png" alt="" width={16} height={16} />행사</span>
+                  <span><Image src="/images/app-ui/job.png" alt="" width={16} height={16} />채용</span>
+                  <span><Image src="/images/app-ui/bookmark.png" alt="" width={16} height={16} />북마크</span>
+                  <span><Image src="/images/app-ui/calendar.png" alt="" width={16} height={16} />캘린더</span>
                 </nav>
                 <div className={styles.phoneHomeBar} />
               </div>
