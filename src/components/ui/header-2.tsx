@@ -6,7 +6,7 @@ import { useScroll } from "@/src/components/ui/use-scroll";
 import { cn } from "@/src/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import AccountMenu from "../AccountMenu";
 
 const links = [
@@ -18,11 +18,25 @@ const links = [
 export function Header() {
     const [open, setOpen] = useState(false);
     const scrolled = useScroll(24);
+    const menuButtonRef = useRef<HTMLButtonElement>(null);
 
     useEffect(() => {
-        document.body.style.overflow = open ? "hidden" : "";
+        if (!open) return;
+        const previousOverflow = document.body.style.overflow;
+        document.body.style.overflow = "hidden";
+        const desktop = window.matchMedia("(min-width: 768px)");
+        const closeOnDesktop = () => { if (desktop.matches) setOpen(false); };
+        const closeOnEscape = (event: KeyboardEvent) => {
+            if (event.key !== "Escape") return;
+            setOpen(false);
+            menuButtonRef.current?.focus();
+        };
+        desktop.addEventListener("change", closeOnDesktop);
+        document.addEventListener("keydown", closeOnEscape);
         return () => {
-            document.body.style.overflow = "";
+            document.body.style.overflow = previousOverflow;
+            desktop.removeEventListener("change", closeOnDesktop);
+            document.removeEventListener("keydown", closeOnEscape);
         };
     }, [open]);
 
@@ -36,8 +50,8 @@ export function Header() {
                 open && "border-gray-200/80 bg-white/90",
             )}
         >
-            <nav className={cn("relative z-10 flex h-16 w-full items-center justify-between px-5 transition-all md:px-8 lg:px-10", scrolled && "lg:px-8")} aria-label="주요 메뉴">
-                <Link href="/" className="flex items-center gap-1.5 text-xl font-bold tracking-tight text-brand" onClick={closeMenu}>
+            <nav className={cn("relative z-10 mx-auto flex h-16 w-full max-w-[1280px] items-center justify-between px-5 transition-all md:h-20 md:px-8 lg:px-10", scrolled && "md:h-16 lg:px-8")} aria-label="주요 메뉴">
+                <Link href="/" className="flex items-center gap-1.5 text-xl font-bold tracking-tight text-[#242323]" onClick={closeMenu}>
                     <Image src="/app-icon-transparent.png" alt="" width={36} height={36} className="size-9" priority />
                     듀잇
                 </Link>
@@ -49,18 +63,20 @@ export function Header() {
                         </Link>
                     ))}
                     <AccountMenu />
-                    <Link href="/#download" className={buttonVariants({ className: "ml-2 bg-brand text-white hover:bg-brand/90" })}>
+                    <Link href="/#download" className={buttonVariants({ className: "ml-3 h-10 rounded-xl bg-brand px-5 text-white hover:bg-brand/90" })}>
                         앱 다운로드
                     </Link>
                 </div>
 
                 <Button
+                    ref={menuButtonRef}
                     type="button"
                     size="icon"
                     variant="outline"
                     className="border-gray-300 bg-white text-gray-800 md:hidden"
                     aria-label={open ? "메뉴 닫기" : "메뉴 열기"}
                     aria-expanded={open}
+                    aria-controls="mobile-navigation"
                     onClick={() => setOpen((current) => !current)}
                 >
                     <MenuToggleIcon open={open} className="size-5" strokeWidth={2} aria-hidden="true" />
@@ -68,6 +84,7 @@ export function Header() {
             </nav>
 
             <div
+                id="mobile-navigation"
                 className={cn("absolute inset-x-0 top-16 z-0 h-[calc(100dvh-4rem)] overflow-y-auto border-y border-gray-200 bg-white md:hidden", open ? "block" : "hidden")}
                 style={{ backgroundColor: "#FFFFFF" }}
             >
