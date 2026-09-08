@@ -12,7 +12,7 @@ import AccountMenu from "../AccountMenu";
 const links = [
     { label: "행사 목록", href: "/events" },
     { label: "채용 공고", href: "/jobs" },
-    { label: "내 북마크", href: "/bookmarks" },
+    { label: "북마크", href: "/bookmarks" },
 ] as const;
 
 export function Header() {

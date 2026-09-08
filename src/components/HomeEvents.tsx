@@ -11,10 +11,10 @@ export default function HomeEvents() {
     <section id="upcoming-events" aria-labelledby="upcoming-events-title" className={styles.events}>
       <header className={styles.sectionHeading}>
         <div>
-          <h2 id="upcoming-events-title">지금, 눈여겨볼 기회</h2>
-          <p>배움이 필요한 날에도, 새로운 경험이 끌리는 날에도.</p>
+          <h2 id="upcoming-events-title">방금, 올라온 행사</h2>
+          <p>최근 올라온 행사와 대외활동을 모아뒀어요.</p>
         </div>
-        <Link href="/events?field=START_DATE&statusGroup=ACTIVE" prefetch={false} className={styles.textLink}>
+        <Link href="/events?field=CREATED_AT&statusGroup=ACTIVE" prefetch={false} className={styles.textLink}>
           전체 행사 보기 <ArrowUpRight size={20} strokeWidth={1.6} aria-hidden />
         </Link>
       </header>
@@ -32,11 +32,11 @@ export default function HomeEvents() {
 
 async function HomeEventsContent() {
   const groups: HomeEventGroup[] = await Promise.all(HOME_EVENT_GROUPS.map(async (group) => {
-    const params = new URLSearchParams({ field: "START_DATE", statusGroup: "ACTIVE" });
+    const params = new URLSearchParams({ field: "CREATED_AT", statusGroup: "ACTIVE" });
     if (group.types.length > 0) params.set("types", group.types.join(","));
     const base = { id: group.id, label: group.label, href: `/events?${params.toString()}` };
     try {
-      const { content } = await fetchEvents({ field: "START_DATE", statusGroup: "ACTIVE", size: 4, types: [...group.types] });
+      const { content } = await fetchEvents({ field: "CREATED_AT", statusGroup: "ACTIVE", size: 4, types: [...group.types] });
       return { ...base, events: content };
     } catch (error) {
       console.error("Failed to load home event group", { group: group.id, message: error instanceof Error ? error.message : "Unknown error" });

@@ -1,72 +1,90 @@
 import Image from "next/image";
-import Link from "next/link";
-import { ArrowDown, ArrowRight, Bell, Bookmark, BriefcaseBusiness, CalendarDays, Check, Search, Signal, Wifi, BatteryFull } from "lucide-react";
-import CalendarPreview from "./CalendarPreview";
+import { ArrowDown, BatteryFull, Signal, Wifi } from "lucide-react";
+import EventThumbnail from "@/src/components/ui/EventThumbnail";
+import type { HomeEventPreview } from "./home-preview-data";
+import HomeHeroCta from "./HomeHeroCta";
 import styles from "./home.module.css";
 
-export default function HomeHero() {
+type HomeHeroProps = {
+  featuredEvent: HomeEventPreview | null;
+};
+
+export default function HomeHero({ featuredEvent }: HomeHeroProps) {
+  const eventTitle = featuredEvent?.title ?? "최근 등록된 행사";
+  const eventType = featuredEvent?.eventType ?? "간호 행사";
+  const eventHost = featuredEvent?.hostName ?? "듀잇";
+  const eventDate = featuredEvent?.date ?? "행사 정보를 불러오는 중";
+
   return (
     <section className={styles.hero} aria-labelledby="home-title">
-      <div className={`${styles.container} ${styles.heroLayout}`}>
+      <div className={styles.container + " " + styles.heroLayout}>
         <div className={styles.heroCopy}>
           <h1 id="home-title">간호의 내일을,<br /><span>발견하는 곳.</span></h1>
           <p className={styles.heroDescription}>
             <span>배우고 경험하고 나아가는 당신을 위해.</span>
-            <span>간호 행사부터 채용까지, 듀잇에서 만나보세요.</span>
+            <span>대외활동·행사를 듀잇에서 만나보세요.</span>
           </p>
           <div className={styles.heroActions}>
-            <Link href="/events" className={styles.primaryLink}>
-              기회 둘러보기 <ArrowRight size={20} strokeWidth={1.7} aria-hidden />
-            </Link>
+            <HomeHeroCta />
             <a href="#features" className={styles.textLink}>
               듀잇 알아보기 <ArrowDown size={18} strokeWidth={1.7} aria-hidden />
             </a>
           </div>
-          <p className={styles.heroNote}>간호사와 간호대학생을 위한 기회 모음</p>
         </div>
-        <figure className={styles.heroFigure} aria-label="듀잇 앱의 행사 탐색, 북마크, 캘린더 기능을 표현한 화면 예시">
+        <figure className={styles.heroFigure} aria-label="실제 듀잇 앱의 행사 탐색 화면을 반영한 미리보기">
           <div className={styles.productStage} aria-hidden="true">
             <div className={styles.heroGlow} />
-            <div className={styles.floatingCalendar}><CalendarPreview compact /></div>
             <div className={styles.phone}>
               <div className={styles.phoneScreen}>
                 <div className={styles.phoneStatus}>
-                  <span>9:41</span><div className={styles.phoneIsland} />
+                  <span>9:41</span>
+                  <div className={styles.phoneIsland} />
                   <span><Signal size={12} /><Wifi size={12} /><BatteryFull size={16} /></span>
                 </div>
                 <div className={styles.phoneApp}>
                   <div className={styles.phoneBrand}>
-                    <span><Image src="/app-icon-transparent.png" alt="" width={25} height={25} />듀잇</span>
-                    <Bell size={17} strokeWidth={1.6} />
+                    <span>
+                      <Image src="/images/app-ui/logo.png" alt="" width={16} height={16} />
+                      듀잇 - Du it!
+                    </span>
+                    <span className={styles.phoneUtility}>
+                      <Image src="/images/app-ui/bell.png" alt="" width={16} height={20} />
+                      <Image src="/images/app-ui/hamburger.png" alt="" width={20} height={16} />
+                    </span>
                   </div>
-                  <p className={styles.phoneTitle}>어떤 기회를<br />찾고 있나요?</p>
-                  <div className={styles.phoneSearch}><Search size={13} /><span>관심 있는 행사를 찾아보세요</span></div>
-                  <div className={styles.phoneTabs}><span>전체</span><span>학술대회</span><span>봉사</span><span>교육</span></div>
-                  <div className={styles.phoneEvent}>
+                  <div className={styles.phoneSearch}>
+                    <Image src="/images/app-ui/search.png" alt="" width={16} height={16} />
+                    <span>찾으시는 행사가 있나요?</span>
+                  </div>
+                  <div className={styles.phoneFilters}>
+                    <span data-selected="true">전체</span>
+                    <span><Image src="/images/app-ui/filter.png" alt="" width={16} height={16} />필터</span>
+                    <span className={styles.phoneSort}>최신순<Image src="/images/app-ui/filter_sort.png" alt="" width={16} height={16} /></span>
+                  </div>
+                  <article className={styles.phoneEvent}>
                     <div className={styles.phonePoster}>
-                      <Image src="/images/home/next-chapter.webp" alt="" fill sizes="260px" priority className={styles.posterImage} />
-                      <div><strong>간호의<br />다음 장</strong><span>배움이 모여,<br />내일의 간호가 됩니다</span></div>
+                      <EventThumbnail src={featuredEvent?.thumbnail ?? null} alt="" eager className={styles.phoneEventThumbnail} />
+                      <Image src="/images/app-ui/bookmark_red.png" alt="" width={18} height={18} className={styles.phoneEventBookmark} />
                     </div>
                     <div className={styles.phoneEventCopy}>
-                      <span>새로운 배움</span><strong>간호 활동과 새로운 배움</strong>
-                      <p><CalendarDays size={12} /> 나에게 맞는 기회를 만나보세요</p>
+                      <strong>{eventTitle}</strong>
+                      <p><span>카테고리</span>{eventType}</p>
+                      <p><span>주최</span>{eventHost}</p>
+                      <p><span>일시</span>{eventDate}</p>
                     </div>
-                  </div>
-                  <div className={styles.phoneSaved}><Check size={13} /> 관심 있는 기회를 모아보세요 <Bookmark size={13} /></div>
+                  </article>
                 </div>
-                <div className={styles.phoneNav}>
-                  <span><CalendarDays size={18} />행사</span><span><BriefcaseBusiness size={18} />채용</span>
-                  <span><Bookmark size={18} />북마크</span><span><CalendarDays size={18} />캘린더</span>
-                </div>
+                <nav className={styles.phoneNav} aria-label="듀잇 앱 하단 메뉴">
+                  <span data-selected="true"><Image src="/images/app-ui/paper.png" alt="" width={20} height={20} />행사</span>
+                  <span><Image src="/images/app-ui/job.png" alt="" width={20} height={20} />채용</span>
+                  <span><Image src="/images/app-ui/bookmark.png" alt="" width={20} height={20} />북마크</span>
+                  <span><Image src="/images/app-ui/calendar.png" alt="" width={20} height={20} />캘린더</span>
+                </nav>
                 <div className={styles.phoneHomeBar} />
               </div>
             </div>
-            <div className={styles.floatingBookmark}>
-              <Bookmark size={27} strokeWidth={1.5} /><strong>발견한 기회를 내 것으로</strong>
-              <span>관심 있는 행사와 채용을 저장해요</span>
-            </div>
           </div>
-          <figcaption className={styles.heroCaption}>앱 화면 예시</figcaption>
+          <figcaption className={styles.heroCaption}>듀잇 앱 화면</figcaption>
         </figure>
       </div>
     </section>
