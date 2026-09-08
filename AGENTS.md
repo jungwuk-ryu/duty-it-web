@@ -56,6 +56,8 @@
 
 - `src/app` 아래의 라우트와 레이아웃은 Next.js App Router 규칙을 따릅니다.
 - 재사용 가능한 UI는 `src/components` 아래에 두고, 범용 UI 조각은 `src/components/ui` 패턴을 따릅니다.
+- 새 단일 선택형 드롭다운(필터/폼)은 채용 공고 필터를 기준으로 만든 `src/components/ui/select-dropdown.tsx`의 `SelectDropdown`을 우선 재사용하며, 같은 Radix 구조와 스타일을 화면별로 복제하지 않습니다.
+- 계정 액션 메뉴, 복수 선택, 다단 필터처럼 상호작용 방식이 다른 드롭다운은 `src/components/ui/dropdown-menu.tsx` 프리미티브를 조합하되 채용 공고 필터의 시각 스타일을 기준으로 맞춥니다.
 - API 호출과 데이터 스키마는 기존 `src/lib/api` 및 `src/lib/schemas` 구조를 우선 사용합니다.
 - TypeScript는 `strict` 설정을 전제로 작성하며, 불필요한 `any`와 non-null assertion을 피합니다.
 - 환경 변수에 의존하는 코드는 누락 가능성과 런타임 위치를 고려해 방어적으로 작성합니다.
@@ -66,3 +68,13 @@
 - 완료한 변경, 실행한 검증, 남은 위험이나 생략한 검증을 짧게 보고합니다.
 - 커밋을 만들었다면 커밋 해시와 메시지를 함께 알립니다.
 - 서브 에이전트 리뷰를 받았다면 주요 결과와 반영 여부를 요약합니다.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->
