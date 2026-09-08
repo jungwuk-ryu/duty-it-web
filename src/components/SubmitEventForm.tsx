@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { type ChangeEvent, type FocusEvent, type FormEvent, useEffect, useMemo, useRef, useState } from "react";
-import { ChevronDown, Upload } from "lucide-react";
+import { Check, ChevronDown, Upload } from "lucide-react";
 
 import { Button } from "@/src/components/ui/button";
 import { DateTimePicker } from "@/src/components/ui/date-time-picker";
@@ -103,7 +103,7 @@ export default function SubmitEventForm() {
             <div className="rounded-[2rem] border border-gray-200 bg-white p-6 shadow-[0_24px_80px_rgba(15,23,42,0.12)] sm:p-10">
                 <div className="mx-auto flex max-w-md flex-col items-center gap-5 text-center">
                     <span className="flex size-14 items-center justify-center rounded-2xl bg-brand text-xl font-bold text-white" aria-hidden>
-                        듀
+                        <Check className="size-8" strokeWidth={3} />
                     </span>
                     <div className="flex flex-col gap-2">
                         <h1 className="text-2xl font-bold tracking-tight text-slate-900">행사 제보가 접수되었어요</h1>
