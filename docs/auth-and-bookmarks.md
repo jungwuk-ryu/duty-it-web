@@ -11,7 +11,7 @@
 
 ## 로그인 정책과 보안
 
-1. Google/Apple 팝업은 Firebase의 메모리 저장 모드로 실행합니다. Firebase 갱신 토큰을 같은 origin의 `/api/auth/social`에 한 번 전달한 다음 브라우저 Firebase 상태를 지웁니다. 인증 토큰을 localStorage나 IndexedDB에 장기 보관하지 않습니다.
+1. Google/Apple 팝업은 Firebase의 메모리 저장 모드로 실행합니다. Firebase 갱신 토큰을 같은 origin의 `/api/auth/social`에 `text/plain` 원문 본문으로 한 번 전달한 다음 브라우저 Firebase 상태를 지웁니다. 인증 토큰을 localStorage나 IndexedDB에 장기 보관하지 않습니다.
 2. 웹 서버는 Firebase REST API에서 갱신 토큰을 교환하고, 그 결과의 ID 토큰을 기존 듀잇 소셜 인증 API에 전달합니다. Firebase UID와 듀잇 providerId를 비교해 계정을 연결합니다. 서로 다른 계정의 ID/갱신 토큰을 조합해 세션을 만들지 않습니다.
 3. 듀잇 액세스 토큰, Firebase 갱신 토큰, 사용자 식별 정보는 AES-256-GCM으로 암호화·인증한 쿠키에만 저장합니다. 운영 쿠키는 `__Host-duit_session`, `HttpOnly`, `Secure`, `SameSite=Lax`, `Path=/`이며 Domain을 지정하지 않습니다. 브라우저 응답 본문에는 사용자 ID와 닉네임만 반환합니다.
 4. 쿠키는 365일간 유지하고 자동 갱신할 때마다 기한을 연장합니다. 액세스 인증은 최대 55분마다 또는 API의 401 응답 시 갱신합니다. 이 시간은 사용자가 다시 로그인해야 하는 시간이 아닙니다. 며칠 뒤 접속하거나 브라우저를 다시 열어도 유효한 갱신 토큰으로 복원합니다.

@@ -98,7 +98,9 @@ export function checkSession(): Promise<void> {
 export async function signInSession(refreshToken: string) {
     return withAuthLock(async () => {
         const response = await request("/api/auth/social", {
-            method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ refreshToken }),
+            method: "POST",
+            headers: { "Content-Type": "text/plain; charset=utf-8" },
+            body: refreshToken,
         });
         const parsed = UserResponseSchema.extend({ isNewUser: z.boolean() }).parse(await responseJson(response));
         generation++;

@@ -86,6 +86,7 @@ export async function createSession(refreshToken: string, previous?: Session) {
     }
     const firebase = FirebaseRefreshSchema.parse(firebaseBody);
     if (previous && previous.uid !== firebase.user_id) throw new AuthError("다시 로그인해 주세요.", 401, true);
+    // The DuIt API binds @RequestBody String verbatim, so forward the verified ID token as raw text.
     const response = await upstreamFetch("/v1/auth/social", undefined, "POST", firebase.id_token);
     const auth = SocialResponseSchema.parse(await response.json());
     if (auth.user.providerId !== firebase.user_id || (previous && previous.user.id !== auth.user.id)) throw new AuthError("다시 로그인해 주세요.", 401, true);
