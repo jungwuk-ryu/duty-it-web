@@ -1,6 +1,6 @@
-import Image from "next/image";
 import Link from "next/link";
 import { Marquee } from "@/src/components/ui/3d-testimonails";
+import EventThumbnail from "@/src/components/ui/EventThumbnail";
 import { Event } from "@/src/lib/schemas/event";
 import { EventTypeLabel } from "@/src/lib/schemas/event-type";
 
@@ -65,16 +65,13 @@ function EventTickerCard({ event }: { event: Event }) {
             className="group/event block w-52 overflow-hidden rounded-2xl border border-border/80 bg-background shadow-[0_8px_18px_rgba(15,23,42,0.10)] transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_14px_24px_rgba(15,23,42,0.14)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2 sm:w-56"
         >
             <div className="relative h-20 overflow-hidden bg-muted sm:h-[5.5rem]">
-                {event.thumbnail ? (
-                    <Image
-                        src={event.thumbnail}
-                        alt=""
-                        fill
-                        sizes="(min-width: 640px) 224px, 208px"
-                        quality={70}
-                        className="object-cover transition duration-300 group-hover/event:scale-105"
-                    />
-                ) : null}
+                <EventThumbnail
+                    src={event.thumbnail}
+                    alt=""
+                    quality={70}
+                    sizes="(min-width: 640px) 224px, 208px"
+                    className="object-cover transition duration-300 group-hover/event:scale-105"
+                />
             </div>
             <div className="flex min-h-[6.5rem] flex-col gap-2 p-3">
                 <p className="line-clamp-2 text-sm font-bold leading-5 text-foreground">{event.title}</p>

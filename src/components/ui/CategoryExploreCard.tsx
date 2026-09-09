@@ -1,9 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import EventThumbnail from "./EventThumbnail";
 
 export type CategoryExploreImage = {
     src: string;
@@ -67,11 +67,9 @@ export default function CategoryExploreCard({
             aria-label={`${title} ${activeImage.title}. ${actionLabel}`}
             className="group relative isolate block min-h-[22rem] overflow-hidden rounded-[1.5rem] bg-slate-950 shadow-[0_14px_32px_rgba(15,23,42,0.16)] transition duration-500 hover:-translate-y-1 hover:shadow-[0_20px_46px_-16px_rgba(198,60,51,0.55)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-4 sm:min-h-[25rem] xl:min-h-[28rem]"
         >
-            <Image
-                key={activeImage.src}
+            <EventThumbnail
                 src={activeImage.src}
                 alt=""
-                fill
                 quality={70}
                 sizes="(min-width: 1280px) 25vw, (min-width: 640px) 50vw, 100vw"
                 className="animate-[category-image-fade_700ms_ease-out] object-cover transition-transform duration-700 ease-out motion-reduce:animate-none motion-reduce:transition-none group-hover:scale-105"
