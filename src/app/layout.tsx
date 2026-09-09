@@ -57,8 +57,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
+  eventModal,
 }: Readonly<{
   children: React.ReactNode;
+  eventModal: React.ReactNode;
 }>) {
   return (
     <html lang="ko" className={`${notoSansKR.className} scroll-smooth motion-reduce:scroll-auto`} data-scroll-behavior="smooth" suppressHydrationWarning>
@@ -68,10 +70,11 @@ export default function RootLayout({
         <ThemeProvider>
           <SessionProvider>
             <Header />
-            <AnimatedThemeToggle className="fixed bottom-6 right-6 z-50 bg-background/90 shadow-lg shadow-slate-950/10 backdrop-blur-sm" />
+            <AnimatedThemeToggle className="app-theme-toggle fixed bottom-6 right-6 z-50 bg-background/90 shadow-lg shadow-slate-950/10 backdrop-blur-sm" />
             <main className="flex-1 bg-canvas">
               {children}
             </main>
+            {eventModal}
             <Footer />
             <AndroidOnlySmartBanner />
           </SessionProvider>

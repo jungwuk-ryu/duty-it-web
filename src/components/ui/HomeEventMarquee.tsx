@@ -57,11 +57,10 @@ export default function HomeEventMarquee({ events }: Props) {
 function EventTickerCard({ event }: { event: Event }) {
     return (
         <Link
-            href={`/visitEvent/${event.id}`}
-            target="_blank"
-            rel="noopener noreferrer"
+            href={`/events/${event.id}`}
+            scroll={false}
             prefetch={false}
-            aria-label={`${event.title} 행사 상세 페이지를 새 탭에서 열기`}
+            aria-label={`${event.title} 행사 상세 보기`}
             className="group/event block w-52 overflow-hidden rounded-2xl border border-border/80 bg-background shadow-[0_8px_18px_rgba(15,23,42,0.10)] transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_14px_24px_rgba(15,23,42,0.14)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2 sm:w-56"
         >
             <div className="relative h-20 overflow-hidden bg-muted sm:h-[5.5rem]">

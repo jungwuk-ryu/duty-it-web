@@ -68,26 +68,37 @@ export function Header() {
                     </Link>
                 </div>
 
-                <Button
-                    ref={menuButtonRef}
-                    type="button"
-                    size="icon"
-                    variant="outline"
-                    className="size-10 border-border bg-background text-foreground md:hidden"
-                    aria-label={open ? "메뉴 닫기" : "메뉴 열기"}
-                    aria-expanded={open}
-                    aria-controls="mobile-navigation"
-                    onClick={() => setOpen((current) => !current)}
-                >
-                    <MenuToggleIcon open={open} className="size-5" strokeWidth={2} aria-hidden="true" />
-                </Button>
+                <div className="flex items-center gap-2 md:hidden">
+                    <Link
+                        href="/#download"
+                        className={buttonVariants({ className: "h-9 rounded-lg bg-brand px-3 text-xs font-bold text-white shadow-sm hover:bg-brand/90 min-[390px]:px-3.5" })}
+                        aria-label="앱 다운로드"
+                        onClick={closeMenu}
+                    >
+                        <span className="min-[390px]:hidden">앱 받기</span>
+                        <span className="hidden min-[390px]:inline">앱 다운로드</span>
+                    </Link>
+                    <Button
+                        ref={menuButtonRef}
+                        type="button"
+                        size="icon"
+                        variant="outline"
+                        className="size-10 border-border bg-background text-foreground"
+                        aria-label={open ? "메뉴 닫기" : "메뉴 열기"}
+                        aria-expanded={open}
+                        aria-controls="mobile-navigation"
+                        onClick={() => setOpen((current) => !current)}
+                    >
+                        <MenuToggleIcon open={open} className="size-5" strokeWidth={2} aria-hidden="true" />
+                    </Button>
+                </div>
             </nav>
 
             <div
                 id="mobile-navigation"
                 className={cn("absolute inset-x-0 top-16 z-0 h-[calc(100dvh-4rem)] overflow-y-auto border-y border-border bg-background md:hidden", open ? "block" : "hidden")}
             >
-                <div className="flex h-full flex-col justify-between gap-8 p-4">
+                <div className="p-4">
                     <div className="grid gap-2">
                         {links.map((link) => (
                             <Link
@@ -99,15 +110,8 @@ export function Header() {
                                 {link.label}
                             </Link>
                         ))}
-                        <AccountMenu onNavigate={closeMenu} />
+                        <AccountMenu onNavigate={closeMenu} className="flex h-12 w-full justify-start text-base text-foreground" />
                     </div>
-                    <Link
-                        href="/#download"
-                        className={buttonVariants({ className: "h-12 w-full bg-brand text-base text-white hover:bg-brand/90" })}
-                        onClick={closeMenu}
-                    >
-                        앱 다운로드
-                    </Link>
                 </div>
             </div>
         </header>
