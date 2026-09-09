@@ -26,7 +26,7 @@ export default function HomeFeaturesClient({ events, jobs }: HomeFeaturesClientP
       <div className={styles.container}>
         <div className={styles.featureSectionHeading}>
           <p className={styles.featureLabel}>맞춤 알림</p>
-          <h2 id="features-title">당신의 픽을<br />놓치지 않도록</h2>
+          <h2 id="features-title">당신의 선택을<br />놓치지 않도록</h2>
           <p className={styles.featureIntro}>발견한 순간부터 참여하는 날까지 챙겨드려요.</p>
         </div>
         <FeatureCarousel

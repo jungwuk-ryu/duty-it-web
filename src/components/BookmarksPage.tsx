@@ -22,8 +22,8 @@ export default function BookmarksPage({ kind }: { kind: BookmarkKind }) {
     return <div className="mx-auto min-h-[65vh] max-w-6xl px-5 py-10 sm:px-8 sm:py-14">
         <div className="mb-8 flex items-start gap-3">
             <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-brand/10 text-brand"><Bookmark size={24} aria-hidden /></span>
-            <div><h1 className="text-3xl font-bold tracking-tight text-slate-950">내 북마크</h1>
-                <p className="mt-2 text-sm leading-6 text-slate-500">관심 있는 행사와 채용 공고를 저장하고, 언제든 다시 찾아보세요.</p></div>
+            <div><h1 className="text-3xl font-bold tracking-tight text-foreground">내 북마크</h1>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">관심 있는 행사와 채용 공고를 저장하고, 언제든 다시 찾아보세요.</p></div>
         </div>
         <nav className="mb-8 flex gap-2 border-b border-border pb-4" aria-label="북마크 분류">
             <Link href="/bookmarks" aria-current={kind === "events" ? "page" : undefined} className={buttonVariants({ variant: kind === "events" ? "default" : "outline", className: "gap-2" })}><CalendarDays size={16} aria-hidden />행사</Link>
