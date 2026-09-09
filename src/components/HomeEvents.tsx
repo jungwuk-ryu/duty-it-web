@@ -11,7 +11,7 @@ export default function HomeEvents() {
     <section id="upcoming-events" aria-labelledby="upcoming-events-title" className={styles.events}>
       <header className={styles.sectionHeading}>
         <div>
-          <h2 id="upcoming-events-title">방금, 올라온 행사</h2>
+          <h2 id="upcoming-events-title">방금 올라온 행사</h2>
           <p>최근 올라온 행사와 대외활동을 모아뒀어요.</p>
         </div>
         <Link href="/events?field=CREATED_AT&statusGroup=ACTIVE" prefetch={false} className={styles.textLink}>
