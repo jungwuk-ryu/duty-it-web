@@ -14,6 +14,7 @@ import {
   serializeJsonLd,
 } from "@/src/lib/event-seo";
 import EventDetail from "@/src/components/events/EventDetail";
+import EventContentSummary from "@/src/components/events/EventContentSummary";
 import EventCard from "@/src/components/ui/EventCard";
 import styles from "@/src/components/events/event-detail.module.css";
 
@@ -33,12 +34,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 export default async function EventDetailPage({ params }: Props) {
-  const event = await fetchEventDetail((await params).eventId);
+  const { eventId } = await params;
+  const event = await fetchEventDetail(eventId);
   const jsonLd = getEventStructuredData(event);
   return <div className={styles.page}>
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }} />
     <Link href="/events?view=list" className={styles.back}><ArrowLeft size={16} aria-hidden />행사 목록으로</Link>
-    <EventDetail key={event.id} event={event} />
+    <EventDetail
+      key={event.id}
+      event={event}
+      eventContent={<Suspense fallback={null}><EventContentSummary eventId={eventId} /></Suspense>}
+    />
     <Suspense fallback={null}><HostEvents hostId={event.host.id} name={event.host.name} eventId={event.id} /></Suspense>
   </div>;
 }

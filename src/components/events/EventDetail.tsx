@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ArrowUpRight, Building2, CalendarDays, ChevronRight, Clock3, Eye, Info } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { Event } from "@/src/lib/schemas/event";
 import { formatEventDateTime, formatEventPeriod, getEventRecruitmentStatus, getHostEventsHref } from "@/src/lib/event-detail";
 import { withUtmSource } from "@/src/lib/url";
@@ -13,7 +13,15 @@ import EventActions from "./EventActions";
 import EventPoster from "./EventPoster";
 import styles from "./event-detail.module.css";
 
-export default function EventDetail({ event, variant = "page" }: { event: Event; variant?: "page" | "panel" }) {
+export default function EventDetail({
+  event,
+  eventContent,
+  variant = "page",
+}: {
+  event: Event;
+  eventContent?: ReactNode;
+  variant?: "page" | "panel";
+}) {
   const Title = variant === "panel" ? "h2" : "h1";
   const SectionTitle = variant === "panel" ? "h3" : "h2";
   const recorded = useRef(false);
@@ -55,6 +63,8 @@ export default function EventDetail({ event, variant = "page" }: { event: Event;
               </div>
             </dl>
           </section>
+
+          {eventContent}
 
           <section className={styles.hostSection} aria-label="주최 정보">
             <div className={styles.sectionHeading}><SectionTitle>주최 안내</SectionTitle></div>

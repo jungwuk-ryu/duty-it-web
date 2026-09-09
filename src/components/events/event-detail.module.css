@@ -22,6 +22,14 @@
 .scheduleRow dt { font-size: 12px; color: var(--duit-muted-foreground); }
 .scheduleRow dd { margin-top: 6px; font-size: 14px; line-height: 1.8; font-weight: 700; word-break: keep-all; overflow-wrap: anywhere; }
 .scheduleRow .recruitmentStart { font-size: 12px; font-weight: 400; color: var(--duit-muted-foreground); }
+.contentSummary { margin-top: 28px; padding: 22px; border: 1px solid color-mix(in srgb, var(--duit-brand) 24%, var(--duit-border)); border-radius: 16px; background: color-mix(in srgb, var(--duit-brand) 5%, var(--duit-canvas)); }
+.contentSummaryHeading { display: flex; align-items: center; gap: 11px; }
+.contentSummaryIcon { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 34px; height: 34px; border-radius: 10px; color: var(--duit-brand); background: color-mix(in srgb, var(--duit-brand) 12%, transparent); }
+.contentSummaryHeading h2, .contentSummaryHeading h3 { margin-top: 2px; font-size: 16px; line-height: 1.5; font-weight: 700; }
+.contentSummaryLabel { display: block; color: var(--duit-brand); font-size: 10px; line-height: 1.4; font-weight: 700; }
+.contentSummaryBody { margin-top: 18px; color: var(--duit-foreground); font-size: 14px; line-height: 1.9; white-space: pre-line; word-break: keep-all; overflow-wrap: anywhere; }
+.contentSummaryNotice { display: flex; align-items: flex-start; gap: 7px; margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--duit-border); color: var(--duit-muted-foreground); font-size: 11px; line-height: 1.7; }
+.contentSummaryNotice svg { flex-shrink: 0; margin-top: 2px; }
 .hostSection { margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--duit-border); }
 .hostCard { display: flex; align-items: center; gap: 14px; padding: 16px; border: 1px solid var(--duit-border); border-radius: 14px; transition: background 160ms; }
 .hostCard:hover { background: var(--duit-muted); }
@@ -62,6 +70,7 @@
   .panelDetail .detailScroll { padding: 0 20px; }
   .panelDetail .actions { padding: 12px 20px max(12px, env(safe-area-inset-bottom)); gap: 8px; }
   .title { font-size: 23px; }
+  .contentSummary { padding: 18px; }
   .page { padding: 20px 20px 40px; }
   .pageDetail { display: flex; flex-direction: column; }
   .pageDetail .detailScroll { display: block; width: 100%; }
