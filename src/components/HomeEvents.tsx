@@ -1,91 +1,55 @@
 import { Suspense } from "react";
 import Link from "next/link";
-import HomeEventMarquee from "@/src/components/ui/HomeEventMarquee";
+import { ArrowRight, ArrowUpRight, BriefcaseBusiness } from "lucide-react";
 import { fetchEvents } from "@/src/lib/api/events";
-import { Event } from "@/src/lib/schemas/event";
-
-const HOME_EVENT_LIMIT = 9;
+import HomeEventCollection from "@/src/components/home/HomeEventCollection";
+import { HOME_EVENT_GROUPS, type HomeEventGroup } from "@/src/components/home/home-event-groups";
+import styles from "@/src/components/home/home.module.css";
 
 export default function HomeEvents() {
-    return (
-        <Suspense fallback={<HomeEventsLoading />}>
-            <HomeEventsContent />
-        </Suspense>
-    );
+  return (
+    <section id="upcoming-events" aria-labelledby="upcoming-events-title" className={styles.events}>
+      <header className={styles.sectionHeading}>
+        <div>
+          <h2 id="upcoming-events-title">방금 올라온 행사</h2>
+          <p>최근 올라온 행사와 대외활동을 모아뒀어요.</p>
+        </div>
+        <Link href="/events?field=CREATED_AT&statusGroup=ACTIVE" prefetch={false} className={styles.textLink}>
+          전체 행사 보기 <ArrowUpRight size={20} strokeWidth={1.6} aria-hidden />
+        </Link>
+      </header>
+      <Suspense fallback={<HomeEventsLoading />}>
+        <HomeEventsContent />
+      </Suspense>
+      <div className={styles.jobsBanner}>
+        <BriefcaseBusiness size={42} strokeWidth={1.2} aria-hidden />
+        <div><h3>다음 근무지, 여기서 찾아보세요.</h3><p>지역과 경력에 맞는 간호 채용 공고를 모았어요.</p></div>
+        <Link href="/jobs" prefetch={false} className={styles.outlineLink}>채용 공고 보기 <ArrowRight size={19} strokeWidth={1.6} aria-hidden /></Link>
+      </div>
+    </section>
+  );
 }
 
 async function HomeEventsContent() {
-    const events = await loadHomeEvents();
-
-    if (events == null || events.length === 0) return <HomeEventsUnavailable />;
-
-    return <HomeEventsSection events={events} />;
-}
-
-function HomeEventsSection({ events }: { events: readonly Event[] }) {
-    return (
-        <section id="upcoming-events" aria-labelledby="upcoming-events-title" className="grid items-center gap-8 overflow-hidden rounded-[2rem] border border-slate-200/80 bg-white p-6 shadow-[0_18px_45px_rgba(15,23,42,0.07)] md:p-9 xl:grid-cols-[minmax(15rem,0.8fr)_minmax(32rem,1.2fr)] xl:gap-12">
-            <div className="flex flex-col items-start gap-5">
-                <div className="flex flex-col gap-3">
-                    <h2 id="upcoming-events-title" className="text-3xl font-bold leading-tight tracking-tight text-slate-950">
-                        행사 확인하기
-                    </h2>
-                    <p className="max-w-sm leading-7 text-slate-600">
-                        여러 곳에 흩어진 행사 목록을 한눈에 확인해 보세요.
-                    </p>
-                </div>
-                <Link
-                    href="/events?field=START_DATE&statusGroup=ACTIVE"
-                    prefetch={false}
-                    className="inline-flex items-center rounded-full bg-brand px-5 py-3 text-sm font-bold text-white transition hover:bg-brand/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
-                >
-                    전체 행사 보기
-                </Link>
-            </div>
-            <HomeEventMarquee events={events} />
-        </section>
-    );
-}
-
-async function loadHomeEvents(): Promise<Event[] | null> {
+  const groups: HomeEventGroup[] = await Promise.all(HOME_EVENT_GROUPS.map(async (group) => {
+    const params = new URLSearchParams({ field: "CREATED_AT", statusGroup: "ACTIVE" });
+    if (group.types.length > 0) params.set("types", group.types.join(","));
+    const base = { id: group.id, label: group.label, href: `/events?${params.toString()}` };
     try {
-        const { content } = await fetchEvents({
-            field: "START_DATE",
-            size: HOME_EVENT_LIMIT,
-            statusGroup: "ACTIVE",
-        });
-        return content;
+      const { content } = await fetchEvents({ field: "CREATED_AT", statusGroup: "ACTIVE", size: 4, types: [...group.types] });
+      return { ...base, events: content };
     } catch (error) {
-        console.error("Failed to load home events", getSafeErrorLog(error));
-        return null;
+      console.error("Failed to load home event group", { group: group.id, message: error instanceof Error ? error.message : "Unknown error" });
+      return { ...base, events: null };
     }
+  }));
+  return <HomeEventCollection groups={groups} />;
 }
 
 function HomeEventsLoading() {
-    return (
-        <section aria-labelledby="upcoming-events-loading-title" aria-busy="true" className="flex min-h-72 flex-col justify-center rounded-[2rem] border border-slate-200/80 bg-white p-8 shadow-[0_18px_45px_rgba(15,23,42,0.07)]">
-            <h2 id="upcoming-events-loading-title" className="text-2xl font-bold text-slate-950">행사 확인하기</h2>
-            <p className="mt-3 text-slate-600">행사 정보를 불러오는 중이에요.</p>
-        </section>
-    );
-}
-
-function HomeEventsUnavailable() {
-    return (
-        <section aria-labelledby="upcoming-events-unavailable-title" className="flex min-h-72 flex-col justify-center rounded-[2rem] border border-slate-200/80 bg-white p-8 shadow-[0_18px_45px_rgba(15,23,42,0.07)]">
-            <h2 id="upcoming-events-unavailable-title" className="text-2xl font-bold text-slate-950">행사 확인하기</h2>
-            <p className="mt-3 text-slate-600">행사 정보를 잠시 불러오지 못했어요. 전체 목록에서 다시 확인해 주세요.</p>
-            <Link href="/events" prefetch={false} className="mt-5 w-fit font-bold text-brand underline underline-offset-4">
-                전체 행사 보기
-            </Link>
-        </section>
-    );
-}
-
-function getSafeErrorLog(error: unknown) {
-    if (error instanceof Error) {
-        return { name: error.name, message: error.message };
-    }
-
-    return { type: typeof error };
+  return (
+    <div role="status" aria-label="행사 정보를 불러오는 중이에요." className={styles.eventSkeleton}>
+      {Array.from({ length: 4 }, (_, index) => <div key={index} aria-hidden="true"><span /></div>)}
+    </div>
+  );
 }

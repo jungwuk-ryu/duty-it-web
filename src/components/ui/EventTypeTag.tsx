@@ -1,28 +1,29 @@
 import { EventTypeLabel } from "@/src/lib/event-labels";
 import type { EventType } from "@/src/lib/schemas/event-type";
+import { cn } from "@/src/lib/utils";
 
 export default function CategoryTag({category} : CategoryTagProps) {
     const color: string = CATEGORY_STYLE[category];
 
     return (
-        <span className={`inline-flex h-8 shrink-0 items-center whitespace-nowrap rounded-full px-2.5 text-xs font-semibold ${color}`}>
+        <span className={cn("inline-flex h-8 shrink-0 items-center whitespace-nowrap rounded-full px-2.5 text-xs font-semibold", color)}>
             {EventTypeLabel[category]}
         </span>
     );
 }
 
 const CATEGORY_STYLE = {
-    CONFERENCE: "bg-orange-100 text-orange-800",
-    SEMINAR: "bg-yellow-100 text-yellow-800",
-    WORKSHOP: "bg-green-100 text-green-800",
-    WEBINAR: "bg-indigo-100 text-indigo-800",
-    CONTEST: "bg-rose-100 text-rose-800",
-    CONTINUING_EDUCATION: "bg-blue-100 text-blue-800",
-    EDUCATION: "bg-emerald-100 text-emerald-800",
-    VOLUNTEER: "bg-teal-100 text-teal-800",
-    TRAINING: "bg-sky-100 text-sky-800",
-    SUPPORTERS: "bg-purple-100 text-purple-800",
-    ETC: "bg-gray-100 text-gray-800",
+    CONFERENCE: "bg-category-conference/10 text-category-conference",
+    SEMINAR: "bg-category-seminar/10 text-category-seminar",
+    WORKSHOP: "bg-category-workshop/10 text-category-workshop",
+    WEBINAR: "bg-category-webinar/10 text-category-webinar",
+    CONTEST: "bg-category-contest/10 text-category-contest",
+    CONTINUING_EDUCATION: "bg-category-continuing/10 text-category-continuing",
+    EDUCATION: "bg-category-education/10 text-category-education",
+    VOLUNTEER: "bg-category-volunteer/10 text-category-volunteer",
+    TRAINING: "bg-category-training/10 text-category-training",
+    SUPPORTERS: "bg-category-supporters/10 text-category-supporters",
+    ETC: "bg-muted text-foreground",
   } satisfies Record<EventType, string>;
 
 type CategoryTagProps = {

@@ -50,7 +50,7 @@ type EventsResponseWire = Omit<EventResponse, "content"> & { content: EventWire[
 const CLIENT_PAGE_CACHE_TTL = 30_000;
 const MAX_CLIENT_PAGE_CACHE_ENTRIES = 24;
 const pageCache = new Map<string, CachedPage>();
-const PAGINATION_BUTTON_CLASS = "inline-flex h-10 items-center gap-1 rounded-lg border border-gray-300 bg-white px-4 text-sm font-semibold text-gray-800 shadow-sm transition hover:border-brand hover:text-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-50 disabled:text-gray-400 disabled:hover:border-gray-200 disabled:hover:text-gray-400";
+const PAGINATION_BUTTON_CLASS = "inline-flex h-10 items-center gap-1 rounded-lg border border-input bg-background px-4 text-sm font-semibold text-foreground shadow-sm transition hover:border-brand hover:text-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand disabled:cursor-not-allowed disabled:border-border disabled:bg-canvas disabled:text-subtle-foreground disabled:hover:border-border disabled:hover:text-subtle-foreground";
 
 export default function EventsResults({
     categoryExplore,
@@ -285,7 +285,7 @@ export default function EventsResults({
                 <div data-events-view="list" className="events-list-enter">
                     <header className="mb-6 text-center">
                         <h1 tabIndex={-1} className="text-3xl font-bold outline-none">행사 목록</h1>
-                        <p className="mt-3 text-gray-600">관심 분야와 일정에 맞는 행사만 골라 확인해보세요.</p>
+                        <p className="mt-3 text-muted-foreground">관심 분야와 일정에 맞는 행사만 골라 확인해보세요.</p>
                     </header>
                     <section className="mb-8">
                         <EventFiltersForm
@@ -310,12 +310,12 @@ export default function EventsResults({
                         {isLoading ? (
                             <EventListScaffold />
                         ) : error != null ? (
-                        <div className="rounded-lg border border-red-100 bg-white px-6 py-14 text-center" role="alert">
-                            <h2 className="text-xl font-bold text-gray-900">행사 정보를 불러오지 못했어요</h2>
-                            <p className="mt-2 text-gray-600">잠시 후 다시 시도해주세요.</p>
+                        <div className="rounded-lg border border-destructive/20 bg-background px-6 py-14 text-center" role="alert">
+                            <h2 className="text-xl font-bold text-foreground">행사 정보를 불러오지 못했어요</h2>
+                            <p className="mt-2 text-muted-foreground">잠시 후 다시 시도해주세요.</p>
                             <div className="mt-5 flex flex-wrap justify-center gap-2">
                                 <button
-                                    className="inline-flex h-10 items-center rounded-lg bg-brand px-4 text-sm font-semibold text-white transition hover:bg-brand/90"
+                                    className="inline-flex h-10 items-center rounded-lg bg-primary px-4 text-sm font-semibold text-white transition hover:bg-primary/90"
                                     onClick={() => void loadPage(request, "none", true)}
                                     type="button"
                                 >
@@ -323,7 +323,7 @@ export default function EventsResults({
                                 </button>
                                 {request.cursor != null && (
                                     <Link
-                                        className="inline-flex h-10 items-center rounded-lg border border-gray-300 px-4 text-sm font-semibold text-gray-700 transition hover:border-gray-400"
+                                        className="inline-flex h-10 items-center rounded-lg border border-input px-4 text-sm font-semibold text-foreground transition hover:border-subtle-foreground"
                                         href={getEventsHref(request, null)}
                                         onClick={handleFirstPage}
                                     >
@@ -335,7 +335,7 @@ export default function EventsResults({
                         ) : events != null ? (
                         <>
                             <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-                                <p className="text-sm text-gray-600">
+                                <p className="text-sm text-muted-foreground">
                                     {getSortLabel(request.field)} · {statusLabel}{hostName != null ? ` · 주최: ${hostName}` : ""} · {events.pageInfo.pageSize}개 표시
                                 </p>
                                 {request.cursor != null && (
@@ -354,11 +354,11 @@ export default function EventsResults({
                                     ))}
                                 </ul>
                             ) : (
-                                <div className="rounded-lg border border-dashed border-gray-300 bg-white px-6 py-14 text-center">
-                                    <h2 className="text-xl font-bold text-gray-900">조건에 맞는 행사가 없어요</h2>
-                                    <p className="mt-2 text-gray-600">검색어를 줄이거나 행사 유형을 다시 선택해보세요.</p>
+                                <div className="rounded-lg border border-dashed border-input bg-background px-6 py-14 text-center">
+                                    <h2 className="text-xl font-bold text-foreground">조건에 맞는 행사가 없어요</h2>
+                                    <p className="mt-2 text-muted-foreground">검색어를 줄이거나 행사 유형을 다시 선택해보세요.</p>
                                     <Link
-                                        className="mt-5 inline-flex h-10 items-center rounded-lg bg-brand px-4 text-sm font-semibold text-white"
+                                        className="mt-5 inline-flex h-10 items-center rounded-lg bg-primary px-4 text-sm font-semibold text-white"
                                         href="/events?view=list"
                                         onClick={(event) => {
                                             event.preventDefault();

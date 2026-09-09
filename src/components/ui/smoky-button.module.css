@@ -1,0 +1,59 @@
+.smokyButton {
+  position: relative;
+  display: inline-flex;
+  min-height: 56px;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  overflow: hidden;
+  border: 0;
+  border-radius: 11px;
+  background: #c63c33;
+  color: #fff;
+  cursor: pointer;
+  isolation: isolate;
+  box-shadow: 0 8px 20px rgb(198 60 51 / 18%);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.smokyButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 25px rgb(198 60 51 / 25%);
+}
+
+.smokyButton:active {
+  transform: translateY(0);
+}
+
+.smokyButton:focus-visible {
+  outline: 2px solid #c63c33;
+  outline-offset: 5px;
+}
+
+.canvas {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  opacity: 0.78;
+  pointer-events: none;
+}
+
+.copy {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 19px;
+  padding: 14px 25px;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.035em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .smokyButton {
+    transition: none;
+  }
+}

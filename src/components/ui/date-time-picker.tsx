@@ -140,12 +140,12 @@ export function DateTimePicker({
                     data-invalid={hasError || undefined}
                     onClick={() => isOpen ? closePicker() : openPicker()}
                     className={cn(
-                        "flex h-12 w-full items-center gap-2 rounded-xl border bg-white px-3 pr-11 text-left text-sm outline-none transition-colors focus:border-brand focus:ring-2 focus:ring-brand/15",
-                        hasError ? "border-red-400" : "border-gray-300 hover:border-slate-400",
+                        "flex h-12 w-full items-center gap-2 rounded-xl border bg-background px-3 pr-11 text-left text-sm outline-none transition-colors focus:border-brand focus:ring-2 focus:ring-brand/15",
+                        hasError ? "border-destructive" : "border-input hover:border-subtle-foreground",
                     )}
                 >
-                    <CalendarDays className="size-4 shrink-0 text-slate-500" aria-hidden />
-                    <span className={cn("min-w-0 flex-1 truncate", displayedDate ? "text-slate-900" : "text-slate-400")}>
+                    <CalendarDays className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+                    <span className={cn("min-w-0 flex-1 truncate", displayedDate ? "text-foreground" : "text-subtle-foreground")}>
                         {displayedDate ? formatDateTime(displayedDate) : "날짜와 시간을 선택해 주세요"}
                     </span>
                 </button>
@@ -156,7 +156,7 @@ export function DateTimePicker({
                             onChange("");
                             closePicker();
                         }}
-                        className="absolute inset-y-1 right-1 flex size-10 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand/50"
+                        className="absolute inset-y-1 right-1 flex size-10 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand/50"
                         aria-label="선택한 일시 지우기"
                     >
                         <X className="size-4" aria-hidden />
@@ -169,15 +169,15 @@ export function DateTimePicker({
                     id={`${id}-calendar`}
                     role="dialog"
                     aria-label="날짜와 시간 선택"
-                    className="absolute left-0 top-[calc(100%+0.5rem)] z-30 w-[min(22rem,calc(100vw-2.5rem))] rounded-2xl border border-gray-200 bg-white p-4 shadow-[0_18px_42px_rgba(15,23,42,0.18)]"
+                    className="absolute left-0 top-[calc(100%+0.5rem)] z-30 w-[min(22rem,calc(100vw-2.5rem))] rounded-2xl border border-border bg-background p-4 shadow-[0_18px_42px_rgba(15,23,42,0.18)]"
                 >
                     <div className="flex items-center justify-between gap-3">
-                        <h3 className="text-sm font-bold text-slate-900">{MONTH_FORMATTER.format(visibleMonth)}</h3>
+                        <h3 className="text-sm font-bold text-foreground">{MONTH_FORMATTER.format(visibleMonth)}</h3>
                         <div className="flex items-center gap-1">
                             <button
                                 type="button"
                                 onClick={() => setVisibleMonth((current) => shiftMonth(current, -1))}
-                                className="flex size-8 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand/50"
+                                className="flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand/50"
                                 aria-label="이전 달"
                             >
                                 <ChevronLeft className="size-4" aria-hidden />
@@ -185,7 +185,7 @@ export function DateTimePicker({
                             <button
                                 type="button"
                                 onClick={() => setVisibleMonth((current) => shiftMonth(current, 1))}
-                                className="flex size-8 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand/50"
+                                className="flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand/50"
                                 aria-label="다음 달"
                             >
                                 <ChevronRight className="size-4" aria-hidden />
@@ -193,7 +193,7 @@ export function DateTimePicker({
                         </div>
                     </div>
 
-                    <div className="mt-4 grid grid-cols-7 text-center text-xs font-medium text-slate-400">
+                    <div className="mt-4 grid grid-cols-7 text-center text-xs font-medium text-subtle-foreground">
                         {WEEKDAYS.map((weekday) => <span key={weekday}>{weekday}</span>)}
                     </div>
                     <div className="mt-2 grid grid-cols-7 gap-y-1">
@@ -213,11 +213,11 @@ export function DateTimePicker({
                                     onClick={() => selectDate(day)}
                                     className={cn(
                                         "mx-auto flex size-9 items-center justify-center rounded-lg text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand/50",
-                                        isSelected && "bg-brand text-white shadow-sm",
-                                        !isSelected && isCurrentDay && "bg-red-50 text-brand",
-                                        !isSelected && !isCurrentDay && isCurrentMonth && isAllowed && "text-slate-800 hover:bg-slate-100",
-                                        !isCurrentMonth && isAllowed && "text-slate-400 hover:bg-slate-100",
-                                        !isAllowed && "cursor-not-allowed text-slate-300 opacity-60",
+                                        isSelected && "bg-primary text-white shadow-sm",
+                                        !isSelected && isCurrentDay && "bg-danger-surface text-brand",
+                                        !isSelected && !isCurrentDay && isCurrentMonth && isAllowed && "text-foreground hover:bg-muted",
+                                        !isCurrentMonth && isAllowed && "text-subtle-foreground hover:bg-muted",
+                                        !isAllowed && "cursor-not-allowed text-subtle-foreground opacity-60",
                                     )}
                                 >
                                     {day.getDate()}
@@ -226,8 +226,8 @@ export function DateTimePicker({
                         })}
                     </div>
 
-                    <div className="mt-4 grid grid-cols-[minmax(0,1fr)_8.75rem] gap-2 border-t border-slate-100 pt-4">
-                        <label className="flex flex-col gap-1.5 text-xs font-semibold text-slate-600">
+                    <div className="mt-4 grid grid-cols-[minmax(0,1fr)_8.75rem] gap-2 border-t border-border/60 pt-4">
+                        <label className="flex flex-col gap-1.5 text-xs font-semibold text-muted-foreground">
                             날짜
                             <input
                                 ref={dateInputRef}
@@ -236,39 +236,39 @@ export function DateTimePicker({
                                 min={minValue?.slice(0, 10)}
                                 max={maxValue?.slice(0, 10)}
                                 onChange={(event) => changeDraftDate(event.target.value)}
-                                className="h-9 rounded-lg border border-gray-300 bg-white px-2 text-sm font-medium text-slate-900 outline-none transition-colors focus:border-brand focus:ring-2 focus:ring-brand/15"
+                                className="h-9 rounded-lg border border-input bg-background px-2 text-sm font-medium text-foreground outline-none transition-colors focus:border-brand focus:ring-2 focus:ring-brand/15"
                             />
                         </label>
-                        <label className="flex flex-col gap-1.5 text-xs font-semibold text-slate-600">
+                        <label className="flex flex-col gap-1.5 text-xs font-semibold text-muted-foreground">
                             시간
                             <span className="relative">
-                                <Clock3 className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-slate-400" aria-hidden />
+                                <Clock3 className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-subtle-foreground" aria-hidden />
                                 <input
                                     ref={timeInputRef}
                                     type="time"
                                     value={draftTime}
                                     step="60"
                                     onChange={(event) => changeDraftTime(event.target.value)}
-                                    className="h-9 w-full rounded-lg border border-gray-300 bg-white pl-8 pr-2 text-sm font-medium text-slate-900 outline-none transition-colors focus:border-brand focus:ring-2 focus:ring-brand/15"
+                                    className="h-9 w-full rounded-lg border border-input bg-background pl-8 pr-2 text-sm font-medium text-foreground outline-none transition-colors focus:border-brand focus:ring-2 focus:ring-brand/15"
                                 />
                             </span>
                         </label>
                     </div>
 
-                    {draftIssue && <p className="mt-3 text-xs leading-5 text-red-600" role="alert">{draftIssue}</p>}
+                    {draftIssue && <p className="mt-3 text-xs leading-5 text-destructive" role="alert">{draftIssue}</p>}
 
                     <div className="mt-4 flex items-center justify-end gap-2">
                         <button
                             type="button"
                             onClick={closePicker}
-                            className="h-9 rounded-lg px-3 text-sm font-semibold text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand/50"
+                            className="h-9 rounded-lg px-3 text-sm font-semibold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand/50"
                         >
                             취소
                         </button>
                         <button
                             type="button"
                             onClick={applyDraft}
-                            className="h-9 rounded-lg bg-brand px-4 text-sm font-semibold text-white transition-colors hover:bg-brand/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand/50"
+                            className="h-9 rounded-lg bg-primary px-4 text-sm font-semibold text-white transition-colors hover:bg-primary/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand/50"
                         >
                             적용
                         </button>

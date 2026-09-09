@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { type ChangeEvent, type FocusEvent, type FormEvent, useEffect, useMemo, useRef, useState } from "react";
-import { ChevronDown, Upload } from "lucide-react";
+import { type ChangeEvent, type DragEvent, type FocusEvent, type FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { Check, ChevronDown, Upload } from "lucide-react";
 
 import { Button } from "@/src/components/ui/button";
 import { DateTimePicker } from "@/src/components/ui/date-time-picker";
@@ -100,14 +100,14 @@ export default function SubmitEventForm() {
 
     if (submission.status === "success") {
         return (
-            <div className="rounded-[2rem] border border-gray-200 bg-white p-6 shadow-[0_24px_80px_rgba(15,23,42,0.12)] sm:p-10">
+            <div className="rounded-[2rem] border border-border bg-background p-6 shadow-[0_24px_80px_rgba(15,23,42,0.12)] sm:p-10">
                 <div className="mx-auto flex max-w-md flex-col items-center gap-5 text-center">
                     <span className="flex size-14 items-center justify-center rounded-2xl bg-brand text-xl font-bold text-white" aria-hidden>
-                        듀
+                        <Check className="size-8" strokeWidth={3} />
                     </span>
                     <div className="flex flex-col gap-2">
-                        <h1 className="text-2xl font-bold tracking-tight text-slate-900">행사 제보가 접수되었어요</h1>
-                        <p className="leading-7 text-slate-600">{submission.message}</p>
+                        <h1 className="text-2xl font-bold tracking-tight text-foreground">행사 제보가 접수되었어요</h1>
+                        <p className="leading-7 text-muted-foreground">{submission.message}</p>
                     </div>
                     <div className="flex w-full flex-col gap-3 sm:flex-row sm:justify-center">
                         <Button type="button" variant="outline" className="h-11 rounded-xl" onClick={resetForm}>
@@ -722,25 +722,65 @@ function FileField({
     error?: string;
     onChange: (file: File | null) => void;
 }) {
+    const [isDragging, setIsDragging] = useState(false);
+
+    function hasFiles(event: DragEvent<HTMLLabelElement>) {
+        return Array.from(event.dataTransfer.types).includes("Files");
+    }
+
+    function handleDragEnter(event: DragEvent<HTMLLabelElement>) {
+        if (!hasFiles(event)) return;
+        event.preventDefault();
+        setIsDragging(true);
+    }
+
+    function handleDragOver(event: DragEvent<HTMLLabelElement>) {
+        if (!hasFiles(event)) return;
+        event.preventDefault();
+        event.dataTransfer.dropEffect = "copy";
+        setIsDragging(true);
+    }
+
+    function handleDragLeave(event: DragEvent<HTMLLabelElement>) {
+        if (!hasFiles(event)) return;
+        const nextTarget = event.relatedTarget;
+        if (nextTarget instanceof Node && event.currentTarget.contains(nextTarget)) return;
+        setIsDragging(false);
+    }
+
+    function handleDrop(event: DragEvent<HTMLLabelElement>) {
+        if (!hasFiles(event)) return;
+        event.preventDefault();
+        setIsDragging(false);
+        onChange(event.dataTransfer.files.item(0));
+    }
+
     return (
         <div className="flex flex-col gap-2">
-            <label htmlFor={id} className="text-sm font-semibold text-slate-800">
+            <label htmlFor={id} className="text-sm font-semibold text-foreground">
                 {label}
             </label>
             <label
                 className={cn(
-                    "flex cursor-pointer items-center gap-3 rounded-xl border border-dashed bg-white px-4 py-3 transition-colors hover:border-brand/60",
-                    error ? "border-red-400" : "border-gray-300",
+                    "flex cursor-pointer items-center gap-3 rounded-xl border border-dashed bg-background px-4 py-3 transition-colors hover:border-brand/60",
+                    error ? "border-destructive" : "border-input",
+                    isDragging && "border-brand bg-brand/5 ring-2 ring-brand/15",
                 )}
+                onDragEnter={handleDragEnter}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
             >
                 <Upload className="size-5 shrink-0 text-brand" aria-hidden />
                 <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-medium text-slate-800">
+                    <span className="block truncate text-sm font-medium text-foreground">
                         {file ? file.name : "이미지 파일 선택"}
                     </span>
-                    <span className="mt-1 block text-xs leading-5 text-slate-500">{description}</span>
+                    <span className="mt-1 block text-xs leading-5 text-muted-foreground" aria-live="polite">
+                        {isDragging ? "여기에 놓아 추가하세요." : description}
+                    </span>
                 </span>
-                <span className="shrink-0 rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-700">선택</span>
+                <span className="shrink-0 rounded-lg bg-muted px-3 py-1.5 text-xs font-semibold text-foreground">선택</span>
                 <input
                     id={id}
                     type="file"
@@ -749,15 +789,15 @@ function FileField({
                     onChange={(event) => onChange(event.target.files?.[0] ?? null)}
                 />
             </label>
-            {error && <p className="text-xs leading-5 text-red-600" role="alert">{error}</p>}
+            {error && <p className="text-xs leading-5 text-destructive" role="alert">{error}</p>}
         </div>
     );
 }
 
 function inputClassName(hasError?: string) {
     return cn(
-        "h-12 w-full rounded-xl border bg-white px-3 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-400 focus:border-brand focus:ring-2 focus:ring-brand/15",
-        hasError ? "border-red-400" : "border-gray-300",
+        "h-12 w-full rounded-xl border bg-background px-3 text-sm text-foreground outline-none transition-colors placeholder:text-subtle-foreground focus:border-brand focus:ring-2 focus:ring-brand/15",
+        hasError ? "border-destructive" : "border-input",
     );
 }
 
@@ -778,14 +818,14 @@ function EventSubmissionPreview({
     const title = values.title.trim() || "행사 제목을 입력해 주세요";
 
     return (
-        <section className="rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:p-5" aria-labelledby="event-preview-title">
+        <section className="rounded-2xl border border-border bg-canvas p-4 sm:p-5" aria-labelledby="event-preview-title">
             <div className="flex flex-col gap-1">
-                <h2 id="event-preview-title" className="text-base font-bold text-slate-900">행사 카드 미리보기</h2>
-                <p className="text-xs leading-5 text-slate-500">입력한 내용이 행사 목록에서 이렇게 보입니다.</p>
+                <h2 id="event-preview-title" className="text-base font-bold text-foreground">행사 카드 미리보기</h2>
+                <p className="text-xs leading-5 text-muted-foreground">입력한 내용이 행사 목록에서 이렇게 보입니다.</p>
             </div>
 
-            <article className="mt-4 flex max-w-sm flex-col overflow-hidden rounded-2xl bg-white shadow-[0_8px_22px_rgba(15,23,42,0.10)]">
-                <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
+            <article className="mx-auto mt-4 flex max-w-sm flex-col overflow-hidden rounded-2xl bg-background shadow-[0_8px_22px_rgba(15,23,42,0.10)]">
+                <div className="relative aspect-[4/3] overflow-hidden bg-muted">
                     {/* blob URL은 Next Image 최적화 대상이 아니므로 로컬 미리보기로만 사용합니다. */}
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
@@ -802,29 +842,29 @@ function EventSubmissionPreview({
 
                 <div className="flex flex-1 flex-col p-5">
                     <div className="flex min-h-8 items-center justify-between gap-2">
-                        <span className="inline-flex h-8 shrink-0 items-center whitespace-nowrap rounded-full bg-slate-100 px-2.5 text-xs font-semibold text-slate-700">
+                        <span className="inline-flex h-8 shrink-0 items-center whitespace-nowrap rounded-full bg-muted px-2.5 text-xs font-semibold text-foreground">
                             {eventTypeLabel}
                         </span>
                         <span className="shrink-0 whitespace-nowrap text-sm font-bold text-brand">검토 예정</span>
                     </div>
 
-                    <p className="mt-5 min-h-10 line-clamp-2 text-sm font-semibold leading-5 text-gray-900">
-                        <span className="mr-2 text-gray-400">주최</span>
+                    <p className="mt-5 min-h-10 line-clamp-2 text-sm font-semibold leading-5 text-foreground">
+                        <span className="mr-2 text-subtle-foreground">주최</span>
                         {hostName}
                     </p>
 
-                    <dl className="mt-auto grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] gap-x-1.5 border-t border-gray-200 pt-4 text-xs">
+                    <dl className="mt-auto grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] gap-x-1.5 border-t border-border pt-4 text-xs">
                         <div className="min-w-0">
-                            <dt className="text-gray-500">일시</dt>
-                            <dd className="mt-1 whitespace-nowrap font-semibold text-gray-900">{formatPreviewDate(values.startAt)}</dd>
+                            <dt className="text-muted-foreground">일시</dt>
+                            <dd className="mt-1 whitespace-nowrap font-semibold text-foreground">{formatPreviewDate(values.startAt)}</dd>
                         </div>
                         <div className="min-w-0">
-                            <dt className="text-gray-500">마감</dt>
-                            <dd className="mt-1 whitespace-nowrap font-semibold text-gray-900">{formatPreviewDate(values.recruitmentEndAt)}</dd>
+                            <dt className="text-muted-foreground">마감</dt>
+                            <dd className="mt-1 whitespace-nowrap font-semibold text-foreground">{formatPreviewDate(values.recruitmentEndAt)}</dd>
                         </div>
                         <div className="min-w-7">
-                            <dt className="text-gray-500">조회</dt>
-                            <dd className="mt-1 font-semibold text-gray-900">0</dd>
+                            <dt className="text-muted-foreground">조회</dt>
+                            <dd className="mt-1 font-semibold text-foreground">0</dd>
                         </div>
                     </dl>
                 </div>

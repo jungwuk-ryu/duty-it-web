@@ -10,7 +10,7 @@ type EventCategory = {
     description: string;
     eventType: EventType;
     href: string;
-    id: "volunteer" | "supporters" | "conference";
+    id: "volunteer" | "supporters" | "conference" | "continuing-education";
     title: string;
 };
 
@@ -42,17 +42,15 @@ const EVENT_CATEGORIES = [
         href: "/events?types=CONFERENCE",
         eventType: "CONFERENCE",
     },
+    {
+        id: "continuing-education",
+        title: "보수교육",
+        description: "실무 역량을 채우는 시간",
+        actionLabel: "행사 보기",
+        href: "/events?types=CONTINUING_EDUCATION",
+        eventType: "CONTINUING_EDUCATION",
+    },
 ] as const satisfies readonly EventCategory[];
-
-const JOB_CATEGORY = {
-    title: "채용",
-    actionLabel: "채용 보기",
-    href: "/jobs",
-    images: [{
-        src: "/images/home/category-jobs.webp",
-        title: "나에게 맞는 간호 일자리",
-    }],
-} as const;
 
 export default function EventCategoryExplore() {
     return (
@@ -68,10 +66,10 @@ async function EventCategoryExploreContent() {
     return (
         <section id="category-explore" aria-labelledby="event-category-explore-title" className="py-2 sm:py-4">
             <header className="max-w-2xl">
-                <h2 id="event-category-explore-title" className="text-3xl font-bold tracking-[-0.04em] text-slate-950 sm:text-4xl">
+                <h2 id="event-category-explore-title" className="text-3xl font-bold tracking-[-0.04em] text-foreground sm:text-4xl">
                     관심 분야별로 둘러보기
                 </h2>
-                <p className="mt-3 text-[15px] leading-7 text-slate-600 sm:text-base">
+                <p className="mt-3 text-[15px] leading-7 text-muted-foreground sm:text-base">
                     내게 맞는 간호 활동과 다음 기회를 찾아보세요.
                 </p>
             </header>
@@ -86,7 +84,6 @@ async function EventCategoryExploreContent() {
                         title={category.title}
                     />
                 ))}
-                <CategoryExploreCard {...JOB_CATEGORY} />
             </div>
         </section>
     );
@@ -160,16 +157,16 @@ function EventCategoryExploreLoading() {
     return (
         <section id="category-explore" aria-busy="true" aria-labelledby="event-category-explore-loading-title" className="py-2 sm:py-4">
             <header className="max-w-2xl">
-                <h2 id="event-category-explore-loading-title" className="text-3xl font-bold tracking-[-0.04em] text-slate-950 sm:text-4xl">
+                <h2 id="event-category-explore-loading-title" className="text-3xl font-bold tracking-[-0.04em] text-foreground sm:text-4xl">
                     관심 분야별로 둘러보기
                 </h2>
-                <p className="mt-3 text-[15px] leading-7 text-slate-600 sm:text-base">
+                <p className="mt-3 text-[15px] leading-7 text-muted-foreground sm:text-base">
                     내게 맞는 간호 활동과 다음 기회를 찾아보세요.
                 </p>
             </header>
             <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:gap-5 xl:grid-cols-4" aria-hidden>
                 {Array.from({ length: 4 }, (_, index) => (
-                    <div key={index} className="min-h-[22rem] animate-pulse rounded-[1.5rem] bg-slate-200 sm:min-h-[25rem] xl:min-h-[28rem]" />
+                    <div key={index} className="min-h-[22rem] animate-pulse rounded-[1.5rem] bg-border sm:min-h-[25rem] xl:min-h-[28rem]" />
                 ))}
             </div>
         </section>

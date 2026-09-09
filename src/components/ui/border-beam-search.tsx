@@ -1,6 +1,8 @@
 "use client";
 
-import { BorderBeam } from "border-beam";
+import { BorderBeam as BorderBeamPrimitive } from "border-beam";
+import { forwardRef } from "react";
+import { useAppTheme } from "@/src/lib/use-theme";
 import type {
     BorderBeamColorVariant,
     BorderBeamProps,
@@ -15,5 +17,11 @@ export type {
     BorderBeamTheme,
 };
 
-export { BorderBeam };
+export const BorderBeam = forwardRef<HTMLDivElement, BorderBeamProps>(function BorderBeam({ theme, ...props }, ref) {
+    const { resolvedTheme } = useAppTheme();
+    const activeTheme = resolvedTheme === "dark" ? "dark" : "light";
+
+    return <BorderBeamPrimitive {...props} ref={ref} theme={theme ?? activeTheme} />;
+});
+
 export default BorderBeam;

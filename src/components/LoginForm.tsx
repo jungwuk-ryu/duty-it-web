@@ -4,7 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, LoaderCircle } from "lucide-react";
 import { type ComponentProps, useState } from "react";
-import { signInWithPopup } from "firebase/auth";
+import { inMemoryPersistence, setPersistence, signInWithPopup, signOut } from "firebase/auth";
+import { safeReturnTo, signInSession, useAuth } from "@/src/lib/auth/client";
 
 import { Button } from "@/src/components/ui/button";
 import {
@@ -22,13 +23,6 @@ type AuthState =
     | { kind: "success"; nickname: string; isNewUser: boolean }
     | { kind: "error"; message: string };
 
-type SocialLoginResponse = {
-    user: {
-        nickname?: string;
-    };
-    isNewUser: boolean;
-};
-
 const BACKGROUND_DOTS = [
     [5, 13, "brand"], [10, 31, "slate"], [7, 63, "brand"], [13, 78, "slate"], [18, 20, "slate"],
     [20, 48, "brand"], [24, 87, "slate"], [29, 10, "brand"], [31, 35, "slate"], [34, 70, "brand"],
@@ -40,6 +34,7 @@ const BACKGROUND_DOTS = [
 export default function LoginForm() {
     const [authState, setAuthState] = useState<AuthState>({ kind: "idle" });
     const isLoading = authState.kind === "loading";
+    const session = useAuth();
 
     async function handleSignIn(provider: Provider) {
         if (isLoading) return;
@@ -47,21 +42,12 @@ export default function LoginForm() {
         setAuthState({ kind: "loading", provider });
 
         try {
+            await setPersistence(firebaseAuth, inMemoryPersistence);
             const credential = await signInWithPopup(
                 firebaseAuth,
                 provider === "google" ? googleAuthProvider : appleAuthProvider,
             );
-            const idToken = await credential.user.getIdToken();
-            const response = await fetch("/api/auth/social", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(idToken),
-            });
-            const body: unknown = await response.json().catch(() => null);
-
-            if (!response.ok || !isSocialLoginResponse(body)) {
-                throw new Error(getServerErrorMessage(body));
-            }
+            const body = await signInSession(credential.user.refreshToken);
 
             setAuthState({
                 kind: "success",
@@ -70,11 +56,13 @@ export default function LoginForm() {
             });
         } catch (error) {
             setAuthState({ kind: "error", message: getLoginErrorMessage(error) });
+        } finally {
+            await signOut(firebaseAuth).catch(() => undefined);
         }
     }
 
     return (
-        <div className="relative isolate min-h-[calc(100svh-4rem)] overflow-hidden bg-white">
+        <div className="relative isolate min-h-[calc(100svh-4rem)] overflow-hidden bg-background">
             <LoginBackdrop />
             <section className="relative mx-auto flex min-h-[calc(100svh-4rem)] w-full max-w-[30rem] items-center px-5 py-16 sm:px-8 sm:py-24">
                 <div className="w-full -translate-y-4 sm:-translate-y-7">
@@ -88,14 +76,14 @@ export default function LoginForm() {
                             priority
                         />
 
-                        {authState.kind === "success" ? (
-                            <LoginSuccess nickname={authState.nickname} isNewUser={authState.isNewUser} />
+                        {authState.kind === "success" || session.user ? (
+                            <LoginSuccess nickname={authState.kind === "success" ? authState.nickname : session.user?.nickname ?? ""} isNewUser={authState.kind === "success" && authState.isNewUser} />
                         ) : (
                             <>
-                                <h1 className="text-3xl font-bold tracking-[-0.04em] text-slate-950 sm:text-[2.25rem]">
+                                <h1 className="text-3xl font-bold tracking-[-0.04em] text-foreground sm:text-[2.25rem]">
                                     듀잇에 로그인하세요
                                 </h1>
-                                <p className="mt-3 text-[15px] leading-6 text-slate-500 sm:text-base">
+                                <p className="mt-3 text-[15px] leading-6 text-muted-foreground sm:text-base">
                                     관심 있는 간호 행사와 채용 소식을 놓치지 마세요.
                                 </p>
 
@@ -103,7 +91,7 @@ export default function LoginForm() {
                                     <Button
                                         type="button"
                                         variant="outline"
-                                        className="h-12 w-full rounded-xl border-gray-300 bg-white text-[15px] font-semibold text-slate-900 shadow-sm shadow-slate-900/5 hover:bg-slate-50"
+                                        className="h-12 w-full rounded-xl border-input bg-background text-[15px] font-semibold text-foreground shadow-sm shadow-slate-900/5 hover:bg-canvas"
                                         disabled={isLoading}
                                         onClick={() => void handleSignIn("google")}
                                     >
@@ -116,7 +104,7 @@ export default function LoginForm() {
                                     </Button>
                                     <Button
                                         type="button"
-                                        className="h-12 w-full rounded-xl bg-black text-[15px] font-semibold text-white shadow-sm shadow-black/15 hover:bg-black/85"
+                                        className="h-12 w-full rounded-xl bg-inverse text-[15px] font-semibold text-inverse-foreground shadow-sm shadow-black/15 hover:bg-inverse/85"
                                         disabled={isLoading}
                                         onClick={() => void handleSignIn("apple")}
                                     >
@@ -130,19 +118,19 @@ export default function LoginForm() {
                                 </div>
 
                                 {authState.kind === "error" && (
-                                    <p className="mt-4 w-full rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-left text-sm leading-6 text-red-700" role="alert">
+                                    <p className="mt-4 w-full rounded-xl border border-destructive/30 bg-danger-surface px-4 py-3 text-left text-sm leading-6 text-destructive" role="alert">
                                         {authState.message}
                                     </p>
                                 )}
 
                                 <Link
                                     href="/"
-                                    className="mt-8 inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 transition-colors hover:text-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand/50"
+                                    className="mt-8 inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand/50"
                                 >
                                     <ArrowLeft className="size-4" aria-hidden />
                                     홈으로 돌아가기
                                 </Link>
-                                <p className="mt-7 text-xs leading-5 text-slate-400">
+                                <p className="mt-7 text-xs leading-5 text-subtle-foreground">
                                     계속하면 듀잇의 이용약관 및 개인정보 처리방침에 동의하게 됩니다.
                                 </p>
                             </>
@@ -159,13 +147,14 @@ function LoginSuccess({ nickname, isNewUser }: { nickname: string; isNewUser: bo
 
     return (
         <div className="flex w-full flex-col items-center">
-            <h1 className="text-3xl font-bold tracking-[-0.04em] text-slate-950 sm:text-[2.25rem]">{greeting}</h1>
-            <p className="mt-3 text-[15px] leading-6 text-slate-500 sm:text-base">
+            <h1 className="text-3xl font-bold tracking-[-0.04em] text-foreground sm:text-[2.25rem]">{greeting}</h1>
+            <p className="mt-3 text-[15px] leading-6 text-muted-foreground sm:text-base">
                 듀잇에서 나에게 맞는 행사와 채용 정보를 찾아보세요.
             </p>
             <Button asChild className="mt-9 h-12 w-full rounded-xl px-6 text-[15px] font-semibold">
-                <Link href="/events">행사 둘러보기</Link>
+                <Link href={typeof window === "undefined" ? "/events" : safeReturnTo(new URLSearchParams(window.location.search).get("next"))}>계속 둘러보기</Link>
             </Button>
+            <Link href="/bookmarks" className="mt-4 text-sm font-semibold text-brand">내 북마크 보기</Link>
         </div>
     );
 }
@@ -178,7 +167,7 @@ function LoginBackdrop() {
                     key={`${top}-${left}`}
                     className={cn(
                         "absolute rounded-full",
-                        tone === "brand" ? "size-1 bg-brand/30" : "size-0.5 bg-slate-300/70",
+                        tone === "brand" ? "size-1 bg-brand/30" : "size-0.5 bg-input/70",
                         index % 3 === 0 && "hidden sm:block",
                     )}
                     style={{ top: `${top}%`, left: `${left}%` }}
@@ -207,27 +196,8 @@ function AppleMark(props: ComponentProps<"svg">) {
     );
 }
 
-function isSocialLoginResponse(value: unknown): value is SocialLoginResponse {
-    return (
-        typeof value === "object"
-        && value !== null
-        && "user" in value
-        && typeof value.user === "object"
-        && value.user !== null
-        && "isNewUser" in value
-        && typeof value.isNewUser === "boolean"
-    );
-}
-
-function getServerErrorMessage(value: unknown): string {
-    if (typeof value === "object" && value !== null && "message" in value && typeof value.message === "string") {
-        return value.message;
-    }
-
-    return "로그인을 완료하지 못했습니다. 잠시 뒤 다시 시도해 주세요.";
-}
-
 function getLoginErrorMessage(error: unknown): string {
+    if (error instanceof Error && error.name === "SessionRequestError") return error.message;
     if (typeof error === "object" && error !== null && "code" in error && typeof error.code === "string") {
         if (error.code === "auth/popup-closed-by-user") {
             return "로그인 창이 닫혔어요. 다시 선택해 주세요.";

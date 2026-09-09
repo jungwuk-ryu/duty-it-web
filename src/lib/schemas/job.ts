@@ -15,6 +15,7 @@ export const JobPostingSchema = z.object({
     id: z.number(),
     wantedAuthNo: OptionalTextSchema,
     isActive: z.boolean(),
+    isBookmarked: z.boolean().default(false),
     company: JobCompanySchema,
     jobsNm: OptionalTextSchema,
     wantedTitle: OptionalTextSchema,

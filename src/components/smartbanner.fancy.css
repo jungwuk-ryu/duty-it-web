@@ -1,15 +1,15 @@
   :root {
-    --sb-glass-border: rgba(255, 255, 255, 0.40);
+    --sb-glass-border: var(--duit-border);
     /*--sb-shadow: 0 14px 34px rgba(0, 0, 0, 0.18);*/
 
     /* typography */
-    --sb-text: rgba(17, 24, 39, 0.92);      /* slate-900 */
-    --sb-subtext: rgba(55, 65, 81, 0.78);   /* slate-700 */
-    --sb-muted: rgba(107, 114, 128, 0.78);  /* slate-500 */
+    --sb-text: var(--duit-foreground);
+    --sb-subtext: var(--duit-muted-foreground);
+    --sb-muted: var(--duit-subtle-foreground);
 
     /* brand accent */
-    --sb-accent: #C63C33;
-    --sb-accent-hover: #c63f33;
+    --sb-accent: var(--duit-primary);
+    --sb-accent-hover: var(--duit-primary);
 
     --sb-radius: 18px;
     --sb-h: 85px;
@@ -30,7 +30,7 @@
     border-radius: var(--sb-radius) !important;
     overflow: hidden !important;
 
-    background: rgba(0, 0, 0, 0.08) !important;
+    background: color-mix(in srgb, var(--duit-background) 94%, transparent) !important;
     border: 1px solid var(--sb-glass-border) !important;
     box-shadow: none !important;
   }
@@ -53,7 +53,7 @@
     background-size: cover !important;
     background-position: center !important;
 
-    border: 1px solid rgba(255,255,255,0.45) !important;
+    border: 1px solid var(--sb-glass-border) !important;
     box-shadow: 0 10px 22px rgba(0,0,0,0.10) !important;
   }
 
@@ -62,9 +62,9 @@
     border-radius: 12px !important;
     flex: 0 0 auto !important;
 
-    background: rgba(255, 255, 255, 0.45) !important;
-    border: 1px solid rgba(255, 255, 255, 0.55) !important;
-    color: rgba(17, 24, 39, 0.75) !important;
+    background: var(--duit-muted) !important;
+    border: 1px solid var(--sb-glass-border) !important;
+    color: var(--sb-text) !important;
 
     display: inline-flex !important;
     align-items: center !important;
@@ -75,8 +75,8 @@
   }
 
   .smartbanner-close:hover {
-    background: rgba(255, 255, 255, 0.62) !important;
-    border-color: rgba(255, 255, 255, 0.70) !important;
+    background: var(--duit-background) !important;
+    border-color: var(--duit-input) !important;
     transform: translateY(-1px) !important;
   }
 

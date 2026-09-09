@@ -5,6 +5,9 @@ import { Noto_Sans_KR } from "next/font/google";
 import Footer from "../components/Footer";
 import { GoogleAnalytics } from '@next/third-parties/google'
 import AndroidOnlySmartBanner from "../components/AndroidOnlySmartBanner";
+import SessionProvider from "../components/SessionProvider";
+import ThemeProvider from "../components/ThemeProvider";
+import { AnimatedThemeToggle } from "../components/ui/animated-theme-toggle";
 
 const notoSansKR = Noto_Sans_KR({
   subsets: ["latin"],
@@ -58,16 +61,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko" className={`${notoSansKR.className} scroll-smooth motion-reduce:scroll-auto`} data-scroll-behavior="smooth">
+    <html lang="ko" className={`${notoSansKR.className} scroll-smooth motion-reduce:scroll-auto`} data-scroll-behavior="smooth" suppressHydrationWarning>
       <body
-        className={"antialiased min-h-screen flex flex-col"}
+        className={"antialiased min-h-screen flex flex-col bg-background text-foreground"}
       >
-        <Header />
-        <main className="flex-1 bg-[#F8F9FA]">
-          {children}
-        </main>
-        <Footer />
-        <AndroidOnlySmartBanner />
+        <ThemeProvider>
+          <SessionProvider>
+            <Header />
+            <AnimatedThemeToggle className="fixed bottom-6 right-6 z-50 bg-background/90 shadow-lg shadow-slate-950/10 backdrop-blur-sm" />
+            <main className="flex-1 bg-canvas">
+              {children}
+            </main>
+            <Footer />
+            <AndroidOnlySmartBanner />
+          </SessionProvider>
+        </ThemeProvider>
       </body>
       <GoogleAnalytics gaId={process.env.GA_ID ?? ""} />
     </html>

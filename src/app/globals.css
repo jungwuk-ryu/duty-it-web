@@ -1,23 +1,127 @@
 @import "tailwindcss";
 @import "@heroui/styles";
 
-@theme {
-    --color-brand: #C63C33;
-    --color-accent: #F3F4F6;
-    --color-accent-foreground: #111827;
-    --color-background: #FFFFFF;
-    --color-border: #E5E7EB;
-    --color-destructive: #DC2626;
-    --color-destructive-foreground: #FFFFFF;
-    --color-input: #D1D5DB;
-    --color-muted-foreground: #6B7280;
-    --color-popover: #FFFFFF;
-    --color-popover-foreground: #111827;
-    --color-primary: #C63C33;
-    --color-primary-foreground: #FFFFFF;
-    --color-ring: #C63C33;
-    --color-secondary: #F3F4F6;
-    --color-secondary-foreground: #111827;
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+    :root, .light {
+        color-scheme: light;
+        --duit-background: #FFFFFF;
+        --duit-canvas: #F8F9FA;
+        --duit-foreground: #111827;
+        --duit-muted: #F3F4F6;
+        --duit-muted-foreground: #626C7A;
+        --duit-subtle-foreground: #6B7280;
+        --duit-border: #E5E7EB;
+        --duit-input: #D1D5DB;
+        --duit-brand: #C63C33;
+        --duit-primary: #C63C33;
+        --duit-primary-foreground: #FFFFFF;
+        --duit-destructive: #B91C1C;
+        --duit-destructive-foreground: #FFFFFF;
+        --duit-danger-surface: #FEF2F2;
+        --duit-inverse: #000000;
+        --duit-inverse-foreground: #FFFFFF;
+    }
+
+    .dark {
+        color-scheme: dark;
+        --duit-background: #181C24;
+        --duit-canvas: #101318;
+        --duit-foreground: #F1F3F6;
+        --duit-muted: #252B35;
+        --duit-muted-foreground: #A9B2C0;
+        --duit-subtle-foreground: #919CAB;
+        --duit-border: #343C49;
+        --duit-input: #4C5767;
+        --duit-brand: #F58D82;
+        --duit-primary: #C63C33;
+        --duit-primary-foreground: #FFFFFF;
+        --duit-destructive: #FCA5A5;
+        --duit-destructive-foreground: #3F0C0C;
+        --duit-danger-surface: #351E24;
+        --duit-inverse: #F1F3F6;
+        --duit-inverse-foreground: #111827;
+    }
+
+    /* Keep HeroUI fields and portalled menus on the same palette as shadcn. */
+    :root, .light, .dark {
+        --background: var(--duit-background);
+        --foreground: var(--duit-foreground);
+        --surface: var(--duit-background);
+        --surface-foreground: var(--duit-foreground);
+        --overlay: var(--duit-background);
+        --overlay-foreground: var(--duit-foreground);
+        --field-background: var(--duit-background);
+        --field-foreground: var(--duit-foreground);
+        --field-placeholder: var(--duit-muted-foreground);
+        --muted: var(--duit-muted-foreground);
+        --default: var(--duit-muted);
+        --default-foreground: var(--duit-foreground);
+        --accent: var(--duit-primary);
+        --accent-foreground: var(--duit-primary-foreground);
+        --border: var(--duit-border);
+        --separator: var(--duit-border);
+        --focus: var(--duit-brand);
+    }
+
+    /* HeroUI also provides these names. Scope the aliases to the document so
+       a `.dark` class cannot leave its foreground and background palettes out of sync. */
+    :root, html.light, html.dark {
+        --color-background: var(--duit-background);
+        --color-canvas: var(--duit-canvas);
+        --color-foreground: var(--duit-foreground);
+        --color-accent: var(--duit-muted);
+        --color-accent-foreground: var(--duit-foreground);
+        --color-muted: var(--duit-muted);
+        --color-muted-foreground: var(--duit-muted-foreground);
+        --color-subtle-foreground: var(--duit-subtle-foreground);
+        --color-border: var(--duit-border);
+        --color-input: var(--duit-input);
+        --color-popover: var(--duit-background);
+        --color-popover-foreground: var(--duit-foreground);
+        --color-primary: var(--duit-primary);
+        --color-primary-foreground: var(--duit-primary-foreground);
+        --color-ring: var(--duit-brand);
+        --color-secondary: var(--duit-muted);
+        --color-secondary-foreground: var(--duit-foreground);
+    }
+}
+
+@theme inline {
+    --color-brand: var(--duit-brand);
+    --color-background: var(--duit-background);
+    --color-canvas: var(--duit-canvas);
+    --color-foreground: var(--duit-foreground);
+    --color-accent: var(--duit-muted);
+    --color-accent-foreground: var(--duit-foreground);
+    --color-muted: var(--duit-muted);
+    --color-muted-foreground: var(--duit-muted-foreground);
+    --color-subtle-foreground: var(--duit-subtle-foreground);
+    --color-border: var(--duit-border);
+    --color-input: var(--duit-input);
+    --color-popover: var(--duit-background);
+    --color-popover-foreground: var(--duit-foreground);
+    --color-primary: var(--duit-primary);
+    --color-primary-foreground: var(--duit-primary-foreground);
+    --color-ring: var(--duit-brand);
+    --color-secondary: var(--duit-muted);
+    --color-secondary-foreground: var(--duit-foreground);
+    --color-destructive: var(--duit-destructive);
+    --color-destructive-foreground: var(--duit-destructive-foreground);
+    --color-danger-surface: var(--duit-danger-surface);
+    --color-inverse: var(--duit-inverse);
+    --color-inverse-foreground: var(--duit-inverse-foreground);
+    --color-category-conference: light-dark(var(--color-orange-800), var(--color-orange-300));
+    --color-category-seminar: light-dark(var(--color-yellow-800), var(--color-yellow-300));
+    --color-category-workshop: light-dark(var(--color-green-800), var(--color-green-300));
+    --color-category-webinar: light-dark(var(--color-indigo-800), var(--color-indigo-300));
+    --color-category-contest: light-dark(var(--color-rose-800), var(--color-rose-300));
+    --color-category-continuing: light-dark(var(--color-blue-800), var(--color-blue-300));
+    --color-category-education: light-dark(var(--color-emerald-800), var(--color-emerald-300));
+    --color-category-volunteer: light-dark(var(--color-teal-800), var(--color-teal-300));
+    --color-category-training: light-dark(var(--color-sky-800), var(--color-sky-300));
+    --color-category-supporters: light-dark(var(--color-purple-800), var(--color-purple-300));
 }
 
 @theme inline {

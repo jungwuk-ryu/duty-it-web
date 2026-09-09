@@ -10,6 +10,8 @@ type Props = {
     className: string;
     eager?: boolean;
     priority?: boolean;
+    quality?: number;
+    sizes?: string;
     src: string | null;
 };
 
@@ -18,11 +20,13 @@ export default function EventThumbnail({
     className,
     eager = false,
     priority = false,
+    quality,
+    sizes = "(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 100vw",
     src,
 }: Props) {
     const preferredSrc = getEventThumbnailSource(src);
-    const [failedSrc, setFailedSrc] = useState<string | null>(null);
-    const imageSrc = failedSrc === preferredSrc ? EVENT_THUMBNAIL_FALLBACK : preferredSrc;
+    const [failedSources, setFailedSources] = useState<ReadonlySet<string>>(() => new Set());
+    const imageSrc = failedSources.has(preferredSrc) ? EVENT_THUMBNAIL_FALLBACK : preferredSrc;
 
     return (
         <Image
@@ -32,12 +36,19 @@ export default function EventThumbnail({
             loading={priority ? undefined : eager ? "eager" : undefined}
             onError={() => {
                 if (imageSrc !== EVENT_THUMBNAIL_FALLBACK) {
-                    setFailedSrc(preferredSrc);
+                    setFailedSources((currentSources) => {
+                        if (currentSources.has(preferredSrc)) return currentSources;
+
+                        const nextSources = new Set(currentSources);
+                        nextSources.add(preferredSrc);
+                        return nextSources;
+                    });
                 }
             }}
             priority={priority}
+            quality={quality}
             className={className}
-            sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 100vw"
+            sizes={sizes}
         />
     );
 }
