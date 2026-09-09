@@ -82,6 +82,7 @@
   border: 3px solid #252423;
   border-radius: 37px;
   background: #fff;
+  color: #242323;
 }
 .phoneStatus { position: relative; display: flex; align-items: center; justify-content: space-between; height: 38px; padding: 0 18px; font-size: 10px; font-weight: 700; }
 .phoneStatus > span:last-child { display: flex; align-items: center; gap: 3px; }
@@ -189,7 +190,7 @@
 .featureCarouselViewport { position: relative; z-index: 1; display: flex; min-width: 0; min-height: 0; height: 100%; padding-bottom: 45px; }
 .featureCarouselSlide { display: flex; width: 100%; min-width: 0; min-height: 0; height: 100%; outline: none; }
 .featureCarouselSlide:focus-visible { border-radius: 24px; outline: 2px solid #f3aaa3; outline-offset: 5px; }
-.demoSurface { box-sizing: border-box; flex: 1; width: 100%; min-width: 0; min-height: 0; height: 100%; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; padding: 34px; border: 1px solid #ffffff90; border-radius: 24px; background: linear-gradient(145deg, #fff 0%, #f9f8f7 100%); color: var(--ink); scrollbar-width: none; box-shadow: 0 22px 35px #0d08082b, inset 0 1px #fff; }
+.demoSurface { --ink: #242323; --muted: #74716f; --line: #e9e6e4; box-sizing: border-box; flex: 1; width: 100%; min-width: 0; min-height: 0; height: 100%; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; padding: 34px; border: 1px solid #ffffff90; border-radius: 24px; background: linear-gradient(145deg, #fff 0%, #f9f8f7 100%); color: var(--ink); scrollbar-width: none; box-shadow: 0 22px 35px #0d08082b, inset 0 1px #fff; }
 .demoSurface::-webkit-scrollbar { display: none; }
 .featureCarouselControls { position: absolute; right: 0; bottom: 0; display: flex; align-items: center; gap: 12px; color: #d6cecb; font-size: 12px; font-variant-numeric: tabular-nums; }
 .featureCarouselControl { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border: 1px solid #ffffff35; border-radius: 50%; background: #ffffff0d; color: #fff; cursor: pointer; transition: background .2s, border-color .2s; }
@@ -256,6 +257,36 @@
 .storeLinks { display: flex; align-items: center; gap: 12px; }
 .storeButton { min-width: 159px; border: 1px solid #ffffff22; border-radius: 8px; background: #c63c33 !important; box-shadow: none !important; }
 .storeButton:hover { background: #d74c42 !important; }
+
+:global(html.dark) .home {
+  --ink: var(--duit-foreground);
+  --muted: var(--duit-muted-foreground);
+  --line: var(--duit-border);
+  --coral: var(--duit-primary);
+  --peach: var(--duit-danger-surface);
+  background: var(--duit-background);
+}
+
+:global(html.dark) .heroDescription,
+:global(html.dark) .featureIntro,
+:global(html.dark) .heroCaption { color: var(--duit-muted-foreground); }
+
+:global(html.dark) .heroGlow {
+  background: radial-gradient(ellipse at 53% 52%, #c63c3338 0%, #c63c3317 42%, transparent 69%);
+}
+
+:global(html.dark) .eventFilters button,
+:global(html.dark) .eventsEmpty,
+:global(html.dark) .jobsBanner { background: var(--duit-muted); }
+
+:global(html.dark) .eventFilters button { border-color: var(--duit-border); }
+:global(html.dark) .eventFilters button:hover { background: var(--duit-border); }
+:global(html.dark) .eventImage,
+:global(html.dark) .eventSkeleton > div > span { background: var(--duit-muted); }
+:global(html.dark) .eventSkeleton > div::after { background: linear-gradient(var(--duit-muted) 0 14px, transparent 14px 30px, var(--duit-border) 30px 42px, transparent 42px); }
+:global(html.dark) .eventBookmark { border: 1px solid var(--duit-border); background: var(--duit-background); color: var(--duit-foreground); box-shadow: none; }
+:global(html.dark) .outlineLink { border-color: var(--duit-input); background: var(--duit-background); }
+:global(html.dark) .features { background: var(--duit-canvas); }
 
 @keyframes preview-enter {
   from { opacity: 0; transform: translateY(5px); }
