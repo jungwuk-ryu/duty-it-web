@@ -64,6 +64,28 @@
         --separator: var(--duit-border);
         --focus: var(--duit-brand);
     }
+
+    /* HeroUI also provides these names. Scope the aliases to the document so
+       a `.dark` class cannot leave its foreground and background palettes out of sync. */
+    :root, html.light, html.dark {
+        --color-background: var(--duit-background);
+        --color-canvas: var(--duit-canvas);
+        --color-foreground: var(--duit-foreground);
+        --color-accent: var(--duit-muted);
+        --color-accent-foreground: var(--duit-foreground);
+        --color-muted: var(--duit-muted);
+        --color-muted-foreground: var(--duit-muted-foreground);
+        --color-subtle-foreground: var(--duit-subtle-foreground);
+        --color-border: var(--duit-border);
+        --color-input: var(--duit-input);
+        --color-popover: var(--duit-background);
+        --color-popover-foreground: var(--duit-foreground);
+        --color-primary: var(--duit-primary);
+        --color-primary-foreground: var(--duit-primary-foreground);
+        --color-ring: var(--duit-brand);
+        --color-secondary: var(--duit-muted);
+        --color-secondary-foreground: var(--duit-foreground);
+    }
 }
 
 @theme inline {
