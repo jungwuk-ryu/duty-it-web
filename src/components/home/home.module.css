@@ -124,7 +124,6 @@
 .phoneNav img { width: 16px; height: 16px; object-fit: contain; opacity: .65; }
 .phoneNav > span[data-selected="true"] img { filter: grayscale(1) brightness(.35); opacity: 1; }
 .phoneHomeBar { position: absolute; bottom: 5px; left: 50%; width: 77px; height: 3px; border-radius: 3px; background: #232222; transform: translateX(-50%); }
-.heroCaption { position: relative; margin-top: 4px; padding-left: 17px; color: #77716d; font-size: 10px; text-align: center; }
 
 .events { padding-block: 90px 70px; }
 .sectionHeading { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; }
@@ -268,8 +267,7 @@
 }
 
 :global(html.dark) .heroDescription,
-:global(html.dark) .featureIntro,
-:global(html.dark) .heroCaption { color: var(--duit-muted-foreground); }
+:global(html.dark) .featureIntro { color: var(--duit-muted-foreground); }
 
 :global(html.dark) .heroGlow {
   background: radial-gradient(ellipse at 53% 52%, #c63c3338 0%, #c63c3317 42%, transparent 69%);
@@ -319,7 +317,6 @@
   .phonePoster { height: 96px; }
   .phoneEventCopy { padding-top: 8px; }
   .phoneEventCopy > strong { font-size: 8px; }
-  .heroCaption { padding-left: 0; }
   .events { padding-block: 72px 54px; }
   .sectionHeading { align-items: flex-start; flex-direction: column; gap: 16px; }
   .sectionHeading h2 { font-size: 31px; }

@@ -119,7 +119,6 @@ export default function HomeHero() {
               </div>
             </div>
           </div>
-          <figcaption className={styles.heroCaption}>듀잇 앱 화면 예시</figcaption>
         </figure>
       </div>
     </section>
