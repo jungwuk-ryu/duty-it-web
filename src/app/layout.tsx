@@ -7,6 +7,7 @@ import { GoogleAnalytics } from '@next/third-parties/google'
 import AndroidOnlySmartBanner from "../components/AndroidOnlySmartBanner";
 import SessionProvider from "../components/SessionProvider";
 import ThemeProvider from "../components/ThemeProvider";
+import { AnimatedThemeToggle } from "../components/ui/animated-theme-toggle";
 
 const notoSansKR = Noto_Sans_KR({
   subsets: ["latin"],
@@ -67,6 +68,7 @@ export default function RootLayout({
         <ThemeProvider>
           <SessionProvider>
             <Header />
+            <AnimatedThemeToggle className="fixed bottom-6 right-6 z-50 bg-background/90 shadow-lg shadow-slate-950/10 backdrop-blur-sm" />
             <main className="flex-1 bg-canvas">
               {children}
             </main>

@@ -1,7 +1,6 @@
 "use client";
 
 import { Button, buttonVariants } from "@/src/components/ui/button";
-import { AnimatedThemeToggle } from "@/src/components/ui/animated-theme-toggle";
 import { MenuToggleIcon } from "@/src/components/ui/menu-toggle-icon";
 import { useScroll } from "@/src/components/ui/use-scroll";
 import { cn } from "@/src/lib/utils";
@@ -64,7 +63,6 @@ export function Header() {
                         </Link>
                     ))}
                     <AccountMenu />
-                    <AnimatedThemeToggle />
                     <Link href="/#download" className={buttonVariants({ className: "ml-3 h-10 rounded-xl bg-brand px-5 text-white hover:bg-brand/90" })}>
                         앱 다운로드
                     </Link>
