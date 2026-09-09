@@ -111,7 +111,7 @@
 .phoneEventThumbnail { object-fit: cover; }
 .phoneEventBookmark { position: absolute; top: 8px; right: 8px; width: 15px; height: 15px; filter: grayscale(1) brightness(.9); opacity: .68; }
 .phoneEventCopy { min-width: 0; padding: 9px 0 0; }
-.phoneEventCopy > strong { display: -webkit-box; overflow: hidden; min-height: 29px; -webkit-box-orient: vertical; -webkit-line-clamp: 2; font-size: 10px; font-weight: 700; line-height: 1.43; letter-spacing: -.055em; }
+.phoneEventCopy > strong { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 2; font-size: 10px; font-weight: 700; line-height: 1.43; letter-spacing: -.055em; }
 .phoneEventMeta { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 7px; margin: 6px 0 0; color: #84817f; font-size: 6px; line-height: 1.3; }
 .phoneEventMeta > div { display: flex; min-width: 0; gap: 4px; }
 .phoneEventMeta dt { flex: 0 0 auto; color: #aaa6a3; }
@@ -318,7 +318,7 @@
   .phone { top: 0; left: 50%; width: 251px; height: 504px; transform: translateX(-50%) rotate(4deg); }
   .phonePoster { height: 96px; }
   .phoneEventCopy { padding-top: 8px; }
-  .phoneEventCopy > strong { min-height: 24px; font-size: 8px; }
+  .phoneEventCopy > strong { font-size: 8px; }
   .heroCaption { padding-left: 0; }
   .events { padding-block: 72px 54px; }
   .sectionHeading { align-items: flex-start; flex-direction: column; gap: 16px; }
@@ -370,7 +370,7 @@
   .phoneFilters > span { min-height: 22px; padding: 4px 6px; }
   .phonePoster { height: 85px; }
   .phoneEventCopy { padding-top: 6px; }
-  .phoneEventCopy > strong { min-height: 19px; font-size: 7px; }
+  .phoneEventCopy > strong { font-size: 7px; }
   .phoneEventMeta, .phoneEventDate { margin-top: 3px; font-size: 5px; }
   .phoneEventBookmark { top: 7px; right: 6px; width: 11px; height: 11px; }
   .phoneNav { height: 55px; padding-top: 7px; }
