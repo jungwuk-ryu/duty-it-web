@@ -22,7 +22,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { type MouseEvent, type ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { flushSync } from "react-dom";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 
 type Option<T extends string> = { value: T; label: string };
 
@@ -62,7 +62,14 @@ export default function EventsResults({
     typeOptions,
 }: Props) {
     const searchParams = useSearchParams();
-    const isListView = isEventListView(Object.fromEntries(searchParams));
+    const pathname = usePathname();
+    const currentListView = isEventListView(Object.fromEntries(searchParams));
+    const [retainedListView, setRetainedListView] = useState(initialIsListView);
+    const isListView = pathname === "/events" ? currentListView : retainedListView;
+    // Intercepted detail routes change the URL while this list stays mounted.
+    if (pathname === "/events" && retainedListView !== currentListView) {
+        setRetainedListView(currentListView);
+    }
     const [request, setRequest] = useState<EventPageRequest>(initialRequest);
     const [events, setEvents] = useState<EventResponse | null>(initialData);
     const [error, setError] = useState<EventsClientFetchError | null>(null);
@@ -192,6 +199,7 @@ export default function EventsResults({
 
     useEffect(() => {
         const handlePopState = () => {
+            if (window.location.pathname !== "/events") return;
             const params = new URLSearchParams(window.location.search);
             const nextRequest = getEventPageRequestFromUrlSearchParams(params);
             const shouldScrollToEventList = nextRequest.cursor !== requestRef.current.cursor;
