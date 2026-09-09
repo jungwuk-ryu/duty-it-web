@@ -23,7 +23,7 @@ export default function EventDetailPanel({ children, event }: { children: ReactN
         <div className={styles.panelToolbar}>
           <span>행사 상세</span>
           <div className="flex items-center gap-1">
-            {event && <EventActions eventId={event.id} title={event.title} initialSaved={event.isBookmarked} />}
+            {event && <EventActions eventId={event.id} title={event.title} hostName={event.host.name} startAt={event.startAt} endAt={event.endAt} initialSaved={event.isBookmarked} />}
             <Dialog.Close asChild><Button variant="ghost" size="icon" className="size-10 rounded-full" aria-label="행사 상세 닫기"><X size={22} aria-hidden /></Button></Dialog.Close>
           </div>
         </div>

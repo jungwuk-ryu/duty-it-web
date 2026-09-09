@@ -35,7 +35,7 @@ export default function EventDetail({ event, variant = "page" }: { event: Event;
         <div className={styles.information}>
           <div className={styles.heading}>
             <div className={styles.tags}><CategoryTag category={event.eventType} /><span className={styles.status}>{getEventRecruitmentStatus(event)}</span></div>
-            {variant === "page" && <EventActions eventId={event.id} title={event.title} initialSaved={event.isBookmarked} />}
+            {variant === "page" && <EventActions eventId={event.id} title={event.title} hostName={event.host.name} startAt={event.startAt} endAt={event.endAt} initialSaved={event.isBookmarked} />}
           </div>
           <Title id={`event-title-${event.id}`} className={styles.title}>{event.title}</Title>
           <p className={styles.hostName}>{event.host.name}</p>
