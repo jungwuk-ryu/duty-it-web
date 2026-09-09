@@ -5,20 +5,22 @@ import styles from "./home.module.css";
 
 const PHONE_MOCK_EVENTS = [
   {
-    id: "clinical-workshop",
-    title: "간호대학생 임상실습 준비 클래스 2기",
-    image: "/images/home/hero-mock-clinical-workshop-flyer.png",
+    id: "elderly-care-forum",
+    title: "2026 노인간호 통합케어 포럼",
+    image: "/images/home/hero-mock-elderly-care-forum.png",
+    imagePosition: "center 24%",
     eventType: "교육",
-    hostName: "너스텝 아카데미",
-    date: "2026. 10. 14.",
+    hostName: "한국통합돌봄간호연구회",
+    date: "2026. 04. 18.",
   },
   {
-    id: "community-volunteer",
-    title: "지역사회 건강돌봄 봉사 프로젝트 5기",
-    image: "/images/home/hero-mock-community-volunteer-flyer.png",
+    id: "community-visiting-nursing-camp",
+    title: "2026 지역사회 방문간호 봉사캠프",
+    image: "/images/home/hero-mock-community-visiting-nursing-camp.png",
+    imagePosition: "center 24%",
     eventType: "봉사",
-    hostName: "메디브릿지",
-    date: "2026. 10. 24.",
+    hostName: "미래간호나눔재단",
+    date: "2026. 07. 24. ~ 07. 27.",
   },
 ];
 
@@ -84,7 +86,15 @@ export default function HomeHero() {
                     {PHONE_MOCK_EVENTS.map((event, index) => (
                       <article className={styles.phoneEvent} key={event.id}>
                         <div className={styles.phonePoster}>
-                          <Image src={event.image} alt="" fill priority={index === 0} className={styles.phoneEventThumbnail} sizes="(max-width: 799px) 251px, 280px" />
+                          <Image
+                            src={event.image}
+                            alt=""
+                            fill
+                            priority={index === 0}
+                            className={styles.phoneEventThumbnail}
+                            sizes="(max-width: 799px) 251px, 280px"
+                            style={{ objectPosition: event.imagePosition }}
+                          />
                         </div>
                         <Image src="/images/app-ui/bookmark.png" alt="" width={20} height={20} className={styles.phoneEventBookmark} />
                         <div className={styles.phoneEventCopy}>
