@@ -13,5 +13,7 @@ export const fetchEventDetail = cache(async (id: string) => {
   });
   if (response.status === 404) notFound();
   if (!response.ok) throw new Error("행사 정보를 불러오지 못했어요.");
-  return EventSchema.parse(await response.json());
+  const event = EventSchema.parse(await response.json());
+  if (event.eventStatusGroup === "PENDING" || event.eventStatus === "PENDING") notFound();
+  return event;
 });

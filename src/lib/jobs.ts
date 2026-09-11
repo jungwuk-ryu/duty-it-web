@@ -1,8 +1,21 @@
 import type { JobPosting } from "@/src/lib/schemas/job";
+import { getKoreanDate, parseJobDeadlineDate } from "./seo-date";
+
+export function getJobValidThrough(job: Pick<JobPosting, "receiptCloseDt" | "expiresAt">): string | null {
+    if (/채용\s*시|상시/.test(job.receiptCloseDt)) return null;
+    // expiresAt is a sorting date at midnight, not an exact application deadline.
+    const day = parseJobDeadlineDate(job.receiptCloseDt) ?? getKoreanDate(job.expiresAt);
+    return day ? `${day}T23:59:59+09:00` : null;
+}
+
+export function isJobOpen(job: Pick<JobPosting, "isActive" | "receiptCloseDt" | "expiresAt">, now = new Date()): boolean {
+    const deadline = getJobValidThrough(job);
+    return job.isActive && (deadline == null || Date.parse(deadline) >= now.getTime());
+}
 
 export function getJobDeadlineLabel(receiptCloseDt: string): string {
     const value = receiptCloseDt.trim();
-    const match = value.match(/^(\d{4})(\d{2})(\d{2})$/);
+    const match = parseJobDeadlineDate(value)?.match(/^(\d{4})-(\d{2})-(\d{2})$/);
 
     if (!match) return value || "마감일 미정";
 
@@ -11,7 +24,7 @@ export function getJobDeadlineLabel(receiptCloseDt: string): string {
 }
 
 export function getJobDday(receiptCloseDt: string, now = new Date()): string | null {
-    const match = receiptCloseDt.trim().match(/^(\d{4})(\d{2})(\d{2})$/);
+    const match = parseJobDeadlineDate(receiptCloseDt)?.match(/^(\d{4})-(\d{2})-(\d{2})$/);
     if (!match) return null;
 
     const [, year, month, day] = match;

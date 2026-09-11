@@ -5,8 +5,10 @@ import HomeFeatures from "@/src/components/home/HomeFeatures";
 import HomeDownload from "@/src/components/home/HomeDownload";
 import { getHomePreviewData } from "@/src/components/home/home-preview-data";
 import styles from "@/src/components/home/home.module.css";
+import { serializeJsonLd, SITE_ORIGIN } from "@/src/lib/seo";
 
 export const metadata: Metadata = {
+  alternates: { canonical: `${SITE_ORIGIN}/` },
   title: "간호의 내일을, 발견하는 곳 | 듀잇",
   description: "간호사와 간호대학생을 위한 대외활동·행사, 학술대회, 보수교육, 봉사와 채용 공고. 듀잇에서 관심 있는 기회를 찾고 북마크로 모아보세요.",
   openGraph: {
@@ -31,6 +33,15 @@ export default async function Home() {
 
   return (
     <div className={styles.home}>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd({
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "@id": `${SITE_ORIGIN}/#website`,
+        name: "듀잇",
+        alternateName: "DuIt",
+        url: `${SITE_ORIGIN}/`,
+        inLanguage: "ko-KR",
+      }) }} />
       <HomeHero />
       <div className={styles.container}>
         <HomeEvents />

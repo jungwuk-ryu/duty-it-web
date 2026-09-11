@@ -28,6 +28,9 @@ export const EventSchema = z.object({
     "host": HostSchema,
     "viewCount": z.number(),
     "isBookmarked": z.boolean(),
+    // Optional until the public events API exposes content timestamps.
+    "createdAt": z.string().nullish(),
+    "updatedAt": z.string().nullish(),
 });
 export type Event = z.infer<typeof EventSchema>;
 

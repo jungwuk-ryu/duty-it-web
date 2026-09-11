@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import SubmitEventForm from "@/src/components/SubmitEventForm";
 
 export const metadata: Metadata = {
+    robots: { index: false, follow: true },
     title: "행사 제보하기 | 듀잇",
     description: "듀잇에 간호 행사를 제보해 주세요. 검토 후 행사 목록에 반영됩니다.",
     alternates: {
