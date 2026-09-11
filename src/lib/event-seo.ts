@@ -2,9 +2,9 @@ import { EventStatusLabel, EventTypeLabel } from "./event-labels";
 import { formatEventDateTime, formatEventPeriod, getHostEventsHref } from "./event-detail";
 import type { Event } from "./schemas/event";
 import { isHttpUrl } from "./url";
+import { SITE_ORIGIN, DEFAULT_SOCIAL_IMAGE } from "./seo";
+export { serializeJsonLd } from "./seo";
 
-const SITE_ORIGIN = "https://www.dutyit.net";
-const DEFAULT_SOCIAL_IMAGE = `${SITE_ORIGIN}/og/default-1200x630.png`;
 const jsonLdDateFormatter = new Intl.DateTimeFormat("en-CA", {
   timeZone: "Asia/Seoul",
   year: "numeric",
@@ -59,7 +59,8 @@ export function getEventStructuredData(event: Event) {
       url: new URL(getHostEventsHref(event.host.id), SITE_ORIGIN).toString(),
       ...(event.host.thumbnail && isHttpUrl(event.host.thumbnail) ? { logo: event.host.thumbnail } : {}),
     },
-    eventStatus: "https://schema.org/EventScheduled",
+    // Lifecycle labels such as FINISHED do not describe cancellation or
+    // postponement. The public API does not expose those facts yet.
     ...(event.eventStatusGroup === "ACTIVE"
       ? {
           potentialAction: {
@@ -71,10 +72,6 @@ export function getEventStructuredData(event: Event) {
       : {}),
     sameAs: event.uri,
   };
-}
-
-export function serializeJsonLd(value: unknown): string {
-  return JSON.stringify(value).replace(/</g, "\\u003c");
 }
 
 function formatJsonLdDateTime(value: Date): string {

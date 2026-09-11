@@ -23,6 +23,7 @@ import Link from "next/link";
 import { type MouseEvent, type ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import { usePathname, useSearchParams } from "next/navigation";
+import { getEventsListMetadata } from "@/src/lib/list-seo";
 
 type Option<T extends string> = { value: T; label: string };
 
@@ -169,6 +170,15 @@ export default function EventsResults({
     }, [initialData, initialRequest]);
 
     useEffect(() => {
+        if (pathname !== "/events") return;
+        const metadata = getEventsListMetadata(Object.fromEntries(getEventsSearchParams(request, request.cursor)));
+        document.querySelector<HTMLLinkElement>('link[rel="canonical"]')?.setAttribute("href", metadata.alternates.canonical);
+        const robots = metadata.robots;
+        document.querySelector('meta[name="robots"]')?.setAttribute("content", `${robots.index ? "index" : "noindex"}, follow`);
+        document.querySelector('meta[property="og:url"]')?.setAttribute("content", metadata.alternates.canonical);
+    }, [pathname, request]);
+
+    useEffect(() => {
         if (!isListView) return;
         const controller = new AbortController();
 
@@ -235,7 +245,9 @@ export default function EventsResults({
         });
     };
 
-    const handleNextPage = () => {
+    const handleNextPage = (event: MouseEvent<HTMLAnchorElement>) => {
+        if (isModifiedNavigation(event)) return;
+        event.preventDefault();
         const nextCursor = events?.pageInfo.hasNext ? events.pageInfo.nextCursor : null;
         if (nextCursor == null) return;
 
@@ -243,7 +255,9 @@ export default function EventsResults({
         void loadPage({ ...request, cursor: nextCursor }, "push", false, true);
     };
 
-    const handlePreviousPage = () => {
+    const handlePreviousPage = (event: MouseEvent<HTMLAnchorElement>) => {
+        if (isModifiedNavigation(event)) return;
+        event.preventDefault();
         const previousRequest = previousRequests[previousRequests.length - 1];
         if (previousRequest != null) {
             setPreviousRequests((currentPreviousRequests) => currentPreviousRequests.slice(0, -1));
@@ -257,6 +271,7 @@ export default function EventsResults({
     };
 
     const handleFirstPage = (event: MouseEvent<HTMLAnchorElement>) => {
+        if (isModifiedNavigation(event)) return;
         event.preventDefault();
         setPreviousRequests([]);
         void loadPage({ ...request, cursor: null }, "push", false, true);
@@ -280,6 +295,7 @@ export default function EventsResults({
         : hostOptions.find((host) => host.id === request.hostId)?.name ?? "선택한 주최";
     const nextCursor = events?.pageInfo.hasNext ? events.pageInfo.nextCursor : null;
     const canGoPrevious = previousRequests.length > 0 || request.cursor != null;
+    const previousRequest = previousRequests.at(-1) ?? { ...request, cursor: null };
 
     return (
         <div ref={pageTopRef} className="scroll-mt-24">
@@ -379,26 +395,34 @@ export default function EventsResults({
                             )}
 
                             <nav aria-label="행사 페이지 탐색" className="mt-8 flex items-center justify-center gap-3">
-                                <button
+                                {canGoPrevious ? <Link
                                     aria-label="이전 행사 페이지"
                                     className={PAGINATION_BUTTON_CLASS}
-                                    disabled={!canGoPrevious}
+                                    href={getEventsHref(previousRequest, previousRequest.cursor)}
                                     onClick={handlePreviousPage}
-                                    type="button"
+                                    prefetch={false}
                                 >
                                     <ChevronLeft aria-hidden="true" className="size-4" />
                                     이전
-                                </button>
-                                <button
+                                </Link> : (
+                                    <button aria-label="이전 행사 페이지" className={PAGINATION_BUTTON_CLASS} disabled type="button">
+                                        <ChevronLeft aria-hidden="true" className="size-4" />이전
+                                    </button>
+                                )}
+                                {nextCursor != null ? <Link
                                     aria-label="다음 행사 페이지"
                                     className={PAGINATION_BUTTON_CLASS}
-                                    disabled={nextCursor == null}
+                                    href={getEventsHref(request, nextCursor)}
                                     onClick={handleNextPage}
-                                    type="button"
+                                    prefetch={false}
                                 >
                                     다음
                                     <ChevronRight aria-hidden="true" className="size-4" />
-                                </button>
+                                </Link> : (
+                                    <button aria-label="다음 행사 페이지" className={PAGINATION_BUTTON_CLASS} disabled type="button">
+                                        다음<ChevronRight aria-hidden="true" className="size-4" />
+                                    </button>
+                                )}
                             </nav>
                         </>
                         ) : null}
@@ -407,6 +431,10 @@ export default function EventsResults({
             )}
         </div>
     );
+}
+
+function isModifiedNavigation(event: MouseEvent<HTMLAnchorElement>): boolean {
+    return event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey;
 }
 
 async function fetchEventsPage(request: EventPageRequest, signal: AbortSignal): Promise<EventResponse> {

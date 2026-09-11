@@ -17,6 +17,7 @@ import EventDetail from "@/src/components/events/EventDetail";
 import EventContentSummary from "@/src/components/events/EventContentSummary";
 import EventCard from "@/src/components/ui/EventCard";
 import styles from "@/src/components/events/event-detail.module.css";
+import { getBreadcrumbStructuredData, getPageMetadata } from "@/src/lib/seo";
 
 type Props = { params: Promise<{ eventId: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -25,18 +26,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const description = getEventMetadataDescription(event);
   const image = getEventSocialImage(event);
   return {
-    title: `${event.title} | 듀잇`,
-    description,
+    ...getPageMetadata({ title: `${event.title} | 듀잇`, description, url, image }),
     keywords: getEventKeywords(event),
-    alternates: { canonical: url },
-    openGraph: { type: "website", title: event.title, description, url, images: [image] },
-    twitter: { card: "summary_large_image", title: event.title, description, images: [image] },
   };
 }
 export default async function EventDetailPage({ params }: Props) {
   const { eventId } = await params;
   const event = await fetchEventDetail(eventId);
-  const jsonLd = getEventStructuredData(event);
+  const jsonLd = [getEventStructuredData(event), getBreadcrumbStructuredData("events", event.title, getEventCanonicalUrl(event.id))];
   return <div className={styles.page}>
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }} />
     <Link href="/events?view=list" className={styles.back}><ArrowLeft size={16} aria-hidden />행사 목록으로</Link>
