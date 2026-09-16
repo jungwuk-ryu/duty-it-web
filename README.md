@@ -8,3 +8,5 @@
 듀잇 웹은 [듀잇](https://github.com/jungwuk-ryu/duty-it)을 소개하고 간단한 행사 목록을 웹에서 제공합니다.
 
 로그인 유지에 필요한 환경 변수와 북마크 구현은 [로그인·북마크 운영 지침](docs/auth-and-bookmarks.md)을 참고하세요.
+
+행사 상세의 AI 행사 내용과 서버 토큰 설정은 [행사 내용 연동 지침](docs/event-content.md)을 참고하세요.

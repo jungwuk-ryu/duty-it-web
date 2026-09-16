@@ -1,50 +1,40 @@
 import { buttonVariants } from "@/src/components/ui/button";
 import { BookmarkIconButton } from "@/src/components/ui/bookmark-icon-button";
-import { fetchJobPosting, JobPostingsFetchError } from "@/src/lib/api/jobs";
-import { getJobDday, getJobDeadlineLabel, getJobEmploymentSummary, getJobTitle } from "@/src/lib/jobs";
-import type { JobPosting } from "@/src/lib/schemas/job";
+import { fetchJobDetail } from "@/src/lib/api/job-detail";
+import { getJobDday, getJobDeadlineLabel, getJobEmploymentSummary, getJobTitle, isJobOpen } from "@/src/lib/jobs";
+import { getJobCanonicalUrl, getJobMetadataDescription, getJobStructuredData } from "@/src/lib/job-seo";
+import { getBreadcrumbStructuredData, getPageMetadata, serializeJsonLd } from "@/src/lib/seo";
+import { getKoreanDate } from "@/src/lib/seo-date";
 import { isHttpUrl } from "@/src/lib/url";
 import { ArrowLeft, BriefcaseBusiness, Building2, CalendarClock, ExternalLink, FileText, GraduationCap, HeartPulse, Landmark, MapPin, Phone, Send, UsersRound, WalletCards } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { notFound } from "next/navigation";
 
 type Props = { params: Promise<{ jobPostingId: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-    const jobPostingId = getJobPostingId((await params).jobPostingId);
-    if (jobPostingId == null) return { title: "채용 공고 | 듀잇" };
-
-    try {
-        const job = await fetchJobPosting(jobPostingId);
-        return {
-            title: `${getJobTitle(job)} | 듀잇`,
-            description: `${job.company.corpNm || "간호"} 채용 공고`,
-            alternates: { canonical: `https://www.dutyit.net/jobs/${job.id}` },
-        };
-    } catch {
-        return { title: "채용 공고 | 듀잇" };
-    }
+    const job = await fetchJobDetail((await params).jobPostingId);
+    return getPageMetadata({
+        title: `${getJobTitle(job)} | 듀잇`,
+        description: getJobMetadataDescription(job),
+        url: getJobCanonicalUrl(job.id),
+        index: isJobOpen(job),
+    });
 }
 
 export default async function JobPostingPage({ params }: Props) {
-    const jobPostingId = getJobPostingId((await params).jobPostingId);
-    if (jobPostingId == null) notFound();
-
-    let job: JobPosting;
-    try {
-        job = await fetchJobPosting(jobPostingId);
-    } catch (error) {
-        if (error instanceof JobPostingsFetchError && error.status === 404) notFound();
-        throw error;
-    }
-
-    const applicationUrl = isHttpUrl(job.dtlRecrContUrl) ? job.dtlRecrContUrl : null;
-    const dday = job.isActive ? getJobDday(job.receiptCloseDt) : null;
+    const job = await fetchJobDetail((await params).jobPostingId);
+    const open = isJobOpen(job);
+    const applicationUrl = open && isHttpUrl(job.dtlRecrContUrl) ? job.dtlRecrContUrl : null;
+    const dday = open ? getJobDday(job.receiptCloseDt) : null;
+    const postedDate = getKoreanDate(job.postedAt);
+    const jobData = getJobStructuredData(job);
+    const breadcrumbs = getBreadcrumbStructuredData("jobs", getJobTitle(job), getJobCanonicalUrl(job.id));
 
     return (
         <div className="container mx-auto mb-8 max-w-5xl px-4 py-8 md:py-10">
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(jobData ? [breadcrumbs, jobData] : breadcrumbs) }} />
             <Link href="/jobs" className={`${buttonVariants({ variant: "ghost", className: "-ml-3 mb-5 text-foreground" })}`}>
                 <ArrowLeft data-icon="inline-start" aria-hidden="true" />
                 채용 공고 목록
@@ -53,8 +43,8 @@ export default async function JobPostingPage({ params }: Props) {
             <article className="overflow-hidden rounded-2xl border border-border/80 bg-background shadow-[0_16px_40px_rgba(15,23,42,0.08),0_2px_8px_rgba(15,23,42,0.04)]">
                 <header className="border-b border-border/60 px-5 py-6 md:px-8 md:py-8">
                     <div className="flex flex-wrap items-center gap-2">
-                        <span className={job.isActive ? "inline-flex h-7 items-center rounded-full bg-brand/10 px-2.5 text-xs font-bold text-brand" : "inline-flex h-7 items-center rounded-full bg-muted px-2.5 text-xs font-bold text-muted-foreground"}>
-                            {job.isActive ? "모집 중" : "마감"}
+                        <span className={open ? "inline-flex h-7 items-center rounded-full bg-brand/10 px-2.5 text-xs font-bold text-brand" : "inline-flex h-7 items-center rounded-full bg-muted px-2.5 text-xs font-bold text-muted-foreground"}>
+                            {open ? "모집 중" : "마감"}
                         </span>
                         {dday && <span className="text-sm font-bold text-brand">{dday}</span>}
                         <span className="text-sm font-medium text-muted-foreground">{job.jobsNm || "간호 채용"}</span>
@@ -64,6 +54,7 @@ export default async function JobPostingPage({ params }: Props) {
                         {job.company.corpNm || "기업 정보 미등록"}
                     </p>
                     <h1 className="mt-2 text-2xl font-bold leading-snug text-foreground md:text-3xl">{getJobTitle(job)}</h1>
+                    {!open && <p className="mt-3 text-sm text-muted-foreground">접수가 마감된 공고입니다. 다른 채용 공고를 확인해 주세요.</p>}
                     <div className="mt-6 flex flex-wrap gap-2">
                         <BookmarkIconButton kind="jobs" itemId={job.id} title={getJobTitle(job)} initialSaved={job.isBookmarked} />
                         {applicationUrl && (
@@ -80,10 +71,11 @@ export default async function JobPostingPage({ params }: Props) {
                     <section aria-labelledby="job-summary">
                         <h2 id="job-summary" className="text-lg font-bold text-foreground">채용 요약</h2>
                         <dl className="mt-4 grid grid-cols-1 gap-x-8 gap-y-5 sm:grid-cols-2 lg:grid-cols-3">
-                            <DetailMeta icon={MapPin} label="근무지" value={job.workRegion || job.company.corpAddr || "근무지 미정"} />
+                            <DetailMeta icon={MapPin} label="근무지" value={job.workRegion || "근무지 미정"} />
                             <DetailMeta icon={BriefcaseBusiness} label="고용 형태" value={getJobEmploymentSummary(job)} />
                             <DetailMeta icon={WalletCards} label="급여" value={job.salTpNm || "급여 협의"} />
                             <DetailMeta icon={CalendarClock} label="접수 마감" value={getJobDeadlineLabel(job.receiptCloseDt)} />
+                            {postedDate && <DetailMeta icon={CalendarClock} label="고용24 게시일" value={postedDate} />}
                             <DetailMeta icon={UsersRound} label="모집 인원" value={job.collectPsncnt ? `${job.collectPsncnt}명` : "미정"} />
                             <DetailMeta icon={GraduationCap} label="경력·학력" value={`${job.enterTpNm || "경력 무관"} · ${job.eduNm || "학력 무관"}`} />
                         </dl>
@@ -158,11 +150,6 @@ function TextSection({ title, icon: Icon, content }: { title: string; icon: type
             <p className="mt-4 whitespace-pre-line break-words leading-7 text-foreground">{content}</p>
         </section>
     );
-}
-
-function getJobPostingId(value: string): number | null {
-    const id = Number(value);
-    return Number.isSafeInteger(id) && id > 0 ? id : null;
 }
 
 function hasPhoneNumber(value: string): boolean {

@@ -853,7 +853,7 @@ function EventSubmissionPreview({
                         {hostName}
                     </p>
 
-                    <dl className="mt-auto grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] gap-x-1.5 border-t border-border pt-4 text-xs">
+                    <dl className="mt-auto grid grid-cols-2 gap-x-3 border-t border-border pt-4 text-xs">
                         <div className="min-w-0">
                             <dt className="text-muted-foreground">일시</dt>
                             <dd className="mt-1 whitespace-nowrap font-semibold text-foreground">{formatPreviewDate(values.startAt)}</dd>
@@ -861,10 +861,6 @@ function EventSubmissionPreview({
                         <div className="min-w-0">
                             <dt className="text-muted-foreground">마감</dt>
                             <dd className="mt-1 whitespace-nowrap font-semibold text-foreground">{formatPreviewDate(values.recruitmentEndAt)}</dd>
-                        </div>
-                        <div className="min-w-7">
-                            <dt className="text-muted-foreground">조회</dt>
-                            <dd className="mt-1 font-semibold text-foreground">0</dd>
                         </div>
                     </dl>
                 </div>

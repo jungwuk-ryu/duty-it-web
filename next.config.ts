@@ -14,6 +14,10 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async rewrites() {
+    // Public sitemap files stay at the origin root so they cover every route.
+    return [{ source: '/sitemap-:name.xml', destination: '/sitemaps/:name' }];
+  },
   async headers() {
     return [
       {

@@ -1,0 +1,82 @@
+.overlay { position: fixed; inset: 0; z-index: 70; background: rgb(12 18 28 / 42%); animation: fade-in 180ms ease-out; }
+.panel { position: fixed; top: 24px; right: 0; bottom: 0; z-index: 80; display: flex; flex-direction: column; width: min(600px, 46vw); border-radius: 28px 0 0 0; border: 1px solid var(--duit-border); background: var(--duit-background); color: var(--duit-foreground); box-shadow: -16px 0 64px rgb(0 0 0 / 15%); outline: none; overflow: hidden; animation: slide-in 240ms ease-out; }
+.panelToolbar { display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; padding: 12px 24px; color: var(--duit-muted-foreground); font-size: 13px; }
+.detail { color: var(--duit-foreground); }
+.panelDetail { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+.panelDetail .detailScroll { flex: 1; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; padding: 0 28px; }
+.poster { position: relative; overflow: hidden; border-radius: 16px; border: 1px solid var(--duit-border); background: var(--duit-canvas); aspect-ratio: 4 / 3; }
+.information { min-width: 0; }
+.panelDetail .information { padding-top: 24px; }
+.heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.tags { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.status { border-radius: 99px; padding: 8px 12px; color: var(--duit-brand); background: color-mix(in srgb, var(--duit-brand) 9%, transparent); font-size: 12px; font-weight: 700; }
+.title { margin-top: 16px; font-size: clamp(22px, 1.85vw, 28px); line-height: 1.5; font-weight: 700; letter-spacing: -.035em; word-break: keep-all; overflow-wrap: anywhere; }
+.hostName { margin-top: 10px; font-size: 14px; line-height: 1.7; color: var(--duit-muted-foreground); }
+.schedule { margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--duit-border); }
+.sectionHeading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
+.sectionHeading :is(h2, h3) { font-size: 15px; font-weight: 700; }
+.sectionHeading > span { font-size: 11px; color: var(--duit-subtle-foreground); }
+.schedule dl { display: grid; gap: 24px; }
+.scheduleRow { display: flex; gap: 14px; }
+.scheduleRow > svg { flex-shrink: 0; margin-top: 2px; color: var(--duit-muted-foreground); }
+.scheduleRow dt { font-size: 12px; color: var(--duit-muted-foreground); }
+.scheduleRow dd { margin-top: 6px; font-size: 14px; line-height: 1.8; font-weight: 700; word-break: keep-all; overflow-wrap: anywhere; }
+.scheduleRow .recruitmentStart { font-size: 12px; font-weight: 400; color: var(--duit-muted-foreground); }
+.contentSummary { margin-top: 28px; padding: 22px; border: 1px solid color-mix(in srgb, var(--duit-brand) 24%, var(--duit-border)); border-radius: 16px; background: color-mix(in srgb, var(--duit-brand) 5%, var(--duit-canvas)); }
+.contentSummaryHeading { display: flex; align-items: center; gap: 11px; }
+.contentSummaryIcon { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 34px; height: 34px; border-radius: 10px; color: var(--duit-brand); background: color-mix(in srgb, var(--duit-brand) 12%, transparent); }
+.contentSummaryHeading h2, .contentSummaryHeading h3 { margin-top: 2px; font-size: 16px; line-height: 1.5; font-weight: 700; }
+.contentSummaryLabel { display: block; color: var(--duit-brand); font-size: 10px; line-height: 1.4; font-weight: 700; }
+.contentSummaryBody { margin-top: 18px; color: var(--duit-foreground); font-size: 14px; line-height: 1.9; white-space: pre-line; word-break: keep-all; overflow-wrap: anywhere; }
+.contentSummaryNotice { display: flex; align-items: flex-start; gap: 7px; margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--duit-border); color: var(--duit-muted-foreground); font-size: 11px; line-height: 1.7; }
+.contentSummaryNotice svg { flex-shrink: 0; margin-top: 2px; }
+.hostSection { margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--duit-border); }
+.hostCard { display: flex; align-items: center; gap: 14px; padding: 16px; border: 1px solid var(--duit-border); border-radius: 14px; transition: background 160ms; }
+.hostCard:hover { background: var(--duit-muted); }
+.hostCard:focus-visible { outline: 2px solid var(--duit-brand); outline-offset: 3px; }
+.hostAvatar { display: flex; align-items: center; justify-content: center; flex-shrink: 0; width: 56px; height: 56px; padding: 8px; border-radius: 12px; background: #fff; border: 1px solid #e5e7eb; color: #667085; overflow: hidden; }
+.hostAvatar img { width: 100%; height: 100%; object-fit: contain; }
+.hostCopy { min-width: 0; flex: 1; }
+.hostCopy strong { display: block; font-size: 14px; line-height: 1.7; word-break: keep-all; overflow-wrap: anywhere; }
+.hostCopy > span { display: flex; align-items: center; gap: 5px; margin-top: 4px; color: var(--duit-muted-foreground); font-size: 12px; }
+.views { display: flex; gap: 7px; align-items: center; margin-top: 24px; font-size: 12px; color: var(--duit-subtle-foreground); }
+.notice { display: flex; align-items: flex-start; gap: 9px; margin: 20px 0 24px; padding: 14px; border-radius: 10px; background: var(--duit-canvas); color: var(--duit-muted-foreground); font-size: 12px; line-height: 1.8; }
+.notice svg { flex-shrink: 0; margin-top: 2px; }
+.actions { display: flex; align-items: center; gap: 12px; }
+.panelDetail .actions { flex-shrink: 0; padding: 16px 28px max(16px, env(safe-area-inset-bottom)); border-top: 1px solid var(--duit-border); background: var(--duit-background); }
+.pageDetail { display: grid; grid-template-columns: minmax(0, .94fr) minmax(0, 1.06fr); column-gap: 56px; align-items: start; }
+.pageDetail .detailScroll { display: contents; }
+.pageDetail .poster { grid-column: 1; grid-row: 1 / span 2; aspect-ratio: 3 / 4; position: sticky; top: 100px; max-height: 760px; }
+.pageDetail .information { grid-column: 2; }
+.pageDetail .actions { grid-column: 2; }
+.page { max-width: 1200px; margin: 0 auto; padding: 32px 24px 72px; }
+.back { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--duit-muted-foreground); margin-bottom: 28px; }
+.back:hover { color: var(--duit-foreground); }
+.related { margin-top: 64px; padding-top: 32px; border-top: 1px solid var(--duit-border); }
+.posterViewer { position: fixed; inset: 24px; z-index: 120; display: flex; flex-direction: column; max-width: 780px; margin: 0 auto; overflow: hidden; border: 1px solid var(--duit-border); border-radius: 18px; background: var(--duit-background); color: var(--duit-foreground); outline: none; box-shadow: 0 24px 80px rgb(0 0 0 / 25%); }
+.viewerToolbar { display: flex; flex-shrink: 0; justify-content: space-between; align-items: center; padding: 10px 20px; border-bottom: 1px solid var(--duit-border); }
+.viewerScroll { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+.viewerScroll img { display: block; width: 100%; height: auto; }
+@keyframes slide-in { from { opacity: 0; transform: translateX(32px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@media (max-width: 900px) {
+  .panel { width: min(600px, 80vw); }
+  .pageDetail { column-gap: 28px; }
+}
+@media (max-width: 640px) {
+  :global(body):has(.page) :global(.app-theme-toggle) { bottom: calc(88px + env(safe-area-inset-bottom)); }
+  .panel { width: 100%; top: 0; height: 100dvh; border-radius: 0; }
+  .panelToolbar { padding: 8px 16px; }
+  .panelDetail .detailScroll { padding: 0 20px; }
+  .panelDetail .actions { padding: 12px 20px max(12px, env(safe-area-inset-bottom)); gap: 8px; }
+  .title { font-size: 23px; }
+  .contentSummary { padding: 18px; }
+  .page { padding: 20px 20px 40px; }
+  .pageDetail { display: flex; flex-direction: column; }
+  .pageDetail .detailScroll { display: block; width: 100%; }
+  .pageDetail .poster { position: relative; top: auto; aspect-ratio: 4 / 3; width: 100%; }
+  .pageDetail .information { padding-top: 24px; }
+  .pageDetail .actions { position: sticky; bottom: 0; width: calc(100% + 40px); margin: 0 -20px; padding: 12px 20px max(12px, env(safe-area-inset-bottom)); background: var(--duit-background); border-top: 1px solid var(--duit-border); z-index: 1; }
+  .related { margin-top: 40px; }
+}
+@media (prefers-reduced-motion: reduce) { .overlay, .panel { animation: none; } }

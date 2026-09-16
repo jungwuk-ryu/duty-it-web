@@ -1,4 +1,4 @@
-import { getJobDday, getJobDeadlineLabel, getJobTitle } from "@/src/lib/jobs";
+import { getJobDday, getJobDeadlineLabel, getJobTitle, isJobOpen } from "@/src/lib/jobs";
 import type { JobPosting } from "@/src/lib/schemas/job";
 import { ArrowRight, Building2, CalendarClock, MapPin, UsersRound, WalletCards } from "lucide-react";
 import Link from "next/link";
@@ -8,7 +8,8 @@ type Props = { job: JobPosting };
 
 export default function JobPostingCard({ job }: Props) {
     const deadline = getJobDeadlineLabel(job.receiptCloseDt);
-    const dday = job.isActive ? getJobDday(job.receiptCloseDt) : null;
+    const open = isJobOpen(job);
+    const dday = open ? getJobDday(job.receiptCloseDt) : null;
 
     return (
         <article className="group relative h-full overflow-hidden rounded-2xl border border-border/80 bg-background shadow-[0_12px_32px_rgba(15,23,42,0.06),0_2px_6px_rgba(15,23,42,0.03)] transition duration-200 hover:-translate-y-0.5 hover:border-brand/30 hover:shadow-[0_18px_40px_rgba(15,23,42,0.10),0_4px_10px_rgba(198,60,51,0.06)]">
@@ -17,8 +18,8 @@ export default function JobPostingCard({ job }: Props) {
                 <div className="grid h-full gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(19rem,0.9fr)] lg:items-center">
                     <div className="min-w-0">
                         <div className="mb-3 flex flex-wrap items-center gap-2 pr-12">
-                            <span className={job.isActive ? "inline-flex h-7 items-center rounded-full bg-brand/10 px-2.5 text-xs font-bold text-brand" : "inline-flex h-7 items-center rounded-full bg-muted px-2.5 text-xs font-bold text-muted-foreground"}>
-                                {job.isActive ? "모집 중" : "마감"}
+                            <span className={open ? "inline-flex h-7 items-center rounded-full bg-brand/10 px-2.5 text-xs font-bold text-brand" : "inline-flex h-7 items-center rounded-full bg-muted px-2.5 text-xs font-bold text-muted-foreground"}>
+                                {open ? "모집 중" : "마감"}
                             </span>
                             {dday && <span className="text-sm font-bold text-brand">{dday}</span>}
                             <span className="truncate text-sm font-medium text-muted-foreground" title={job.jobsNm || undefined}>{job.jobsNm || "간호 채용"}</span>
@@ -34,7 +35,7 @@ export default function JobPostingCard({ job }: Props) {
                     </div>
 
                     <dl className="grid grid-cols-2 gap-x-4 gap-y-4 border-t border-border/60 pt-4 text-sm lg:border-l lg:border-t-0 lg:pl-5 lg:pt-0">
-                        <JobMeta icon={MapPin} label="근무지" value={job.workRegion || job.company.corpAddr || "근무지 미정"} />
+                        <JobMeta icon={MapPin} label="근무지" value={job.workRegion || "근무지 미정"} />
                         <JobMeta icon={WalletCards} label="급여" value={job.salTpNm || "급여 협의"} />
                         <JobMeta icon={UsersRound} label="경력·학력" value={`${job.enterTpNm || "경력 무관"} · ${job.eduNm || "학력 무관"}`} />
                         <JobMeta icon={CalendarClock} label="접수 마감" value={deadline} />

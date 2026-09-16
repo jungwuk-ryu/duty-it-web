@@ -13,8 +13,10 @@ import {
 } from "@/src/lib/api/jobs";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { getJobCursor, getJobFilters, getJobsHref, type JobFilters, type JobsSearchParams } from "@/src/lib/job-query";
+import { getJobsListMetadata } from "@/src/lib/list-seo";
 
-const JOBS_CANONICAL = "https://www.dutyit.net/jobs";
 const PAGE_SIZE = 12;
 
 const WORK_REGION_LABELS: Record<JobWorkRegion, string> = {
@@ -26,49 +28,18 @@ const EMPLOYMENT_TYPE_LABELS: Record<JobEmploymentType, string> = {
 const CLOSE_TYPE_LABELS: Record<JobCloseType, string> = {
     FIXED: "마감일 있음", ON_HIRE: "채용 시 마감", ONGOING: "상시 모집",
 };
-const JOB_WORK_REGION_SET = new Set<string>(JOB_WORK_REGIONS);
-const JOB_EMPLOYMENT_TYPE_SET = new Set<string>(JOB_EMPLOYMENT_TYPES);
-const JOB_CLOSE_TYPE_SET = new Set<string>(JOB_CLOSE_TYPES);
-
-type JobsSearchParams = {
-    cursor?: string | string[] | null;
-    q?: string | string[] | null;
-    searchKeyword?: string | string[] | null;
-    region?: string | string[] | null;
-    employmentType?: string | string[] | null;
-    closeType?: string | string[] | null;
-};
 type Props = { searchParams: Promise<JobsSearchParams> };
-type JobFilters = {
-    searchKeyword: string;
-    workRegion: JobWorkRegion | null;
-    employmentType: JobEmploymentType | null;
-    closeType: JobCloseType | null;
-};
 
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
-    const filters = getJobFilters(await searchParams);
-    const title = filters.searchKeyword ? `${filters.searchKeyword} 채용 공고 | 듀잇` : "간호 채용 공고 | 듀잇";
-
-    return {
-        title,
-        alternates: { canonical: JOBS_CANONICAL },
-        openGraph: { url: getJobsAbsoluteUrl(filters), title },
-    };
+    return getJobsListMetadata(await searchParams);
 }
 
 export default async function JobsPage({ searchParams }: Props) {
     const resolvedSearchParams = await searchParams;
     const filters = getJobFilters(resolvedSearchParams);
-    const cursor = getFirstValue(resolvedSearchParams.cursor);
-    let recoveredFromInvalidCursor = false;
-
-    let jobs = await fetchJobsSafely(filters, cursor);
-    if (jobs == null) {
-        recoveredFromInvalidCursor = true;
-        jobs = await fetchJobsSafely(filters, null);
-    }
-    if (jobs == null) throw new Error("Failed to recover job postings from invalid cursor.");
+    const cursor = getJobCursor(resolvedSearchParams);
+    const jobs = await fetchJobsSafely(filters, cursor);
+    if (jobs == null) redirect(getJobsHref(filters, null));
 
     const { content, pageInfo } = jobs;
     const nextHref = pageInfo.hasNext && pageInfo.nextCursor ? getJobsHref(filters, pageInfo.nextCursor) : null;
@@ -92,12 +63,6 @@ export default async function JobsPage({ searchParams }: Props) {
                     closeTypeOptions={[{ value: "", label: "전체 마감 방식" }, ...JOB_CLOSE_TYPES.map((value) => ({ value, label: CLOSE_TYPE_LABELS[value] }))]}
                 />
             </section>
-
-            {recoveredFromInvalidCursor && (
-                <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900" role="alert">
-                    페이지 정보가 만료되어 첫 페이지를 보여드려요. <Link className="font-semibold underline" href={getJobsHref(filters, null)}>정리된 주소로 보기</Link>
-                </div>
-            )}
 
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
                 <p className="text-sm text-muted-foreground">{getResultSummary(filters)} · {pageInfo.pageSize}개 표시</p>
@@ -145,19 +110,6 @@ async function fetchJobsSafely(filters: JobFilters, cursor: string | null) {
     }
 }
 
-function getJobFilters(searchParams: JobsSearchParams): JobFilters {
-    const workRegion = getFirstValue(searchParams.region);
-    const employmentType = getFirstValue(searchParams.employmentType);
-    const closeType = getFirstValue(searchParams.closeType);
-
-    return {
-        searchKeyword: (getFirstValue(searchParams.q) ?? getFirstValue(searchParams.searchKeyword) ?? "").trim().slice(0, 80),
-        workRegion: workRegion && JOB_WORK_REGION_SET.has(workRegion) ? workRegion as JobWorkRegion : null,
-        employmentType: employmentType && JOB_EMPLOYMENT_TYPE_SET.has(employmentType) ? employmentType as JobEmploymentType : null,
-        closeType: closeType && JOB_CLOSE_TYPE_SET.has(closeType) ? closeType as JobCloseType : null,
-    };
-}
-
 function getResultSummary(filters: JobFilters): string {
     const conditions = [
         filters.searchKeyword && `“${filters.searchKeyword}” 검색`,
@@ -166,29 +118,4 @@ function getResultSummary(filters: JobFilters): string {
         filters.closeType && CLOSE_TYPE_LABELS[filters.closeType],
     ].filter(Boolean);
     return conditions.length > 0 ? conditions.join(" · ") : "최신 채용 공고";
-}
-
-function getFirstValue(value: string | string[] | null | undefined): string | null {
-    return Array.isArray(value) ? value[0] ?? null : value ?? null;
-}
-
-function getJobsHref(filters: JobFilters, cursor: string | null): string {
-    const params = getJobsSearchParams(filters, cursor);
-    return params.size > 0 ? `/jobs?${params}` : "/jobs";
-}
-
-function getJobsAbsoluteUrl(filters: JobFilters): string {
-    const url = new URL(JOBS_CANONICAL);
-    getJobsSearchParams(filters, null).forEach((value, key) => url.searchParams.set(key, value));
-    return url.toString();
-}
-
-function getJobsSearchParams(filters: JobFilters, cursor: string | null): URLSearchParams {
-    const params = new URLSearchParams();
-    if (filters.searchKeyword) params.set("q", filters.searchKeyword);
-    if (filters.workRegion) params.set("region", filters.workRegion);
-    if (filters.employmentType) params.set("employmentType", filters.employmentType);
-    if (filters.closeType) params.set("closeType", filters.closeType);
-    if (cursor) params.set("cursor", cursor);
-    return params;
 }

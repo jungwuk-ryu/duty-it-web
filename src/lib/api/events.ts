@@ -31,7 +31,7 @@ export class EventsFetchError extends Error {
     }
 }
 
-export async function fetchEvents(opts: FetchOptions = {}): Promise<EventResponse> {
+export async function fetchEvents(opts: FetchOptions = {}, request?: { cache: "no-store"; signal: AbortSignal }): Promise<EventResponse> {
     const {
         cursor = null,
         field = "CREATED_AT",
@@ -56,7 +56,10 @@ export async function fetchEvents(opts: FetchOptions = {}): Promise<EventRespons
     }
 
 
-    const res = await fetch(`${API_BASE}/v2/events?${params.toString()}`, { next: { revalidate: 60 } });
+    const res = await fetch(`${API_BASE}/v2/events?${params.toString()}`, {
+        ...(request ? { cache: request.cache } : { next: { revalidate: 60 } }),
+        signal: request?.signal ?? AbortSignal.timeout(15_000),
+    });
     if (!res.ok) {
         let responseBody: unknown = null;
         try {

@@ -9,6 +9,7 @@ export const JobCompanySchema = z.object({
     homePg: OptionalTextSchema,
     busiCont: OptionalTextSchema,
     indTpCdNm: OptionalTextSchema,
+    updatedAt: OptionalTextSchema,
 });
 
 export const JobPostingSchema = z.object({
@@ -57,6 +58,9 @@ export const JobPostingSchema = z.object({
     enterTpCd: OptionalTextSchema,
     salTpCd: OptionalTextSchema,
     contactTelno: OptionalTextSchema,
+    // Original Work24 posting date; createdAt is only the DuIt import date.
+    postedAt: OptionalTextSchema,
+    expiresAt: OptionalTextSchema,
     createdAt: OptionalTextSchema,
     updatedAt: OptionalTextSchema,
 });

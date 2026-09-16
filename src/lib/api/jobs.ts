@@ -1,34 +1,10 @@
 import "server-only";
 
 import { JobPosting, JobPostingPage, JobPostingPageSchema, JobPostingSchema } from "@/src/lib/schemas/job";
+import type { JobWorkRegion, JobEmploymentType, JobCloseType } from "../job-query";
 
-export const JOB_WORK_REGIONS = [
-    "SEOUL",
-    "BUSAN",
-    "DAEGU",
-    "INCHEON",
-    "GWANGJU",
-    "DAEJEON",
-    "ULSAN",
-    "SEJONG",
-    "GYEONGGI",
-    "GANGWON",
-    "CHUNGBUK",
-    "CHUNGNAM",
-    "JEONBUK",
-    "JEONNAM",
-    "GYEONGBUK",
-    "GYEONGNAM",
-    "JEJU",
-    "ETC",
-] as const;
-
-export const JOB_EMPLOYMENT_TYPES = ["FULL_TIME", "CONTRACT", "PART_TIME", "DISPATCH", "INTERN", "ETC"] as const;
-export const JOB_CLOSE_TYPES = ["FIXED", "ON_HIRE", "ONGOING"] as const;
-
-export type JobWorkRegion = typeof JOB_WORK_REGIONS[number];
-export type JobEmploymentType = typeof JOB_EMPLOYMENT_TYPES[number];
-export type JobCloseType = typeof JOB_CLOSE_TYPES[number];
+export { JOB_WORK_REGIONS, JOB_EMPLOYMENT_TYPES, JOB_CLOSE_TYPES } from "../job-query";
+export type { JobWorkRegion, JobEmploymentType, JobCloseType };
 
 type FetchJobPostingsOptions = {
     cursor?: string | null;
@@ -53,7 +29,7 @@ export class JobPostingsFetchError extends Error {
     }
 }
 
-export async function fetchJobPostings(options: FetchJobPostingsOptions = {}): Promise<JobPostingPage> {
+export async function fetchJobPostings(options: FetchJobPostingsOptions = {}, request?: { cache: "no-store"; signal: AbortSignal }): Promise<JobPostingPage> {
     const {
         cursor = null,
         size = 12,
@@ -74,7 +50,8 @@ export async function fetchJobPostings(options: FetchJobPostingsOptions = {}): P
     closeTypes.forEach((type) => params.append("closeTypes", type));
 
     const response = await fetch(`${API_BASE}/v1/job-postings?${params.toString()}`, {
-        next: { revalidate: 60 },
+        ...(request ? { cache: request.cache } : { next: { revalidate: 60 } }),
+        signal: request?.signal ?? AbortSignal.timeout(15_000),
     });
     const json = await getResponseJson(response);
 
@@ -94,6 +71,7 @@ export async function fetchJobPostings(options: FetchJobPostingsOptions = {}): P
 export async function fetchJobPosting(jobPostingId: number): Promise<JobPosting> {
     const response = await fetch(`${API_BASE}/v1/job-postings/${jobPostingId}`, {
         next: { revalidate: 60 },
+        signal: AbortSignal.timeout(15_000),
     });
     const json = await getResponseJson(response);
 

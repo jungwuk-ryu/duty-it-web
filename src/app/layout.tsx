@@ -8,6 +8,7 @@ import AndroidOnlySmartBanner from "../components/AndroidOnlySmartBanner";
 import SessionProvider from "../components/SessionProvider";
 import ThemeProvider from "../components/ThemeProvider";
 import { AnimatedThemeToggle } from "../components/ui/animated-theme-toggle";
+import { SITE_DESCRIPTION, SITE_ORIGIN } from "../lib/seo";
 
 const notoSansKR = Noto_Sans_KR({
   subsets: ["latin"],
@@ -16,18 +17,15 @@ const notoSansKR = Noto_Sans_KR({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.dutyit.net"),
+  metadataBase: new URL(SITE_ORIGIN),
   title: "듀잇",
-  description: "국내 모든 간호 행사가 한곳에!",
-  alternates: {
-    canonical: 'https://www.dutyit.net/'
-  },
+  description: SITE_DESCRIPTION,
   openGraph: {
     type: 'website',
     siteName: '듀잇',
     locale: 'ko_KR',
-    title: '간호 행사, 1분 만에 찾기',
-    description: '주요 간호 워크숍·세미나 일정을 한곳에서 보고, 마감 알림으로 놓치지 마세요.',
+    title: '간호 행사와 채용 | 듀잇',
+    description: SITE_DESCRIPTION,
     images: {
       url: '/og/default-1200x630.png',
       width: 1200,
@@ -35,8 +33,8 @@ export const metadata: Metadata = {
     }
   },
   twitter: {
-    title: '🔥 간호 행사 놓치지 마',
-    description: '간호 공모전·세미나 일정 듀잇이 모아뒀어😋',
+    title: '간호 행사와 채용 | 듀잇',
+    description: SITE_DESCRIPTION,
     card: 'summary_large_image',
     images: {
       url: '/og/default-1200x630.png',
@@ -57,8 +55,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
+  eventModal,
 }: Readonly<{
   children: React.ReactNode;
+  eventModal: React.ReactNode;
 }>) {
   return (
     <html lang="ko" className={`${notoSansKR.className} scroll-smooth motion-reduce:scroll-auto`} data-scroll-behavior="smooth" suppressHydrationWarning>
@@ -68,10 +68,11 @@ export default function RootLayout({
         <ThemeProvider>
           <SessionProvider>
             <Header />
-            <AnimatedThemeToggle className="fixed bottom-6 right-6 z-50 bg-background/90 shadow-lg shadow-slate-950/10 backdrop-blur-sm" />
+            <AnimatedThemeToggle className="app-theme-toggle fixed bottom-6 right-6 z-50 bg-background/90 shadow-lg shadow-slate-950/10 backdrop-blur-sm" />
             <main className="flex-1 bg-canvas">
               {children}
             </main>
+            {eventModal}
             <Footer />
             <AndroidOnlySmartBanner />
           </SessionProvider>

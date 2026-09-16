@@ -1,3 +1,5 @@
+"use client";
+
 import type { Event } from "@/src/lib/schemas/event";
 import EventThumbnail from "./EventThumbnail";
 import CategoryTag from "./EventTypeTag";
@@ -24,7 +26,8 @@ export default function EventCard({ event, eager = false, onHostClick, priority 
     const recruitmentStatus = getRecruitmentStatus(event);
 
     return (
-        <article className="group flex h-full flex-col overflow-hidden rounded-2xl bg-background shadow-[0_8px_22px_rgba(15,23,42,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_16px_30px_rgba(15,23,42,0.16)]">
+        <article className="group relative flex h-full flex-col overflow-hidden rounded-2xl bg-background shadow-[0_8px_22px_rgba(15,23,42,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_16px_30px_rgba(15,23,42,0.16)]">
+            <Link href={`/events/${event.id}`} prefetch={false} scroll={false} aria-label={`${event.title} 상세 보기`} className="absolute inset-0 z-10 rounded-2xl focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-[-3px]" />
             <div className="relative aspect-[4/3] overflow-hidden bg-muted">
                 <EventThumbnail
                     src={event.thumbnail}
@@ -34,19 +37,12 @@ export default function EventCard({ event, eager = false, onHostClick, priority 
                     className="object-cover transition duration-500 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
-                <BookmarkIconButton kind="events" itemId={event.id} title={event.title} initialSaved={event.isBookmarked} className="absolute right-3 top-3 rounded-full bg-white/95 text-slate-800 shadow-sm" />
-                <Link
-                    href={`/visitEvent/${event.id}`}
-                    aria-label={`${event.title} 바로가기`}
-                    prefetch={false}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="absolute inset-x-0 bottom-0 block p-5 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-[-6px]"
-                >
+                <BookmarkIconButton kind="events" itemId={event.id} title={event.title} initialSaved={event.isBookmarked} className="absolute right-3 top-3 z-20 rounded-full bg-white/95 text-slate-800 shadow-sm" />
+                <div className="absolute inset-x-0 bottom-0 block p-5 text-white">
                     <h3 className="line-clamp-3 text-xl font-bold leading-snug drop-shadow-sm">
                         {event.title}
                     </h3>
-                </Link>
+                </div>
             </div>
 
             <div className="flex flex-1 flex-col p-5">
@@ -61,7 +57,7 @@ export default function EventCard({ event, eager = false, onHostClick, priority 
                     <span className="mr-2 text-subtle-foreground">주최</span>
                     <Link
                         aria-label={`${event.host.name} 주최 행사 보기`}
-                        className="rounded-sm text-foreground underline-offset-2 transition hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-foreground focus-visible:outline-offset-2"
+                        className="relative z-20 rounded-sm text-foreground underline-offset-2 transition hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-foreground focus-visible:outline-offset-2"
                         href={`/events?hostId=${event.host.id}`}
                         onClick={(clickedEvent) => handleHostClick(clickedEvent, event.host.id, onHostClick)}
                     >
@@ -69,7 +65,7 @@ export default function EventCard({ event, eager = false, onHostClick, priority 
                     </Link>
                 </p>
 
-                <dl className="mt-auto grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] gap-x-1.5 border-t border-border pt-4 text-xs">
+                <dl className="mt-auto grid grid-cols-2 gap-x-3 border-t border-border pt-4 text-xs">
                     <div className="min-w-0">
                         <dt className="text-muted-foreground">일시</dt>
                         <dd className="mt-1 whitespace-nowrap font-semibold text-foreground" title={formatDates(event.startAt, event.endAt)}>
@@ -80,12 +76,6 @@ export default function EventCard({ event, eager = false, onHostClick, priority 
                         <dt className="text-muted-foreground">마감</dt>
                         <dd className="mt-1 whitespace-nowrap font-semibold text-foreground" title={event.recruitmentEndAt == null ? "-" : formatDate(event.recruitmentEndAt)}>
                             {event.recruitmentEndAt == null ? "-" : formatCompactDate(event.recruitmentEndAt)}
-                        </dd>
-                    </div>
-                    <div className="min-w-7">
-                        <dt className="text-muted-foreground">조회</dt>
-                        <dd className="mt-1 font-semibold text-foreground">
-                            {event.viewCount.toLocaleString("ko-KR")}
                         </dd>
                     </div>
                 </dl>
