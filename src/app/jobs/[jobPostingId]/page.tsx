@@ -6,7 +6,7 @@ import { getJobCanonicalUrl, getJobMetadataDescription, getJobStructuredData } f
 import { getBreadcrumbStructuredData, getPageMetadata, serializeJsonLd } from "@/src/lib/seo";
 import { getKoreanDate } from "@/src/lib/seo-date";
 import { isHttpUrl } from "@/src/lib/url";
-import { ArrowLeft, BriefcaseBusiness, Building2, CalendarClock, ExternalLink, FileText, GraduationCap, HeartPulse, Landmark, MapPin, Phone, Send, UsersRound, WalletCards } from "lucide-react";
+import { ArrowLeft, BriefcaseBusiness, Building2, CalendarClock, ExternalLink, FileText, GraduationCap, HeartPulse, Landmark, MapPin, Phone, Send, ShieldAlert, UsersRound, WalletCards } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -94,6 +94,27 @@ export default async function JobPostingPage({ params }: Props) {
                         </dl>
                     </section>
 
+                    <aside className="rounded-2xl border border-brand/25 bg-brand/5 p-5 md:p-6" aria-labelledby="defaulter-notice">
+                        <div className="flex items-start gap-3">
+                            <ShieldAlert className="mt-0.5 size-5 shrink-0 text-brand" aria-hidden="true" />
+                            <div className="min-w-0">
+                                <h2 id="defaulter-notice" className="text-base font-bold text-foreground">지원 전, 체불사업주 명단을 확인해 주세요</h2>
+                                <p className="mt-2 text-sm leading-6 text-foreground">
+                                    이 공고의 사업주가 체불사업주 명단에 포함되어 있는지 확인해 주세요. 직업안정법 제25조(직업정보제공사업자의 준수 사항) 제1호에 따라 고용노동부의 공개 명단을 안내합니다.
+                                </p>
+                                <a
+                                    href="https://www.moel.go.kr/info/defaulter/defaulterList.do"
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-brand underline underline-offset-4 hover:text-brand/80"
+                                >
+                                    체불사업주 명단 확인하기
+                                    <ExternalLink className="size-4" aria-hidden="true" />
+                                </a>
+                            </div>
+                        </div>
+                    </aside>
+
                     {(job.certificate || job.major || job.pfCond || job.etcPfCond) && (
                         <section className="border-t border-border/60 pt-7" aria-labelledby="qualifications">
                             <h2 id="qualifications" className="text-lg font-bold text-foreground">자격 및 우대사항</h2>
@@ -123,7 +144,15 @@ export default async function JobPostingPage({ params }: Props) {
                             alt="고용24 제공 채용 정보 출처"
                             width={360}
                             height={77}
-                            className="h-auto w-full max-w-[360px]"
+                            className="mx-auto h-auto w-full max-w-[360px] dark:hidden"
+                        />
+                        <Image
+                            src="/job-information-source-work24-dark.svg"
+                            alt=""
+                            width={360}
+                            height={77}
+                            aria-hidden="true"
+                            className="mx-auto hidden h-auto w-full max-w-[360px] dark:block"
                         />
                     </section>
                 </div>
