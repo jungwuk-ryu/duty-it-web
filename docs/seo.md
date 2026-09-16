@@ -43,7 +43,7 @@ JobPosting은 원문 게시일(`postedAt`), 실제 채용기관, 직종, 직무 
 
 2026-09-11 운영 OpenAPI에는 로컬 사본에 없던 `postedAt`, `expiresAt`이 있다. 누락되는 이전 응답도 처리하되 원문 게시일이 없으면 JobPosting을 생성하지 않는다. [운영 OpenAPI](https://api.dutyit.net/v3/api-docs/DuIt%20OPEN%20API%20v1)
 
-행사 API에는 현재 **장소·주소, 취소·연기 상태, 생성·수정일이 없다**. 행사 제목·포스터·AI 요약에서 이 값을 추정하지 않는다. 기존 Event의 일정·주최·이미지·원문 연결은 유지하되 명시적으로 알 수 없는 상태를 고정하지 않는다. Google 행사 검색의 필수 장소 정보와 취소·연기 상태를 완성하려면 백엔드의 명시적 필드와 화면 표시가 먼저 필요하다. API에 수정일이 추가되면 선택 필드로 읽어 사이트맵에 반영할 수 있다. [Google Event 가이드](https://developers.google.com/search/docs/appearance/structured-data/event)
+행사 API에는 현재 **장소·주소, 취소·연기 상태, 생성·수정일이 없다**. 행사 제목·포스터·AI 요약에서 이 값을 추정하지 않는다. Google 행사 검색은 실제 물리적 장소와 주소를 필수로 요구하므로 행사 상세에서는 유효한 BreadcrumbList만 출력하고 Event 구조화 데이터는 출력하지 않는다. 백엔드에 검증된 장소명과 주소 필드가 추가되고 기존 데이터가 보완된 뒤, 필수 장소 정보가 완성된 행사에만 Event를 다시 활성화한다. API에 수정일이 추가되면 선택 필드로 읽어 사이트맵에 반영할 수 있다. [Google Event 가이드](https://developers.google.com/search/docs/appearance/structured-data/event)
 
 ## Google Indexing API 실행
 

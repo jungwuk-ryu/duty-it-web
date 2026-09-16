@@ -9,15 +9,15 @@ import {
   getEventCanonicalUrl,
   getEventKeywords,
   getEventMetadataDescription,
+  getEventPageStructuredData,
   getEventSocialImage,
-  getEventStructuredData,
   serializeJsonLd,
 } from "@/src/lib/event-seo";
 import EventDetail from "@/src/components/events/EventDetail";
 import EventContentSummary from "@/src/components/events/EventContentSummary";
 import EventCard from "@/src/components/ui/EventCard";
 import styles from "@/src/components/events/event-detail.module.css";
-import { getBreadcrumbStructuredData, getPageMetadata } from "@/src/lib/seo";
+import { getPageMetadata } from "@/src/lib/seo";
 
 type Props = { params: Promise<{ eventId: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function EventDetailPage({ params }: Props) {
   const { eventId } = await params;
   const event = await fetchEventDetail(eventId);
-  const jsonLd = [getEventStructuredData(event), getBreadcrumbStructuredData("events", event.title, getEventCanonicalUrl(event.id))];
+  const jsonLd = getEventPageStructuredData(event);
   return <div className={styles.page}>
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }} />
     <Link href="/events?view=list" className={styles.back}><ArrowLeft size={16} aria-hidden />행사 목록으로</Link>

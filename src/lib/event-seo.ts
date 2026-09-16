@@ -1,20 +1,9 @@
 import { EventStatusLabel, EventTypeLabel } from "./event-labels";
-import { formatEventDateTime, formatEventPeriod, getHostEventsHref } from "./event-detail";
+import { formatEventDateTime, formatEventPeriod } from "./event-detail";
 import type { Event } from "./schemas/event";
 import { isHttpUrl } from "./url";
-import { SITE_ORIGIN, DEFAULT_SOCIAL_IMAGE } from "./seo";
+import { DEFAULT_SOCIAL_IMAGE, getBreadcrumbStructuredData, SITE_ORIGIN } from "./seo";
 export { serializeJsonLd } from "./seo";
-
-const jsonLdDateFormatter = new Intl.DateTimeFormat("en-CA", {
-  timeZone: "Asia/Seoul",
-  year: "numeric",
-  month: "2-digit",
-  day: "2-digit",
-  hour: "2-digit",
-  minute: "2-digit",
-  second: "2-digit",
-  hourCycle: "h23",
-});
 
 export function getEventCanonicalUrl(eventId: number): string {
   return `${SITE_ORIGIN}/events/${eventId}`;
@@ -37,46 +26,9 @@ export function getEventSocialImage(event: Event): string {
   return event.thumbnail && isHttpUrl(event.thumbnail) ? event.thumbnail : DEFAULT_SOCIAL_IMAGE;
 }
 
-export function getEventStructuredData(event: Event) {
-  const canonicalUrl = getEventCanonicalUrl(event.id);
-
-  return {
-    "@context": "https://schema.org",
-    "@type": "Event",
-    "@id": `${canonicalUrl}#event`,
-    name: event.title,
-    description: getEventMetadataDescription(event),
-    url: canonicalUrl,
-    mainEntityOfPage: canonicalUrl,
-    image: [getEventSocialImage(event)],
-    inLanguage: "ko-KR",
-    keywords: getEventKeywords(event),
-    startDate: formatJsonLdDateTime(event.startAt),
-    ...(event.endAt ? { endDate: formatJsonLdDateTime(event.endAt) } : {}),
-    organizer: {
-      "@type": "Organization",
-      name: event.host.name,
-      url: new URL(getHostEventsHref(event.host.id), SITE_ORIGIN).toString(),
-      ...(event.host.thumbnail && isHttpUrl(event.host.thumbnail) ? { logo: event.host.thumbnail } : {}),
-    },
-    // Lifecycle labels such as FINISHED do not describe cancellation or
-    // postponement. The public API does not expose those facts yet.
-    ...(event.eventStatusGroup === "ACTIVE"
-      ? {
-          potentialAction: {
-            "@type": "RegisterAction",
-            name: "주최 페이지에서 행사 확인",
-            target: event.uri,
-          },
-        }
-      : {}),
-    sameAs: event.uri,
-  };
-}
-
-function formatJsonLdDateTime(value: Date): string {
-  const parts = jsonLdDateFormatter.formatToParts(value);
-  const part = (type: Intl.DateTimeFormatPartTypes) => parts.find((item) => item.type === type)?.value ?? "";
-
-  return `${part("year")}-${part("month")}-${part("day")}T${part("hour")}:${part("minute")}:${part("second")}+09:00`;
+export function getEventPageStructuredData(event: Event) {
+  // Google Event rich results require a real physical Place and postal address.
+  // The public event API does not expose trustworthy location data yet, so only
+  // emit valid breadcrumb markup instead of fabricating an invalid Event item.
+  return getBreadcrumbStructuredData("events", event.title, getEventCanonicalUrl(event.id));
 }

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { getEventMetadataDescription, getEventStructuredData, serializeJsonLd } from "./event-seo";
+import { getEventMetadataDescription, getEventPageStructuredData, serializeJsonLd } from "./event-seo";
 import type { Event } from "./schemas/event";
 
 const event: Event = {
@@ -30,21 +30,17 @@ test("event metadata describes its type, organizer, schedule, and application de
   assert.match(description, /신청 마감 2026년 9월 14일 \(월\) 23:59/);
 });
 
-test("event JSON-LD exposes canonical, schedule, organizer, poster, and source URL", () => {
-  const data = getEventStructuredData(event);
+test("event JSON-LD stays valid without fabricating a required physical location", () => {
+  const data = getEventPageStructuredData(event);
 
-  assert.equal(data["@type"], "Event");
-  assert.equal(data.url, "https://www.dutyit.net/events/727");
-  assert.equal(data.startDate, "2026-09-18T09:00:00+09:00");
-  assert.equal(data.endDate, "2026-09-18T16:00:00+09:00");
-  assert.deepEqual(data.organizer, {
-    "@type": "Organization",
-    name: "대한의료봉사회",
-    url: "https://www.dutyit.net/events?view=list&hostId=42",
+  assert.equal(data["@type"], "BreadcrumbList");
+  assert.deepEqual(data.itemListElement.at(-1), {
+    "@type": "ListItem",
+    position: 3,
+    name: event.title,
+    item: "https://www.dutyit.net/events/727",
   });
-  assert.deepEqual(data.image, [event.thumbnail]);
-  assert.deepEqual(data.keywords, [event.title, event.host.name, "봉사", "모집 중", "간호 행사"]);
-  assert.equal(data.sameAs, event.uri);
+  assert.equal(serializeJsonLd(data).includes('"@type":"Event"'), false);
 });
 
 test("JSON-LD serialization prevents event text from closing the script element", () => {
