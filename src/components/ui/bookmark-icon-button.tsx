@@ -25,7 +25,7 @@ export function BookmarkIconButton({ kind, itemId, title, className, initialSave
     const reducedMotion = useReducedMotion();
     const router = useRouter();
     const saved = Boolean(auth.user) && (entry?.saved ?? initialSaved);
-    const pending = auth.status === "loading" || Boolean(auth.user && (!entry || entry.pending));
+    const pending = Boolean(auth.user && entry?.pending);
     const label = entry?.error ? `${title} 북마크 상태 다시 확인` : `${title} 북마크 ${saved ? "해제" : "저장"}`;
 
     async function handleClick() {
@@ -42,7 +42,7 @@ export function BookmarkIconButton({ kind, itemId, title, className, initialSave
         <div className={cn("relative flex shrink-0 items-center justify-center", className)}>
             <Button type="button" variant="ghost" size="icon" className="size-11 rounded-full" onClick={() => void handleClick()}
                 disabled={pending} aria-pressed={saved} aria-label={label} aria-busy={pending} title={entry?.error ?? label}>
-                <motion.span className="relative flex items-center justify-center" initial={false}
+                <motion.span className="relative flex items-center justify-center" initial={false} tabIndex={-1}
                     animate={{ scale: reducedMotion ? 1 : saved ? 1.1 : 1 }}
                     whileTap={reducedMotion ? undefined : { scale: 0.85, rotate: saved ? 0 : -10 }}
                     transition={{ type: "spring", stiffness: 300, damping: 15 }}>

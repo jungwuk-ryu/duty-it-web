@@ -33,10 +33,12 @@ const dateFormatter = new Intl.DateTimeFormat("ko-KR", {
   day: "2-digit",
 });
 
+export const getHomeJobPostings = cache(() => fetchJobPostings({ size: 4 }));
+
 export const getHomePreviewData = cache(async (): Promise<HomePreviewData> => {
   const [eventsResult, jobsResult] = await Promise.allSettled([
     fetchEvents({ field: "CREATED_AT", size: 3, statusGroup: "ACTIVE" }),
-    fetchJobPostings({ size: 3 }),
+    getHomeJobPostings(),
   ]);
 
   const events = eventsResult.status === "fulfilled"
@@ -51,7 +53,7 @@ export const getHomePreviewData = cache(async (): Promise<HomePreviewData> => {
     : [];
 
   const jobs = jobsResult.status === "fulfilled"
-    ? jobsResult.value.content.map((job) => ({
+    ? jobsResult.value.content.slice(0, 3).map((job) => ({
       id: job.id,
       companyName: job.company.corpNm || "채용 기업",
       title: job.wantedTitle || job.jobsNm || "간호 채용 공고",

@@ -1,5 +1,6 @@
 import EventsResults from "@/src/components/EventsResults";
 import EventCategoryExplore from "@/src/components/EventCategoryExplore";
+import EventActivityGuide from "@/src/components/EventActivityGuide";
 import {
     EventsFetchError,
     fetchEvents,
@@ -19,6 +20,7 @@ import { EventStatusGroupLabel, EventTypeLabel } from "@/src/lib/event-labels";
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getEventsListMetadata } from "@/src/lib/list-seo";
+import eventStyles from "@/src/components/ui/event-item.module.css";
 
 const PAGE_SIZE = 12;
 // Re-enable ALL when the public events API supports statusGroup=ALL.
@@ -43,13 +45,15 @@ export default async function EventsPage({ searchParams }: Props) {
     };
 
     return (
-        <div className="container mx-auto px-4 mb-5 py-10">
+        <div className={eventStyles.page}>
             <EventsResults
                 key={`${isEventListView(resolvedSearchParams)}:${getEventsHref(initialRequest, initialRequest.cursor)}`}
                 categoryExplore={<EventCategoryExplore />}
+                activityGuide={<EventActivityGuide />}
                 initialData={events}
                 initialIsListView={isEventListView(resolvedSearchParams)}
                 initialRequest={initialRequest}
+                referenceDate={new Date().toISOString()}
                 sortOptions={SORT_OPTIONS}
                 statusOptions={FILTER_STATUS_GROUP_OPTIONS.map((value) => ({
                     value,

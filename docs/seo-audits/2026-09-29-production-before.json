@@ -1,0 +1,344 @@
+{
+  "measuredAt": "2026-09-29T01:56:06.056Z",
+  "baseUrl": "https://www.dutyit.net",
+  "canonicalOrigin": "https://www.dutyit.net",
+  "userAgent": "DutyitSEOAudit/1.0",
+  "scope": "HTTP response sample; not search rankings, full-site coverage, or a structured-data eligibility validator",
+  "summary": {
+    "requests": 17,
+    "sitemapUrls": 1098,
+    "failedChecks": 15
+  },
+  "failures": [
+    "/: socialDescription",
+    "/: schema:Organization",
+    "/: aboutLinked",
+    "/about: expectedStatus",
+    "/about: indexPolicy",
+    "/about: canonical",
+    "/about: h1",
+    "/about: socialTitle",
+    "/about: socialUrl",
+    "/about: schema:AboutPage",
+    "/about: schema:FAQPage",
+    "/llms.txt: expectedStatus",
+    "/llms.txt: plainText",
+    "/llms.txt: siteGuide",
+    "/sitemap.xml: aboutIncluded"
+  ],
+  "rows": [
+    {
+      "path": "/",
+      "checks": {
+        "expectedStatus": true,
+        "indexPolicy": true,
+        "title": true,
+        "description": true,
+        "canonical": true,
+        "h1": true,
+        "socialTitle": true,
+        "socialDescription": false,
+        "socialUrl": true,
+        "validJsonLd": true,
+        "schema:WebSite": true,
+        "schema:Organization": false,
+        "aboutLinked": false
+      },
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "xRobotsTag": null,
+      "title": "간호의 내일을, 발견하는 곳 | 듀잇",
+      "h1": [
+        "간호의 내일을 발견하는 곳"
+      ],
+      "canonical": "https://www.dutyit.net",
+      "robots": "",
+      "structuredData": [
+        "WebSite"
+      ]
+    },
+    {
+      "path": "/events",
+      "checks": {
+        "expectedStatus": true,
+        "indexPolicy": true,
+        "title": true,
+        "description": true,
+        "canonical": true,
+        "h1": true,
+        "socialTitle": true,
+        "socialDescription": true,
+        "socialUrl": true,
+        "validJsonLd": true
+      },
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "xRobotsTag": null,
+      "title": "간호 행사 목록 | 듀잇",
+      "h1": [
+        "나의 다음 간호 대외활동 을 찾아보세요"
+      ],
+      "canonical": "https://www.dutyit.net/events",
+      "robots": "index, follow",
+      "structuredData": []
+    },
+    {
+      "path": "/jobs",
+      "checks": {
+        "expectedStatus": true,
+        "indexPolicy": true,
+        "title": true,
+        "description": true,
+        "canonical": true,
+        "h1": true,
+        "socialTitle": true,
+        "socialDescription": true,
+        "socialUrl": true,
+        "validJsonLd": true
+      },
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "xRobotsTag": null,
+      "title": "간호 채용 공고 | 듀잇",
+      "h1": [
+        "간호 채용 공고"
+      ],
+      "canonical": "https://www.dutyit.net/jobs",
+      "robots": "index, follow",
+      "structuredData": []
+    },
+    {
+      "path": "/about",
+      "checks": {
+        "expectedStatus": false,
+        "indexPolicy": false,
+        "title": true,
+        "description": true,
+        "canonical": false,
+        "h1": false,
+        "socialTitle": false,
+        "socialDescription": true,
+        "socialUrl": false,
+        "validJsonLd": true,
+        "schema:AboutPage": false,
+        "schema:FAQPage": false
+      },
+      "status": 404,
+      "contentType": "text/html; charset=utf-8",
+      "xRobotsTag": null,
+      "title": "듀잇",
+      "h1": [],
+      "robots": "noindex",
+      "structuredData": []
+    },
+    {
+      "path": "/login",
+      "checks": {
+        "expectedStatus": true,
+        "indexPolicy": true,
+        "title": true,
+        "description": true,
+        "validJsonLd": true
+      },
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "xRobotsTag": null,
+      "title": "로그인 | 듀잇",
+      "h1": [
+        "듀잇에 로그인하세요"
+      ],
+      "canonical": "https://www.dutyit.net/login",
+      "robots": "noindex, follow",
+      "structuredData": []
+    },
+    {
+      "path": "/bookmarks",
+      "checks": {
+        "expectedStatus": true,
+        "indexPolicy": true,
+        "title": true,
+        "description": true,
+        "validJsonLd": true
+      },
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "xRobotsTag": null,
+      "title": "내 북마크 | 듀잇",
+      "h1": [
+        "내 북마크"
+      ],
+      "robots": "noindex, nofollow",
+      "structuredData": []
+    },
+    {
+      "path": "/submit-event",
+      "checks": {
+        "expectedStatus": true,
+        "indexPolicy": true,
+        "title": true,
+        "description": true,
+        "validJsonLd": true
+      },
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "xRobotsTag": null,
+      "title": "행사 제보하기 | 듀잇",
+      "h1": [
+        "행사 제보하기"
+      ],
+      "canonical": "https://www.dutyit.net/submit-event",
+      "robots": "noindex, follow",
+      "structuredData": []
+    },
+    {
+      "path": "/seo-audit-missing-page",
+      "checks": {
+        "expectedStatus": true
+      },
+      "status": 404,
+      "contentType": "text/html; charset=utf-8",
+      "xRobotsTag": null
+    },
+    {
+      "path": "/robots.txt",
+      "checks": {
+        "expectedStatus": true,
+        "sitemapDeclared": true,
+        "wildcardPresent": true,
+        "noSitewideBlock": true
+      },
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "xRobotsTag": null
+    },
+    {
+      "path": "/llms.txt",
+      "checks": {
+        "expectedStatus": false,
+        "plainText": false,
+        "siteGuide": false
+      },
+      "status": 404,
+      "contentType": "text/html; charset=utf-8",
+      "xRobotsTag": null
+    },
+    {
+      "path": "/naver58ded178a26f37d0e045fd7270dcc8cb.html",
+      "checks": {
+        "expectedStatus": true,
+        "verificationFile": true
+      },
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "xRobotsTag": null
+    },
+    {
+      "path": "/sitemap.xml",
+      "checks": {
+        "expectedStatus": true,
+        "index": true,
+        "aboutIncluded": false,
+        "uniqueUrls": true
+      },
+      "status": 200,
+      "contentType": "application/xml; charset=utf-8",
+      "xRobotsTag": null
+    },
+    {
+      "path": "/sitemap-static-0.xml",
+      "checks": {
+        "expectedStatus": true,
+        "urlset": true,
+        "limits": true,
+        "canonicalLocations": true
+      },
+      "status": 200,
+      "contentType": "application/xml; charset=utf-8",
+      "xRobotsTag": null,
+      "urlCount": 3
+    },
+    {
+      "path": "/sitemap-events-0.xml",
+      "checks": {
+        "expectedStatus": true,
+        "urlset": true,
+        "limits": true,
+        "canonicalLocations": true
+      },
+      "status": 200,
+      "contentType": "application/xml; charset=utf-8",
+      "xRobotsTag": null,
+      "urlCount": 594
+    },
+    {
+      "path": "/sitemap-jobs-0.xml",
+      "checks": {
+        "expectedStatus": true,
+        "urlset": true,
+        "limits": true,
+        "canonicalLocations": true
+      },
+      "status": 200,
+      "contentType": "application/xml; charset=utf-8",
+      "xRobotsTag": null,
+      "urlCount": 501
+    },
+    {
+      "path": "/events/2",
+      "checks": {
+        "expectedStatus": true,
+        "indexPolicy": true,
+        "title": true,
+        "description": true,
+        "canonical": true,
+        "h1": true,
+        "socialTitle": true,
+        "socialDescription": true,
+        "socialUrl": true,
+        "validJsonLd": true,
+        "schema:BreadcrumbList": true
+      },
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "xRobotsTag": null,
+      "title": "2025 추계실무교육 최신 항암화학요법 증상관리와 간호 | 듀잇",
+      "h1": [
+        "2025 추계실무교육 최신 항암화학요법 증상관리와 간호"
+      ],
+      "canonical": "https://www.dutyit.net/events/2",
+      "robots": "index, follow",
+      "structuredData": [
+        "BreadcrumbList"
+      ]
+    },
+    {
+      "path": "/jobs/5684",
+      "checks": {
+        "expectedStatus": true,
+        "indexPolicy": true,
+        "title": true,
+        "description": true,
+        "canonical": true,
+        "h1": true,
+        "socialTitle": true,
+        "socialDescription": true,
+        "socialUrl": true,
+        "validJsonLd": true,
+        "schema:BreadcrumbList": true
+      },
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "xRobotsTag": null,
+      "title": "[청송 진보병원] 병동 간호사를 채용합니다. | 듀잇",
+      "h1": [
+        "[청송 진보병원] 병동 간호사를 채용합니다."
+      ],
+      "canonical": "https://www.dutyit.net/jobs/5684",
+      "robots": "index, follow",
+      "structuredData": [
+        "BreadcrumbList",
+        "JobPosting"
+      ]
+    }
+  ]
+}

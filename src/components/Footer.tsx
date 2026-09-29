@@ -16,6 +16,7 @@ export default function Footer() {
           </div>
         </div>
         <nav aria-label="서비스 안내" className="flex flex-wrap gap-x-5 gap-y-3 text-xs">
+          <Link href="/about" className="no-underline transition hover:text-brand">듀잇 소개</Link>
           <Link href="https://status.dutyit.net/" className="no-underline transition hover:text-brand">서비스 상태</Link>
           <Link href="/submit-event" className="no-underline transition hover:text-brand" prefetch={false}>행사 제보하기</Link>
           <a href="mailto:contact@dutyit.net" className="no-underline transition hover:text-brand">문의하기</a>

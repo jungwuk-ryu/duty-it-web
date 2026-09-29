@@ -2,6 +2,9 @@ import { getCursor, getEventFilters, getEventsSearchParams, type EventSearchPara
 import { getJobCursor, getJobFilters, getJobsHref, type JobsSearchParams } from "./job-query";
 import { getPageMetadata, SITE_ORIGIN } from "./seo";
 
+export const EVENTS_PAGE_HEADING = "간호대학생·간호사 대외활동";
+export const EVENTS_PAGE_DESCRIPTION = "간호대학생 대외활동과 간호사 참여 행사를 찾아보세요. 봉사·서포터즈·공모전부터 학술대회·교육까지, 주최기관과 모집 기간을 확인하고 관심 활동을 북마크하세요.";
+
 export function getEventsListMetadata(params: EventSearchParams) {
   const filters = getEventFilters(params);
   const query = getEventsSearchParams(filters, getCursor(params));
@@ -9,8 +12,8 @@ export function getEventsListMetadata(params: EventSearchParams) {
   const index = !filters.searchKeyword && filters.hostId == null && filters.types.length === 0
     && filters.statusGroup === "ACTIVE" && filters.field === "CREATED_AT";
   return getPageMetadata({
-    title: filters.searchKeyword ? `${filters.searchKeyword} 행사 검색 | 듀잇` : "간호 행사 목록 | 듀잇",
-    description: "간호사와 간호대학생을 위한 학술대회, 세미나, 보수교육, 공모전, 봉사와 대외활동을 찾아보세요. 행사 일정, 주최기관과 신청 마감을 듀잇에서 확인하세요.",
+    title: filters.searchKeyword ? `${filters.searchKeyword} 대외활동·행사 검색 | 듀잇` : `${EVENTS_PAGE_HEADING} | 봉사·서포터즈·공모전 | 듀잇`,
+    description: EVENTS_PAGE_DESCRIPTION,
     url, index,
   });
 }

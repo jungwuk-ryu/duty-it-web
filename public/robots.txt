@@ -1,3 +1,5 @@
+# Public pages are open to search, AI search, and training crawlers.
+# The wildcard group also keeps /api/ excluded for those crawlers.
 User-agent: *
 Allow: /
 Disallow: /api/

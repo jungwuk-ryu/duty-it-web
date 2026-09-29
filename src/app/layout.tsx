@@ -8,7 +8,9 @@ import AndroidOnlySmartBanner from "../components/AndroidOnlySmartBanner";
 import SessionProvider from "../components/SessionProvider";
 import ThemeProvider from "../components/ThemeProvider";
 import { AnimatedThemeToggle } from "../components/ui/animated-theme-toggle";
-import { SITE_DESCRIPTION, SITE_ORIGIN } from "../lib/seo";
+import { serializeJsonLd, SITE_DESCRIPTION, SITE_ORIGIN, SITE_TITLE } from "../lib/seo";
+import { getOrganizationStructuredData } from "../lib/site-info";
+import { initialAuthState } from "../lib/auth/server";
 
 const notoSansKR = Noto_Sans_KR({
   subsets: ["latin"],
@@ -24,7 +26,7 @@ export const metadata: Metadata = {
     type: 'website',
     siteName: '듀잇',
     locale: 'ko_KR',
-    title: '간호 행사와 채용 | 듀잇',
+    title: SITE_TITLE,
     description: SITE_DESCRIPTION,
     images: {
       url: '/og/default-1200x630.png',
@@ -33,7 +35,7 @@ export const metadata: Metadata = {
     }
   },
   twitter: {
-    title: '간호 행사와 채용 | 듀잇',
+    title: SITE_TITLE,
     description: SITE_DESCRIPTION,
     card: 'summary_large_image',
     images: {
@@ -43,8 +45,10 @@ export const metadata: Metadata = {
     }
   },
   icons: {
+    icon: "/app-icon-transparent.png",
+    apple: "/app-icon-transparent.png",
     other: [
-      { rel: "android-touch-icon", url: "/app-icon.png" }
+      { rel: "android-touch-icon", url: "/app-icon-transparent.png" }
     ]
   },
   other: {
@@ -53,20 +57,22 @@ export const metadata: Metadata = {
   }
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
   eventModal,
 }: Readonly<{
   children: React.ReactNode;
   eventModal: React.ReactNode;
 }>) {
+  const initialAuth = await initialAuthState();
   return (
     <html lang="ko" className={`${notoSansKR.className} scroll-smooth motion-reduce:scroll-auto`} data-scroll-behavior="smooth" suppressHydrationWarning>
       <body
         className={"antialiased min-h-screen flex flex-col bg-background text-foreground"}
       >
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(getOrganizationStructuredData()) }} />
         <ThemeProvider>
-          <SessionProvider>
+          <SessionProvider initialAuth={initialAuth}>
             <Header />
             <AnimatedThemeToggle className="app-theme-toggle fixed bottom-6 right-6 z-50 bg-background/90 shadow-lg shadow-slate-950/10 backdrop-blur-sm" />
             <main className="flex-1 bg-canvas">

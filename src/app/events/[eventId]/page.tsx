@@ -16,6 +16,7 @@ import {
 import EventDetail from "@/src/components/events/EventDetail";
 import EventContentSummary from "@/src/components/events/EventContentSummary";
 import EventCard from "@/src/components/ui/EventCard";
+import eventStyles from "@/src/components/ui/event-item.module.css";
 import styles from "@/src/components/events/event-detail.module.css";
 import { getPageMetadata } from "@/src/lib/seo";
 
@@ -49,11 +50,12 @@ async function HostEvents({ hostId, name, eventId }: { hostId: number; name: str
   const result = await fetchEvents({ hostId, size: 4 }).catch(() => null);
   const events = result?.content.filter((event) => event.id !== eventId).slice(0, 3) ?? [];
   if (!events.length) return null;
+  const referenceDate = new Date().toISOString();
   return <section className={styles.related} aria-label="같은 주최의 다른 행사">
     <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
       <div><p className="mb-2 text-xs text-muted-foreground">{name}</p><h2 className="text-xl font-bold">같은 주최의 다른 행사</h2></div>
       <Link href={getHostEventsHref(hostId)} className="flex items-center gap-1 text-sm font-bold">전체 보기<ArrowUpRight size={16} aria-hidden /></Link>
     </div>
-    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">{events.map((item) => <EventCard key={item.id} event={item} />)}</div>
+    <div className={`${eventStyles.grid} ${eventStyles.relatedGrid}`}>{events.map((item) => <EventCard key={item.id} event={item} referenceDate={referenceDate} />)}</div>
   </section>;
 }

@@ -1,7 +1,8 @@
 import { buttonVariants } from "@/src/components/ui/button";
 import { BookmarkIconButton } from "@/src/components/ui/bookmark-icon-button";
 import { fetchJobDetail } from "@/src/lib/api/job-detail";
-import { getJobDday, getJobDeadlineLabel, getJobEmploymentSummary, getJobTitle, isJobOpen } from "@/src/lib/jobs";
+import { getJobDeadlineLabel, getJobEmploymentSummary, getJobTitle, isJobOpen } from "@/src/lib/jobs";
+import { getJobClosingLabel } from "@/src/lib/job-list-summary";
 import { getJobCanonicalUrl, getJobMetadataDescription, getJobStructuredData } from "@/src/lib/job-seo";
 import { getBreadcrumbStructuredData, getPageMetadata, serializeJsonLd } from "@/src/lib/seo";
 import { getKoreanDate } from "@/src/lib/seo-date";
@@ -27,7 +28,7 @@ export default async function JobPostingPage({ params }: Props) {
     const job = await fetchJobDetail((await params).jobPostingId);
     const open = isJobOpen(job);
     const applicationUrl = open && isHttpUrl(job.dtlRecrContUrl) ? job.dtlRecrContUrl : null;
-    const dday = open ? getJobDday(job.receiptCloseDt) : null;
+    const closingLabel = getJobClosingLabel(job);
     const postedDate = getKoreanDate(job.postedAt);
     const jobData = getJobStructuredData(job);
     const breadcrumbs = getBreadcrumbStructuredData("jobs", getJobTitle(job), getJobCanonicalUrl(job.id));
@@ -36,21 +37,18 @@ export default async function JobPostingPage({ params }: Props) {
         <div className="container mx-auto mb-8 max-w-5xl px-4 py-8 md:py-10">
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(jobData ? [breadcrumbs, jobData] : breadcrumbs) }} />
             <Link href="/jobs" className={`${buttonVariants({ variant: "ghost", className: "-ml-3 mb-5 text-foreground" })}`}>
-                <ArrowLeft data-icon="inline-start" aria-hidden="true" />
+                <ArrowLeft data-icon="inline-start" className="text-muted-foreground" aria-hidden="true" />
                 채용 공고 목록
             </Link>
 
             <article className="overflow-hidden rounded-2xl border border-border/80 bg-background shadow-[0_16px_40px_rgba(15,23,42,0.08),0_2px_8px_rgba(15,23,42,0.04)]">
                 <header className="border-b border-border/60 px-5 py-6 md:px-8 md:py-8">
                     <div className="flex flex-wrap items-center gap-2">
-                        <span className={open ? "inline-flex h-7 items-center rounded-full bg-brand/10 px-2.5 text-xs font-bold text-brand" : "inline-flex h-7 items-center rounded-full bg-muted px-2.5 text-xs font-bold text-muted-foreground"}>
-                            {open ? "모집 중" : "마감"}
-                        </span>
-                        {dday && <span className="text-sm font-bold text-brand">{dday}</span>}
+                        <span className={`text-sm font-bold ${closingLabel.startsWith("D-") ? "text-brand" : "text-muted-foreground"}`}>{closingLabel}</span>
                         <span className="text-sm font-medium text-muted-foreground">{job.jobsNm || "간호 채용"}</span>
                     </div>
                     <p className="mt-4 flex items-center gap-1.5 text-sm font-semibold text-muted-foreground">
-                        <Building2 className="size-4 shrink-0 text-brand" aria-hidden="true" />
+                        <Building2 className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
                         {job.company.corpNm || "기업 정보 미등록"}
                     </p>
                     <h1 className="mt-2 text-2xl font-bold leading-snug text-foreground md:text-3xl">{getJobTitle(job)}</h1>
@@ -94,9 +92,9 @@ export default async function JobPostingPage({ params }: Props) {
                         </dl>
                     </section>
 
-                    <aside className="rounded-2xl border border-brand/25 bg-brand/5 p-5 md:p-6" aria-labelledby="defaulter-notice">
+                    <aside className="rounded-xl border border-border bg-muted/50 p-5 md:p-6" aria-labelledby="defaulter-notice">
                         <div className="flex items-start gap-3">
-                            <ShieldAlert className="mt-0.5 size-5 shrink-0 text-brand" aria-hidden="true" />
+                            <ShieldAlert className="mt-0.5 size-5 shrink-0 text-muted-foreground" aria-hidden="true" />
                             <div className="min-w-0">
                                 <h2 id="defaulter-notice" className="text-base font-bold text-foreground">지원 전, 체불사업주 명단을 확인해 주세요</h2>
                                 <p className="mt-2 text-sm leading-6 text-foreground">
@@ -106,10 +104,10 @@ export default async function JobPostingPage({ params }: Props) {
                                     href="https://www.moel.go.kr/info/defaulter/defaulterList.do"
                                     target="_blank"
                                     rel="noreferrer"
-                                    className="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-brand underline underline-offset-4 hover:text-brand/80"
+                                    className="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-foreground underline underline-offset-4 hover:text-muted-foreground"
                                 >
                                     체불사업주 명단 확인하기
-                                    <ExternalLink className="size-4" aria-hidden="true" />
+                                    <ExternalLink className="size-4 text-muted-foreground" aria-hidden="true" />
                                 </a>
                             </div>
                         </div>
@@ -164,7 +162,7 @@ export default async function JobPostingPage({ params }: Props) {
 function DetailMeta({ icon: Icon, label, value }: { icon: typeof MapPin; label: string; value: string }) {
     return (
         <div className="min-w-0">
-            <dt className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground"><Icon className="size-4 shrink-0 text-brand" aria-hidden="true" />{label}</dt>
+            <dt className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground"><Icon className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />{label}</dt>
             <dd className="mt-1 whitespace-pre-line break-words font-semibold leading-6 text-foreground">{value}</dd>
         </div>
     );
@@ -175,7 +173,7 @@ function TextSection({ title, icon: Icon, content }: { title: string; icon: type
 
     return (
         <section className="border-t border-border/60 pt-7">
-            <h2 className="flex items-center gap-2 text-lg font-bold text-foreground"><Icon className="size-5 text-brand" aria-hidden="true" />{title}</h2>
+            <h2 className="flex items-center gap-2 text-lg font-bold text-foreground"><Icon className="size-5 text-muted-foreground" aria-hidden="true" />{title}</h2>
             <p className="mt-4 whitespace-pre-line break-words leading-7 text-foreground">{content}</p>
         </section>
     );

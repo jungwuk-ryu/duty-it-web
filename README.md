@@ -5,8 +5,10 @@
 ![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)  
 
 # [듀잇 웹](https://www.dutyit.net/) [![Better Stack Badge](https://uptime.betterstack.com/status-badges/v3/monitor/280lw.svg)](https://status.dutyit.net/)
-듀잇 웹은 [듀잇](https://github.com/jungwuk-ryu/duty-it)을 소개하고 간단한 행사 목록을 웹에서 제공합니다.
+듀잇 웹은 간호사와 간호대학생을 위한 행사·대외활동 및 채용 정보를 제공하는 [듀잇(DuIt)](https://github.com/jungwuk-ryu/duty-it)의 웹 서비스입니다.
 
 로그인 유지에 필요한 환경 변수와 북마크 구현은 [로그인·북마크 운영 지침](docs/auth-and-bookmarks.md)을 참고하세요.
 
 행사 상세의 AI 행사 내용과 서버 토큰 설정은 [행사 내용 연동 지침](docs/event-content.md)을 참고하세요.
+
+검색 노출 정책, 사이트맵과 `npm run seo:audit` 사용법은 [SEO 운영 지침](docs/seo.md)을 참고하세요.
