@@ -14,7 +14,7 @@ afterEach(() => {
   globalThis.fetch = originalFetch;
 });
 
-test("reads available event content with a server-only bearer token", async () => {
+test("reads public event content without transmitting a server secret", async () => {
   process.env.DUIT_EVENT_CONTENT_API_TOKEN = "server-secret";
   process.env.SURFER_API_BASE = "https://surfer.example.test/";
   let request: { input: string; init?: RequestInit } | undefined;
@@ -37,8 +37,9 @@ test("reads available event content with a server-only bearer token", async () =
   const content = await fetchEventContent("701");
 
   assert.equal(content?.body, "행사 자료를 바탕으로 정리한 내용입니다.");
-  assert.equal(request?.input, "https://surfer.example.test/api/v1/duit-events/701/content");
-  assert.equal(new Headers(request?.init?.headers).get("Authorization"), "Bearer server-secret");
+  assert.equal(request?.input, "https://surfer.example.test/api/v1/public/duit-events/701/content");
+  assert.equal(new Headers(request?.init?.headers).has("Authorization"), false);
+  assert.deepEqual(request?.init?.next, { revalidate: 60 });
 });
 
 test("omits the section when Surfer has no generated content", async () => {
@@ -53,7 +54,7 @@ test("omits the section when Surfer has no generated content", async () => {
   assert.equal(await fetchEventContent("702"), null);
 });
 
-test("does not call Surfer without a configured server token", async () => {
+test("rejects invalid event IDs before calling Surfer", async () => {
   delete process.env.DUIT_EVENT_CONTENT_API_TOKEN;
   let called = false;
   globalThis.fetch = async () => {
@@ -61,8 +62,26 @@ test("does not call Surfer without a configured server token", async () => {
     return Response.json({});
   };
 
-  assert.equal(await fetchEventContent("703"), null);
+  assert.equal(await fetchEventContent("invalid-id"), null);
   assert.equal(called, false);
+});
+
+test("works without a server token and rejects content for another event", async () => {
+  delete process.env.DUIT_EVENT_CONTENT_API_TOKEN;
+  globalThis.fetch = async () => Response.json({
+    schemaVersion: "duit-event-content-api.v1",
+    eventId: "706",
+    availability: "available",
+    content: {
+      format: "text/plain",
+      language: "ko",
+      body: "공개된 행사 내용입니다.",
+      generatedAt: "2026-09-09T12:00:00.000Z",
+    },
+  });
+
+  assert.equal((await fetchEventContent("706"))?.body, "공개된 행사 내용입니다.");
+  assert.equal(await fetchEventContent("707"), null);
 });
 
 test("fails open when Surfer returns an invalid or failed response", async () => {

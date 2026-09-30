@@ -53,7 +53,6 @@ npm run dev
 | `API_BASE` | 필수. 듀잇 API 주소이며 끝에 `/api`를 포함합니다. |
 | `AUTH_SESSION_SECRET` | 로그인 사용 시 필수. 세션 쿠키 암호화용 64자리 hex 값입니다. 재배포·서버 인스턴스 간 같은 값을 유지합니다. |
 | `AUTH_ORIGIN` | 선택. 프록시가 공개 origin을 보존하지 않을 때 실제 웹 origin을 지정합니다. |
-| `DUIT_EVENT_CONTENT_API_TOKEN` | 선택. Surfer가 생성한 행사 내용을 상세 화면에 표시할 때 사용하는 서버 간 토큰입니다. |
 | `SURFER_API_BASE` | 선택. Surfer 주소를 기본값 `https://surfer.dutyit.net`에서 변경할 때 사용합니다. |
 | `GA_ID` | 선택. Google Analytics 측정 ID입니다. |
 

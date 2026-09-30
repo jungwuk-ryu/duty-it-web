@@ -4,9 +4,10 @@
 
 ## 서버 환경 변수
 
-- `DUIT_EVENT_CONTENT_API_TOKEN`: Surfer와 공유하는 서버 간 Bearer 토큰입니다. `NEXT_PUBLIC_` 접두사를 붙이지 않고 Vercel의 서버 비밀 환경 변수로 관리합니다.
 - `SURFER_API_BASE`: 선택 사항이며 기본값은 `https://surfer.dutyit.net`입니다.
 
-토큰은 서버 컴포넌트의 서버 전용 조회 모듈에서만 사용합니다. 브라우저 요청, HTML, React 속성에는 토큰을 포함하지 않습니다.
+웹과 Android 앱은 `GET /api/v1/public/duit-events/{eventId}/content`를 사용합니다. 서버 비밀 토큰이 필요하지 않습니다. 웹에서는 서버 컴포넌트가 이 경로를 조회하고 최대 60초 동안 결과를 캐시합니다.
 
-운영 배포 전에는 Preview와 Production 환경에 `DUIT_EVENT_CONTENT_API_TOKEN`을 등록해야 합니다. 토큰이 없거나 본문 응답의 `availability`가 `unavailable`이면 행사 내용 섹션을 렌더링하지 않습니다.
+Surfer는 저장된 본문이 있는 행사에 대해 듀잇 공개 API의 현재 상태가 `ACTIVE` 또는 `FINISHED`인지 확인한 뒤 내용을 반환합니다. 미공개·삭제·철회된 행사와 본문이 없는 행사는 `availability: unavailable`로 반환하며, 웹은 내용 섹션을 렌더링하지 않습니다. 요청 제한이나 조회 오류도 기존 상세 화면을 막지 않습니다.
+
+기존 서버 간 전용 경로는 Surfer의 Bearer 인증을 유지합니다. 앱이나 브라우저에 해당 서버 토큰을 포함하지 않습니다. 이번 공개 읽기 연동 이후 듀잇 웹의 `DUIT_EVENT_CONTENT_API_TOKEN` 설정은 사용되지 않습니다.
