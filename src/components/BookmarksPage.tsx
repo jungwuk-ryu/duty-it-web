@@ -10,6 +10,8 @@ import { EventSchema, type Event } from "@/src/lib/schemas/event";
 import { JobPostingSchema, type JobPosting } from "@/src/lib/schemas/job";
 import { Button, buttonVariants } from "./ui/button";
 import EventCard from "./ui/EventCard";
+import eventStyles from "./ui/event-item.module.css";
+import jobStyles from "./ui/job-posting.module.css";
 import JobPostingCard from "./ui/JobPostingCard";
 import { cn } from "@/src/lib/utils";
 
@@ -29,7 +31,7 @@ export default function BookmarksPage({ kind }: { kind: BookmarkKind }) {
             <Link href="/bookmarks" aria-current={kind === "events" ? "page" : undefined} className={buttonVariants({ variant: kind === "events" ? "default" : "outline", className: "gap-2" })}><CalendarDays size={16} aria-hidden />행사</Link>
             <Link href="/bookmarks?type=jobs" aria-current={kind === "jobs" ? "page" : undefined} className={buttonVariants({ variant: kind === "jobs" ? "default" : "outline", className: "gap-2" })}><BriefcaseBusiness size={16} aria-hidden />채용 공고</Link>
         </nav>
-        {auth.status === "loading" ? <Loading /> : auth.user ? <SavedList key={`${auth.user.id}:${kind}`} kind={kind} />
+        {auth.user ? <SavedList key={`${auth.user.id}:${kind}`} kind={kind} />
             : auth.status === "error" ? <div role="alert" className="flex flex-col items-center gap-4 py-16"><p>{auth.message}</p><Button variant="outline" onClick={() => void checkSession()}>다시 시도</Button></div>
                 : <div className="flex flex-col items-center gap-4 rounded-2xl border border-border bg-background px-5 py-16 text-center">
                     <Bookmark size={36} className="text-muted-foreground" aria-hidden />
@@ -41,6 +43,7 @@ export default function BookmarksPage({ kind }: { kind: BookmarkKind }) {
 }
 
 function SavedList({ kind }: { kind: BookmarkKind }) {
+    const [referenceDate] = useState(() => new Date().toISOString());
     const [items, setItems] = useState<Item[]>([]);
     const [next, setNext] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
@@ -93,8 +96,8 @@ function SavedList({ kind }: { kind: BookmarkKind }) {
 
     return <section aria-label={kind === "events" ? "저장한 행사" : "저장한 채용 공고"} aria-busy={loading}>
         {kind === "jobs" && <p className="mb-5 text-sm text-muted-foreground">현재 공개 중인 채용 공고를 보여드려요. 공개가 종료된 공고는 목록에서 제외돼요.</p>}
-        {items.length > 0 && <div className={cn("grid gap-5", kind === "events" ? "sm:grid-cols-2 lg:grid-cols-3" : "grid-cols-1")}>
-            {items.map((item) => item.job ? <JobPostingCard key={item.id} job={item.job} /> : item.event ? <EventCard key={item.id} event={item.event} />
+        {items.length > 0 && <div className={cn(kind === "events" ? eventStyles.grid : jobStyles.grid)}>
+            {items.map((item) => item.job ? <JobPostingCard key={item.id} job={item.job} /> : item.event ? <EventCard key={item.id} event={item.event} referenceDate={referenceDate} />
                 : <div key={item.id} className="rounded-2xl border border-border bg-background p-6 text-sm text-muted-foreground">이 행사는 현재 공개되지 않아 내용을 볼 수 없어요.</div>)}
         </div>}
         {error && <div className="mt-6 flex flex-col items-center gap-3" role="alert"><p className="text-sm text-destructive">{error}</p><Button variant="outline" onClick={() => reload(retryCursor.current)}>다시 시도</Button></div>}

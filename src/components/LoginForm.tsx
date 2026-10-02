@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { ArrowLeft, LoaderCircle } from "lucide-react";
 import { type ComponentProps, useState } from "react";
 import { inMemoryPersistence, setPersistence, signInWithPopup, signOut } from "firebase/auth";
@@ -143,6 +144,7 @@ export default function LoginForm() {
 }
 
 function LoginSuccess({ nickname, isNewUser }: { nickname: string; isNewUser: boolean }) {
+    const searchParams = useSearchParams();
     const greeting = nickname ? `${nickname}님, ${isNewUser ? "환영해요" : "다시 만나 반가워요"}` : "로그인이 완료되었어요";
 
     return (
@@ -152,7 +154,7 @@ function LoginSuccess({ nickname, isNewUser }: { nickname: string; isNewUser: bo
                 듀잇에서 나에게 맞는 행사와 채용 정보를 찾아보세요.
             </p>
             <Button asChild className="mt-9 h-12 w-full rounded-xl px-6 text-[15px] font-semibold">
-                <Link href={typeof window === "undefined" ? "/events" : safeReturnTo(new URLSearchParams(window.location.search).get("next"))}>계속 둘러보기</Link>
+                <Link href={safeReturnTo(searchParams.get("next"))}>계속 둘러보기</Link>
             </Button>
             <Link href="/bookmarks" className="mt-4 text-sm font-semibold text-brand">내 북마크 보기</Link>
         </div>

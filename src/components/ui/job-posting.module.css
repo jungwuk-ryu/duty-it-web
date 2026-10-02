@@ -1,0 +1,29 @@
+.page { width: min(1200px, calc(100% - 80px)); margin: 0 auto 20px; padding-block: 40px; word-break: keep-all; }
+.grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; margin: 0; padding: 0; list-style: none; }
+.card { position: relative; min-width: 0; height: 100%; border: 1px solid var(--duit-border); border-radius: 10px; background: var(--duit-background); color: var(--duit-foreground); transition: border-color .2s; word-break: keep-all; }
+.card:hover { border-color: var(--duit-subtle-foreground); }
+.cardLink { display: flex; flex-direction: column; height: 100%; padding: 20px; border-radius: inherit; text-decoration: none; }
+.cardLink:focus { outline: none; }
+.card .cardLink:focus-visible { outline: 2px solid var(--duit-subtle-foreground); outline-offset: 3px; }
+.card .bookmark button:focus-visible { outline: 2px solid var(--duit-subtle-foreground); outline-offset: 2px; box-shadow: none; }
+.deadline { display: block; padding-right: 40px; color: var(--duit-muted-foreground); font-size: 13px; font-weight: 700; line-height: 22px; }
+.deadline[data-countdown="true"] { color: var(--duit-brand); }
+.company { overflow: hidden; margin-top: 14px; color: var(--duit-muted-foreground); font-size: 13px; line-height: 1.6; text-overflow: ellipsis; white-space: nowrap; }
+.title { display: -webkit-box; overflow: hidden; min-height: 52px; margin-top: 5px; -webkit-box-orient: vertical; -webkit-line-clamp: 2; color: var(--duit-foreground); font-size: 17px; font-weight: 700; line-height: 1.55; letter-spacing: -.035em; overflow-wrap: anywhere; }
+.facts { padding: 0; margin: 14px 0 0; color: var(--duit-muted-foreground); font-size: 13px; line-height: 1.8; list-style: none; }
+.facts li { display: inline; }
+.facts li + li::before { padding-inline: 5px; color: var(--duit-subtle-foreground); content: "·"; }
+.bookmark { position: absolute; top: 9px; right: 9px; border-radius: 50%; }
+.card .bookmark button { color: var(--duit-muted-foreground); }
+
+@media (max-width: 1099px) {
+    .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 699px) {
+    .page { width: calc(100% - 32px); padding-block: 28px; }
+    .grid { grid-template-columns: 1fr; gap: 12px; }
+    .cardLink { padding: 18px; }
+    .company { margin-top: 10px; }
+    .title { min-height: 0; }
+    .facts { margin-top: 12px; }
+}

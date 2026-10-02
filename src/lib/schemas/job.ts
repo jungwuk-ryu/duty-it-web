@@ -1,6 +1,8 @@
+import { decode } from "html-entities";
 import { z } from "zod";
 
-const OptionalTextSchema = z.string().nullable().optional().transform((value) => value?.trim() ?? "");
+// Work24 text can arrive HTML-escaped; decode once before it reaches cards, details, or SEO.
+const OptionalTextSchema = z.string().nullable().optional().transform((value) => decode(value?.trim() ?? "", { scope: "strict" }));
 
 export const JobCompanySchema = z.object({
     id: z.number(),

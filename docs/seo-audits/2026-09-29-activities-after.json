@@ -1,0 +1,397 @@
+{
+  "measuredAt": "2026-09-29T02:11:49.356Z",
+  "baseUrl": "http://127.0.0.1:3000",
+  "canonicalOrigin": "https://www.dutyit.net",
+  "userAgent": "DutyitSEOAudit/1.0",
+  "scope": "HTTP response sample; not search rankings, full-site coverage, or a structured-data eligibility validator",
+  "summary": {
+    "requests": 19,
+    "sitemapUrls": 1099,
+    "failedChecks": 0
+  },
+  "failures": [],
+  "rows": [
+    {
+      "path": "/",
+      "checks": {
+        "expectedStatus": true,
+        "indexPolicy": true,
+        "title": true,
+        "description": true,
+        "canonical": true,
+        "h1": true,
+        "socialTitle": true,
+        "socialDescription": true,
+        "socialUrl": true,
+        "validJsonLd": true,
+        "schema:WebSite": true,
+        "schema:Organization": true,
+        "aboutLinked": true
+      },
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "xRobotsTag": null,
+      "title": "간호사·간호대학생 대외활동과 채용 | 듀잇",
+      "h1": [
+        "간호사를 위한 대외활동과 채용을 한곳에서"
+      ],
+      "canonical": "https://www.dutyit.net",
+      "robots": "",
+      "structuredData": [
+        "Organization",
+        "WebSite"
+      ]
+    },
+    {
+      "path": "/events",
+      "checks": {
+        "expectedStatus": true,
+        "indexPolicy": true,
+        "title": true,
+        "description": true,
+        "canonical": true,
+        "h1": true,
+        "socialTitle": true,
+        "socialDescription": true,
+        "socialUrl": true,
+        "validJsonLd": true,
+        "activityIntent": true,
+        "activityGuideRendered": true,
+        "activityCategoryLinks": true
+      },
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "xRobotsTag": null,
+      "title": "간호대학생·간호사 대외활동 | 봉사·서포터즈·공모전 | 듀잇",
+      "h1": [
+        "간호대학생·간호사 대외활동"
+      ],
+      "canonical": "https://www.dutyit.net/events",
+      "robots": "index, follow",
+      "structuredData": [
+        "Organization"
+      ]
+    },
+    {
+      "path": "/events?types=VOLUNTEER",
+      "checks": {
+        "expectedStatus": true,
+        "indexPolicy": true,
+        "title": true,
+        "description": true,
+        "validJsonLd": true
+      },
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "xRobotsTag": null,
+      "title": "간호대학생·간호사 대외활동 | 봉사·서포터즈·공모전 | 듀잇",
+      "h1": [
+        "간호대학생·간호사 대외활동 ·행사 목록"
+      ],
+      "canonical": "https://www.dutyit.net/events?types=VOLUNTEER",
+      "robots": "noindex, follow",
+      "structuredData": [
+        "Organization"
+      ]
+    },
+    {
+      "path": "/events?q=%EB%B4%89%EC%82%AC",
+      "checks": {
+        "expectedStatus": true,
+        "indexPolicy": true,
+        "title": true,
+        "description": true,
+        "validJsonLd": true
+      },
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "xRobotsTag": null,
+      "title": "봉사 대외활동·행사 검색 | 듀잇",
+      "h1": [
+        "간호대학생·간호사 대외활동 ·행사 목록"
+      ],
+      "canonical": "https://www.dutyit.net/events?q=%EB%B4%89%EC%82%AC",
+      "robots": "noindex, follow",
+      "structuredData": [
+        "Organization"
+      ]
+    },
+    {
+      "path": "/jobs",
+      "checks": {
+        "expectedStatus": true,
+        "indexPolicy": true,
+        "title": true,
+        "description": true,
+        "canonical": true,
+        "h1": true,
+        "socialTitle": true,
+        "socialDescription": true,
+        "socialUrl": true,
+        "validJsonLd": true
+      },
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "xRobotsTag": null,
+      "title": "간호 채용 공고 | 듀잇",
+      "h1": [
+        "간호 채용 공고"
+      ],
+      "canonical": "https://www.dutyit.net/jobs",
+      "robots": "index, follow",
+      "structuredData": [
+        "Organization"
+      ]
+    },
+    {
+      "path": "/about",
+      "checks": {
+        "expectedStatus": true,
+        "indexPolicy": true,
+        "title": true,
+        "description": true,
+        "canonical": true,
+        "h1": true,
+        "socialTitle": true,
+        "socialDescription": true,
+        "socialUrl": true,
+        "validJsonLd": true,
+        "schema:AboutPage": true,
+        "schema:FAQPage": true,
+        "faqMatchesHtml": true
+      },
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "xRobotsTag": null,
+      "title": "듀잇 소개 · 간호 행사와 채용 이용 안내 | 듀잇",
+      "h1": [
+        "듀잇은 어떤 서비스인가요?"
+      ],
+      "canonical": "https://www.dutyit.net/about",
+      "robots": "index, follow",
+      "structuredData": [
+        "Organization",
+        "AboutPage",
+        "FAQPage",
+        "BreadcrumbList"
+      ]
+    },
+    {
+      "path": "/login",
+      "checks": {
+        "expectedStatus": true,
+        "indexPolicy": true,
+        "title": true,
+        "description": true,
+        "validJsonLd": true
+      },
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "xRobotsTag": null,
+      "title": "로그인 | 듀잇",
+      "h1": [
+        "듀잇에 로그인하세요"
+      ],
+      "canonical": "https://www.dutyit.net/login",
+      "robots": "noindex, follow",
+      "structuredData": [
+        "Organization"
+      ]
+    },
+    {
+      "path": "/bookmarks",
+      "checks": {
+        "expectedStatus": true,
+        "indexPolicy": true,
+        "title": true,
+        "description": true,
+        "validJsonLd": true
+      },
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "xRobotsTag": null,
+      "title": "내 북마크 | 듀잇",
+      "h1": [
+        "내 북마크"
+      ],
+      "robots": "noindex, nofollow",
+      "structuredData": [
+        "Organization"
+      ]
+    },
+    {
+      "path": "/submit-event",
+      "checks": {
+        "expectedStatus": true,
+        "indexPolicy": true,
+        "title": true,
+        "description": true,
+        "validJsonLd": true
+      },
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "xRobotsTag": null,
+      "title": "행사 제보하기 | 듀잇",
+      "h1": [
+        "행사 제보하기"
+      ],
+      "canonical": "https://www.dutyit.net/submit-event",
+      "robots": "noindex, follow",
+      "structuredData": [
+        "Organization"
+      ]
+    },
+    {
+      "path": "/seo-audit-missing-page",
+      "checks": {
+        "expectedStatus": true
+      },
+      "status": 404,
+      "contentType": "text/html; charset=utf-8",
+      "xRobotsTag": null
+    },
+    {
+      "path": "/robots.txt",
+      "checks": {
+        "expectedStatus": true,
+        "sitemapDeclared": true,
+        "wildcardPresent": true,
+        "noSitewideBlock": true
+      },
+      "status": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "xRobotsTag": null
+    },
+    {
+      "path": "/llms.txt",
+      "checks": {
+        "expectedStatus": true,
+        "plainText": true,
+        "siteGuide": true
+      },
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "xRobotsTag": null
+    },
+    {
+      "path": "/naver58ded178a26f37d0e045fd7270dcc8cb.html",
+      "checks": {
+        "expectedStatus": true,
+        "verificationFile": true
+      },
+      "status": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "xRobotsTag": null
+    },
+    {
+      "path": "/sitemap.xml",
+      "checks": {
+        "expectedStatus": true,
+        "index": true,
+        "aboutIncluded": true,
+        "uniqueUrls": true
+      },
+      "status": 200,
+      "contentType": "application/xml; charset=utf-8",
+      "xRobotsTag": null
+    },
+    {
+      "path": "/sitemap-static-0.xml",
+      "checks": {
+        "expectedStatus": true,
+        "urlset": true,
+        "limits": true,
+        "canonicalLocations": true
+      },
+      "status": 200,
+      "contentType": "application/xml; charset=utf-8",
+      "xRobotsTag": null,
+      "urlCount": 4
+    },
+    {
+      "path": "/sitemap-events-0.xml",
+      "checks": {
+        "expectedStatus": true,
+        "urlset": true,
+        "limits": true,
+        "canonicalLocations": true
+      },
+      "status": 200,
+      "contentType": "application/xml; charset=utf-8",
+      "xRobotsTag": null,
+      "urlCount": 594
+    },
+    {
+      "path": "/sitemap-jobs-0.xml",
+      "checks": {
+        "expectedStatus": true,
+        "urlset": true,
+        "limits": true,
+        "canonicalLocations": true
+      },
+      "status": 200,
+      "contentType": "application/xml; charset=utf-8",
+      "xRobotsTag": null,
+      "urlCount": 501
+    },
+    {
+      "path": "/events/2",
+      "checks": {
+        "expectedStatus": true,
+        "indexPolicy": true,
+        "title": true,
+        "description": true,
+        "canonical": true,
+        "h1": true,
+        "socialTitle": true,
+        "socialDescription": true,
+        "socialUrl": true,
+        "validJsonLd": true,
+        "schema:BreadcrumbList": true
+      },
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "xRobotsTag": null,
+      "title": "2025 추계실무교육 최신 항암화학요법 증상관리와 간호 | 듀잇",
+      "h1": [
+        "2025 추계실무교육 최신 항암화학요법 증상관리와 간호"
+      ],
+      "canonical": "https://www.dutyit.net/events/2",
+      "robots": "index, follow",
+      "structuredData": [
+        "Organization",
+        "BreadcrumbList"
+      ]
+    },
+    {
+      "path": "/jobs/5684",
+      "checks": {
+        "expectedStatus": true,
+        "indexPolicy": true,
+        "title": true,
+        "description": true,
+        "canonical": true,
+        "h1": true,
+        "socialTitle": true,
+        "socialDescription": true,
+        "socialUrl": true,
+        "validJsonLd": true,
+        "schema:BreadcrumbList": true
+      },
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "xRobotsTag": null,
+      "title": "[청송 진보병원] 병동 간호사를 채용합니다. | 듀잇",
+      "h1": [
+        "[청송 진보병원] 병동 간호사를 채용합니다."
+      ],
+      "canonical": "https://www.dutyit.net/jobs/5684",
+      "robots": "index, follow",
+      "structuredData": [
+        "Organization",
+        "BreadcrumbList",
+        "JobPosting"
+      ]
+    }
+  ]
+}

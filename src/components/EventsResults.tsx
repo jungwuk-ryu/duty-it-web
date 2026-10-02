@@ -4,6 +4,7 @@ import EventFiltersForm from "@/src/components/EventFiltersForm";
 import EventsDiscovery from "@/src/components/EventsDiscovery";
 import EventListScaffold from "@/src/components/EventListScaffold";
 import EventCard from "@/src/components/ui/EventCard";
+import eventStyles from "@/src/components/ui/event-item.module.css";
 import {
     getEventPageRequestFromUrlSearchParams,
     getEventsHref,
@@ -23,7 +24,7 @@ import Link from "next/link";
 import { type MouseEvent, type ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import { usePathname, useSearchParams } from "next/navigation";
-import { getEventsListMetadata } from "@/src/lib/list-seo";
+import { EVENTS_PAGE_HEADING, getEventsListMetadata } from "@/src/lib/list-seo";
 
 type Option<T extends string> = { value: T; label: string };
 
@@ -32,6 +33,7 @@ type Props = {
     initialData: EventResponse;
     initialIsListView: boolean;
     initialRequest: EventPageRequest;
+    referenceDate: string;
     sortOptions: readonly Option<EventSortField>[];
     statusOptions: readonly Option<EventStatusFilter>[];
     typeOptions: readonly Option<EventType>[];
@@ -58,6 +60,7 @@ export default function EventsResults({
     initialData,
     initialIsListView,
     initialRequest,
+    referenceDate,
     sortOptions,
     statusOptions,
     typeOptions,
@@ -172,6 +175,16 @@ export default function EventsResults({
     useEffect(() => {
         if (pathname !== "/events") return;
         const metadata = getEventsListMetadata(Object.fromEntries(getEventsSearchParams(request, request.cursor)));
+        document.title = metadata.title;
+        for (const [selector, content] of [
+            ['meta[name="description"]', metadata.description],
+            ['meta[property="og:title"]', metadata.title],
+            ['meta[property="og:description"]', metadata.description],
+            ['meta[name="twitter:title"]', metadata.title],
+            ['meta[name="twitter:description"]', metadata.description],
+        ]) {
+            document.querySelector(selector)?.setAttribute("content", content);
+        }
         document.querySelector<HTMLLinkElement>('link[rel="canonical"]')?.setAttribute("href", metadata.alternates.canonical);
         const robots = metadata.robots;
         document.querySelector('meta[name="robots"]')?.setAttribute("content", `${robots.index ? "index" : "noindex"}, follow`);
@@ -303,13 +316,14 @@ export default function EventsResults({
                 <EventsDiscovery
                     categoryExplore={categoryExplore}
                     events={initialIsListView ? (events?.content ?? []) : initialData.content}
+                    referenceDate={referenceDate}
                     onExplore={handleExplore}
                 />
             ) : (
                 <div data-events-view="list" className="events-list-enter">
                     <header className="mb-6 text-center">
-                        <h1 tabIndex={-1} className="text-3xl font-bold outline-none">행사 목록</h1>
-                        <p className="mt-3 text-muted-foreground">관심 분야와 일정에 맞는 행사만 골라 확인해보세요.</p>
+                        <h1 tabIndex={-1} className="text-2xl font-bold outline-none sm:text-[28px]">{EVENTS_PAGE_HEADING}·행사 목록</h1>
+                        <p className="mt-3 text-muted-foreground">관심 분야와 일정에 맞는 활동을 골라 확인해보세요.</p>
                     </header>
                     <section className="mb-8">
                         <EventFiltersForm
@@ -370,10 +384,10 @@ export default function EventsResults({
                             </div>
 
                             {events.content.length > 0 ? (
-                                <ul className="grid grid-cols-1 gap-7 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                                <ul className={eventStyles.grid}>
                                     {events.content.map((event, index) => (
                                         <li key={event.id} className="h-full">
-                                            <EventCard event={event} eager={index < 4} onHostClick={handleHostClick} priority={index === 0} />
+                                            <EventCard event={event} referenceDate={referenceDate} eager={index < 4} onHostClick={handleHostClick} priority={index === 0} />
                                         </li>
                                     ))}
                                 </ul>
@@ -513,7 +527,7 @@ function getRequestKey(request: EventPageRequest): string {
 }
 
 function getDocumentTitle(request: EventPageRequest): string {
-    return request.searchKeyword ? `${request.searchKeyword} 행사 검색 | 듀잇` : "간호 행사 목록 | 듀잇";
+    return getEventsListMetadata(Object.fromEntries(getEventsSearchParams(request, request.cursor))).title;
 }
 
 function getCachedPage(key: string): EventResponse | null {

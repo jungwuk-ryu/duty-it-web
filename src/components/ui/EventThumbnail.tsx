@@ -31,6 +31,8 @@ export default function EventThumbnail({
     return (
         <Image
             src={imageSrc}
+            // Event uploads are served directly so Vercel's transformation quota cannot hide them.
+            unoptimized={!imageSrc.startsWith("/")}
             alt={alt}
             fill
             loading={priority ? undefined : eager ? "eager" : undefined}

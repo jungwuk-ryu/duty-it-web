@@ -1,12 +1,11 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { createContext, useContext, useSyncExternalStore } from "react";
 import { z } from "zod";
-import type { PublicUser } from "./session-crypto";
+import { GUEST, type AuthState } from "./state";
 
-type AuthState = { status: "loading" | "authenticated" | "guest" | "error"; user: PublicUser | null; message: string | null };
-const INITIAL: AuthState = { status: "loading", user: null, message: null };
-let state = INITIAL;
+export const InitialAuthContext = createContext<AuthState>(GUEST);
+let state: AuthState | null = null;
 let generation = 0;
 const listeners = new Set<() => void>();
 let refreshing: Promise<Response> | null = null;
@@ -19,8 +18,10 @@ export class SessionRequestError extends Error {
 }
 
 function publish(next: AuthState) { state = next; listeners.forEach((listener) => listener()); }
+function subscribe(listener: () => void) { listeners.add(listener); return () => { listeners.delete(listener); }; }
 export function useAuth() {
-    return useSyncExternalStore((listener) => { listeners.add(listener); return () => listeners.delete(listener); }, () => state, () => INITIAL);
+    const initial = useContext(InitialAuthContext);
+    return useSyncExternalStore(subscribe, () => state ?? initial, () => initial);
 }
 function signalChange() {
     window.dispatchEvent(new Event("duit-auth-change"));
@@ -55,6 +56,7 @@ export async function sessionFetch(path: string, init?: RequestInit): Promise<Re
     if (!path.startsWith("/api/")) throw new Error("Session requests must stay on this site.");
     const started = generation;
     const response = await request(path, init);
+    if (started !== generation) throw new SessionRequestError("로그인 상태가 변경되었습니다. 다시 시도해 주세요.", 409);
     if (response.status !== 401) return response;
     const refreshed = await refreshSession();
     if (started !== generation) throw new SessionRequestError("로그인 상태가 변경되었습니다. 다시 시도해 주세요.", 409);
@@ -63,10 +65,13 @@ export async function sessionFetch(path: string, init?: RequestInit): Promise<Re
         return refreshed;
     }
     const parsed = UserResponseSchema.safeParse(await refreshed.json());
+    if (started !== generation) throw new SessionRequestError("로그인 상태가 변경되었습니다. 다시 시도해 주세요.", 409);
     if (!parsed.success) throw new SessionRequestError("로그인을 확인하지 못했습니다.", 502);
     publish({ status: "authenticated", user: parsed.data.user, message: null });
     // Only a definite 401 is retried. Never replay a toggle after a timeout or 5xx.
-    return request(path, init);
+    const retried = await request(path, init);
+    if (started !== generation) throw new SessionRequestError("로그인 상태가 변경되었습니다. 다시 시도해 주세요.", 409);
+    return retried;
 }
 
 export async function responseJson(response: Response): Promise<unknown> {
@@ -81,7 +86,7 @@ export async function responseJson(response: Response): Promise<unknown> {
 export function checkSession(): Promise<void> {
     if (checking) return checking;
     const started = generation;
-    checking = (async () => {
+    const check = (async () => {
         try {
             const response = await sessionFetch("/api/auth/session");
             if (started !== generation) return;
@@ -89,10 +94,11 @@ export function checkSession(): Promise<void> {
             const parsed = UserResponseSchema.parse(await responseJson(response));
             if (started === generation) publish({ status: "authenticated", user: parsed.user, message: null });
         } catch {
-            if (started === generation) publish({ ...state, status: state.user ? "authenticated" : "error", message: "로그인 연결을 확인하지 못했습니다. 다시 시도해 주세요." });
+            if (started === generation) publish({ user: state?.user ?? null, status: state?.user ? "authenticated" : "error", message: "로그인 연결을 확인하지 못했습니다. 다시 시도해 주세요." });
         }
-    })().finally(() => { checking = null; });
-    return checking;
+    })().finally(() => { if (checking === check) checking = null; });
+    checking = check;
+    return check;
 }
 
 export async function signInSession(refreshToken: string) {
@@ -119,13 +125,14 @@ export async function signOutSession() {
     });
 }
 
-export function observeSession() {
+export function observeSession(initial: AuthState) {
+    if (!state) publish(initial);
     void checkSession();
     const resume = () => { if (document.visibilityState === "visible") void checkSession(); };
     const changed = (event: StorageEvent) => {
         if (event.key !== "duit-auth-change") return;
         generation++;
-        publish(INITIAL); // Remove the previous account's private content immediately.
+        publish(GUEST); // Remove the previous account's private content immediately.
         checking = null;
         void checkSession();
     };

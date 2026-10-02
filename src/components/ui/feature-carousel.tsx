@@ -95,7 +95,7 @@ export function FeatureCarousel<T extends FeatureCarouselItem>({
   const currentIndex = Math.min(activeIndex, items.length - 1);
   const activeItem = items[currentIndex];
   const slideMotion = prefersReducedMotion
-    ? { initial: false, animate: { opacity: 1 }, exit: { opacity: 0 } }
+    ? { initial: false, animate: { opacity: 1, x: 0, scale: 1 }, exit: { opacity: 0 } }
     : { initial: { opacity: 0, x: 20, scale: 0.985 }, animate: { opacity: 1, x: 0, scale: 1 }, exit: { opacity: 0, x: -20, scale: 0.985 } };
 
   return (

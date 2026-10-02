@@ -4,7 +4,7 @@
 
 `/sitemap.xml`은 색인 파일이며 `/sitemap-static-0.xml`, `/sitemap-events-0.xml`, `/sitemap-jobs-0.xml` 등을 가리킨다. 각 파일은 URL 50,000개 또는 압축 전 UTF-8 50MB에 도달하기 전에 분할한다. 공개 파일을 루트 경로에 두기 위해 Next.js rewrite를 사용한다. JSX가 없는 XML 응답은 `route.ts`에서 생성한다.
 
-- 정적 URL: 홈, 행사 목록, 채용 목록.
+- 정적 URL: 홈, 행사 목록, 채용 목록, 듀잇 소개(`/about`).
 - 행사: 공개 `ACTIVE`와 `FINISHED`를 각각 마지막 커서까지 조회한다. 종료 행사는 기록으로 보존하고, 승인 대기 행사는 제외한다. 실제 포스터가 있으면 이미지 URL도 제공한다.
 - 채용: 활성 상태이며 한국 시간 기준 접수 마감이 지나지 않은 상세 URL만 포함한다. 목록과 구조화 데이터에도 같은 마감 판정을 사용한다.
 - 중복 ID·URL은 제거한다. 커서 누락·반복·진행 중단, 응답 형식 오류, 요청 실패는 전체 생성 실패다. 임의의 100페이지 제한은 없다.
@@ -74,3 +74,41 @@ npm run seo:notify-jobs -- --type URL_DELETED --url https://www.dutyit.net/jobs/
 5. 색인 보고서·구조화 데이터 오류·사이트맵 수집 오류·실제 노출 및 클릭을 관찰한다. 코드 변경만으로 검색 순위나 리치 결과 노출을 보장할 수는 없다.
 
 계정 기반 사이트맵 제출, 실제 Indexing API 전송, 행사 API 확장은 이 웹 PR 배포와 별도로 수행해야 한다.
+
+## 서비스 소개와 AI용 사이트 안내
+
+`/about`은 서비스 설명, 행사·채용 정보 출처, AI 요약의 확인 방법, 이용 FAQ와 공식 앱·문의 링크를 서버 HTML로 제공한다. 푸터에서 연결하고 정적 사이트맵에 포함한다. 확인되지 않은 운영자 실명, 법인명, 주소, 사용자 수, 갱신 주기는 추가하지 않는다.
+
+`src/lib/site-info.ts`의 서비스 정보를 소개 페이지, JSON-LD, `/llms.txt`가 함께 사용한다. FAQ 질문·답변도 같은 배열에서 렌더링해 화면과 구조화 데이터가 달라지지 않게 한다. 루트 `Organization`의 식별자는 `https://www.dutyit.net/#organization`으로 고정하고 홈 `WebSite.publisher`와 소개 페이지가 이를 참조한다. 공식 앱 링크는 현재 웹에서 제공하는 App Store·Google Play 주소만 사용한다.
+
+`/llms.txt`는 `text/plain; charset=utf-8`로 제공하는 보조 안내서다. 듀잇은 서비스 기능·이용 안내의 원출처이며, 개별 행사·채용 조건의 원출처는 주최자와 채용기관임을 구분한다. 수시로 달라지는 공고 전문이나 확인하지 못한 갱신 주기는 넣지 않는다.
+
+2026-09-29 확인한 Google 문서에 따르면 FAQ 리치 결과는 2026-05-07부터 중단됐으며, `llms.txt`는 Google 검색 노출·순위에 영향을 주지 않는다. FAQPage는 실제 문답을 표현하는 용도이고, `llms.txt`는 이를 이용하는 다른 시스템을 위한 안내다. AI 인용이나 순위 상승의 보장 조건으로 취급하지 않는다. [Google 변경 기록](https://developers.google.com/search/updates#june-2026), [Google AI 기능 안내](https://developers.google.com/search/docs/appearance/ai-features)
+
+`robots.txt`의 기존 `User-agent: *` 정책을 유지한다. 일반 검색, AI 검색, 학습 크롤러 모두 같은 공개 경로 허용과 `/api/` 제외 규칙을 받는다. 별도의 봇 그룹에 `Allow: /`만 추가하면 일반 그룹의 `/api/` 제한을 상속하지 않으므로 그런 중복 그룹은 만들지 않는다. 공개 수집 정책을 바꿀 때에는 검색 수집과 학습 수집을 구분해 검토한다. robots.txt는 접근 제어나 개인정보 보호 장치가 아니다.
+
+## 재현 가능한 HTTP 점검
+
+```sh
+# 현재 운영 환경의 기준선 또는 배포 후 점검
+npm run seo:audit -- --output /path/to/production-seo.json
+
+# npm run build && npm run start -- --port 3000 으로 실행한 로컬 빌드
+npm run seo:audit -- --base-url http://localhost:3000 --output /path/to/local-seo.json
+```
+
+`seo:audit`는 로그인·JavaScript 실행 없이 응답을 읽는다. 홈·목록·소개, 개인 페이지의 noindex, 실제 404, robots.txt, llms.txt, 네이버 확인 파일, 사이트맵의 모든 하위 파일과 행사·채용 각 1개 상세를 점검한다. HTTP 상태, 제목·설명·대표 주소·소셜 메타, JSON-LD 파싱, 가시 FAQ 일치, 사이트맵 URL 수를 JSON으로 남긴다. 로컬에서도 canonical은 운영 도메인이어야 한다. 실패한 검사가 있거나 요청이 실패하면 종료 코드 1을 반환한다. robots 검사는 기본 정책의 회귀 점검이며 전체 robots 구문 해석기는 아니다.
+
+이 명령은 표본 점검이다. 모든 상세 페이지의 품질, 구조화 데이터 전체 스키마 적합성, Google이 실제 선택한 canonical, 네이버 사이트 등록 완료, 실제 검색 순위·인용을 증명하지 않는다. 릴리스 점검 때 실행하고, URL 수의 급감은 API 데이터 변화와 함께 확인한다. HTML 전체나 인증 정보는 보고서에 저장하지 않는다.
+
+이번 기준선과 후속 측정 방법은 [2026-09-29 SEO 점검](seo-audit-2026-09-29.md), 콘텐츠 후보는 [질문 백로그](../content/backlog.md)에 기록한다.
+
+## 대외활동 키워드 운영
+
+`/events`를 간호 분야 대외활동 검색의 대표 페이지로 사용한다. 제목은 `간호대학생·간호사 대외활동 | 봉사·서포터즈·공모전 | 듀잇`이며 H1과 첫 설명에도 대상과 콘텐츠 범위를 명시한다. 홈은 대외활동과 채용을 함께 안내하고, 홈 버튼·주요 메뉴·소개 FAQ에서 `/events`로 연결한다. 봉사·서포터즈·공모전 선택 가이드는 실제 모집요강을 확인하도록 안내하며 참가 자격이나 활동 혜택을 추정하지 않는다.
+
+필터·검색 화면은 기존의 `noindex, follow`와 자체 canonical을 유지한다. 키워드별 별도 복제 페이지나 자동 연도별 URL은 만들지 않는다. History API로 검색·필터를 바꿀 때 서버와 동일한 메타데이터 함수로 제목·설명·OG·Twitter·canonical·robots를 갱신한다. `seo:audit`는 대표 페이지의 H1·제목·가이드·유형 링크 및 검색·필터 2개 표본의 noindex도 검사한다.
+
+배포 후 Search Console과 네이버에서 `대외활동`, `간호대학생 대외활동`, `간호학과 대외활동`, `간호사 대외활동`을 구분해 `/events`의 노출·클릭·CTR·평균 순위를 비교한다. 봉사·서포터즈·공모전 관련 검색어도 별도로 분류한다. 이들은 최적화 대상이며 검색량·상위 노출을 확인했다는 뜻이 아니다. 첫 점검은 배포 후 14일, 기간 비교는 집계 지연과 요일 구성을 고려한다.
+
+짧고 정확한 제목과 가시 H1·링크 텍스트를 정합시키는 접근은 [Google 제목 링크 안내](https://developers.google.com/search/docs/appearance/title-link)에 근거한다. 대외활동 검색량이나 순위 상승을 수치로 가정하지 않는다.
