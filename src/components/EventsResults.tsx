@@ -30,7 +30,6 @@ type Option<T extends string> = { value: T; label: string };
 
 type Props = {
     categoryExplore: ReactNode;
-    activityGuide: ReactNode;
     initialData: EventResponse;
     initialIsListView: boolean;
     initialRequest: EventPageRequest;
@@ -58,7 +57,6 @@ const PAGINATION_BUTTON_CLASS = "inline-flex h-10 items-center gap-1 rounded-lg 
 
 export default function EventsResults({
     categoryExplore,
-    activityGuide,
     initialData,
     initialIsListView,
     initialRequest,
@@ -317,7 +315,6 @@ export default function EventsResults({
             {!isListView ? (
                 <EventsDiscovery
                     categoryExplore={categoryExplore}
-                    activityGuide={activityGuide}
                     events={initialIsListView ? (events?.content ?? []) : initialData.content}
                     referenceDate={referenceDate}
                     onExplore={handleExplore}

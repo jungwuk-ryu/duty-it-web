@@ -12,13 +12,12 @@ import { type MouseEvent, type ReactNode, useState } from "react";
 
 type Props = {
     categoryExplore: ReactNode;
-    activityGuide: ReactNode;
     events: readonly Event[];
     referenceDate: string;
     onExplore: (request: EventPageRequest) => void;
 };
 
-export default function EventsDiscovery({ categoryExplore, activityGuide, events, referenceDate, onExplore }: Props) {
+export default function EventsDiscovery({ categoryExplore, events, referenceDate, onExplore }: Props) {
     const [searchKeyword, setSearchKeyword] = useState("");
 
     const openList = (query = new URLSearchParams()) => {
@@ -88,7 +87,6 @@ export default function EventsDiscovery({ categoryExplore, activityGuide, events
                     <p className="py-8 text-center text-muted-foreground">새로운 행사를 준비하고 있어요. 관심 분야에서 더 많은 행사를 찾아보세요.</p>
                 )}
             </section>
-            {activityGuide}
         </div>
     );
 }

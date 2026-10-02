@@ -1,6 +1,5 @@
 import EventsResults from "@/src/components/EventsResults";
 import EventCategoryExplore from "@/src/components/EventCategoryExplore";
-import EventActivityGuide from "@/src/components/EventActivityGuide";
 import {
     EventsFetchError,
     fetchEvents,
@@ -49,7 +48,6 @@ export default async function EventsPage({ searchParams }: Props) {
             <EventsResults
                 key={`${isEventListView(resolvedSearchParams)}:${getEventsHref(initialRequest, initialRequest.cursor)}`}
                 categoryExplore={<EventCategoryExplore />}
-                activityGuide={<EventActivityGuide />}
                 initialData={events}
                 initialIsListView={isEventListView(resolvedSearchParams)}
                 initialRequest={initialRequest}

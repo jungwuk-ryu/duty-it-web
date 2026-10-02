@@ -95,8 +95,7 @@ async function page(path: string, index = true, requiredTypes: string[] = []) {
   if (path === "/") row.checks.aboutLinked = /href=["']\/about["']/.test(html);
   if (path === "/events") {
     row.checks.activityIntent = row.title.includes("대외활동") && row.h1.some((heading) => heading.includes("대외활동"));
-    row.checks.activityGuideRendered = /id=["']events-activity-guide["']/.test(html) && textOnly(html).includes("참가 대상");
-    row.checks.activityCategoryLinks = ["VOLUNTEER", "SUPPORTERS", "CONTEST"].every((type) => html.includes(`/events?types=${type}`));
+    row.checks.activityCategoryLinks = ["VOLUNTEER", "SUPPORTERS", "CONFERENCE", "CONTINUING_EDUCATION"].every((type) => html.includes(`/events?types=${type}`));
   }
 }
 
