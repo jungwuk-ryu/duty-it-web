@@ -11,6 +11,7 @@ import { AnimatedThemeToggle } from "../components/ui/animated-theme-toggle";
 import { serializeJsonLd, SITE_DESCRIPTION, SITE_ORIGIN, SITE_TITLE } from "../lib/seo";
 import { getOrganizationStructuredData } from "../lib/site-info";
 import { initialAuthState } from "../lib/auth/server";
+import { IOS_APP_ID } from "../lib/event-app-links";
 
 const notoSansKR = Noto_Sans_KR({
   subsets: ["latin"],
@@ -51,8 +52,8 @@ export const metadata: Metadata = {
       { rel: "android-touch-icon", url: "/app-icon-transparent.png" }
     ]
   },
+  itunes: { appId: IOS_APP_ID },
   other: {
-    'apple-itunes-app': 'app-id=6751395152',
     'google-play-app' : 'app-id=com.dutyit.app',
   }
 };

@@ -12,6 +12,14 @@
 .status { border-radius: 99px; padding: 8px 12px; color: var(--duit-brand); background: color-mix(in srgb, var(--duit-brand) 9%, transparent); font-size: 12px; font-weight: 700; }
 .title { margin-top: 16px; font-size: clamp(22px, 1.85vw, 28px); line-height: 1.5; font-weight: 700; letter-spacing: -.035em; word-break: keep-all; overflow-wrap: anywhere; }
 .hostName { margin-top: 10px; font-size: 14px; line-height: 1.7; color: var(--duit-muted-foreground); }
+.appLink { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin-top: 24px; padding: 16px; border: 1px solid var(--duit-border); border-radius: 14px; background: var(--duit-canvas); }
+.appLinkCopy { display: flex; align-items: center; gap: 10px; }
+.appLinkCopy > svg { flex-shrink: 0; color: var(--duit-brand); }
+.appLinkCopy p { font-size: 13px; font-weight: 700; }
+.appLinkCopy span { display: block; margin-top: 4px; font-size: 11px; color: var(--duit-muted-foreground); }
+.appLinkActions { display: flex; align-items: center; gap: 14px; }
+.appInstall { font-size: 12px; color: var(--duit-muted-foreground); text-decoration: underline; text-underline-offset: 3px; }
+.appInstall:focus-visible { outline: 2px solid var(--duit-brand); outline-offset: 3px; }
 .schedule { margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--duit-border); }
 .sectionHeading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
 .sectionHeading :is(h2, h3) { font-size: 15px; font-weight: 700; }
