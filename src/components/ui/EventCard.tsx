@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import EventLink from "@/src/components/events/EventLink";
 import type { MouseEvent } from "react";
 import { EventTypeLabel } from "@/src/lib/event-labels";
 import { getEventDday } from "@/src/lib/event-dday";
@@ -27,10 +28,10 @@ export default function EventCard({ event, referenceDate, eager = false, onHostC
     return (
         <article className={styles.item}>
             <div className={styles.image}>
-                <Link href={`/events/${event.id}`} prefetch={false} scroll={false} tabIndex={-1} aria-hidden="true">
+                <EventLink eventId={event.id} tabIndex={-1} aria-hidden="true">
                     <EventThumbnail src={event.thumbnail} alt="" className={styles.thumbnail}
                         sizes="(max-width: 799px) 50vw, 280px" eager={eager} priority={priority} />
-                </Link>
+                </EventLink>
                 <BookmarkIconButton kind="events" itemId={event.id} title={event.title} initialSaved={event.isBookmarked} className={styles.bookmark} />
             </div>
             <div className={styles.meta}>
@@ -39,7 +40,7 @@ export default function EventCard({ event, referenceDate, eager = false, onHostC
                     <span className="sr-only">행사 시작일 기준 </span>{dday}
                 </time>}
             </div>
-            <h3><Link href={`/events/${event.id}`} prefetch={false} scroll={false}>{event.title}</Link></h3>
+            <h3><EventLink eventId={event.id}>{event.title}</EventLink></h3>
             <p className={styles.host}>
                 <Link href={`/events?hostId=${event.host.id}`} prefetch={false}
                     title={`${event.host.name}의 행사 보기`}

@@ -1,8 +1,9 @@
 "use client";
 
 import { Smartphone } from "lucide-react";
-import { useSyncExternalStore } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import { ANDROID_APP_STORE_URL, getAppPlatform, getEventAppLinks, IOS_APP_STORE_URL } from "@/src/lib/event-app-links";
+import { launchEventApp } from "@/src/lib/event-app-launch";
 import { Button } from "@/src/components/ui/button";
 import styles from "./event-detail.module.css";
 
@@ -12,6 +13,9 @@ function getServerSnapshot() { return null; }
 
 export default function EventAppLink({ eventId }: { eventId: number }) {
   const platform = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  useEffect(() => {
+    if (platform) launchEventApp(eventId, true);
+  }, [eventId, platform]);
   if (!platform) return null;
   const links = getEventAppLinks(eventId);
   const appUrl = platform === "android" ? links.androidUrl : links.iosUrl;
@@ -24,6 +28,7 @@ export default function EventAppLink({ eventId }: { eventId: number }) {
     </div>
     <div className={styles.appLinkActions}>
       <Button asChild size="sm" className="rounded-lg font-bold"><a href={appUrl}>앱으로 열기</a></Button>
+      <a href={`/events/${eventId}?openIn=web`} className={styles.appInstall}>웹에서 보기</a>
       <a href={storeUrl} target="_blank" rel="noopener noreferrer" className={styles.appInstall}>앱 설치<span className="sr-only"> (새 탭)</span></a>
     </div>
   </section>;
