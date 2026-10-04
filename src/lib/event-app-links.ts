@@ -17,16 +17,20 @@ export function getAppPlatform(userAgent: string, maxTouchPoints = 0): AppPlatfo
 
 export function getEventAppLinks(eventId: number) {
   const webUrl = `${SITE_ORIGIN}/events/${eventId}`;
+  const webFallbackUrl = `${webUrl}?openIn=web`;
+  // This path is already associated on devices with Apple's older AASA cache.
+  // The marker preserves the organizer behavior of unmarked visitEvent links.
+  const universalUrl = `${SITE_ORIGIN}/visitEvent/${eventId}?openIn=app`;
   const iosUrl = `dutyit://events/${eventId}`;
   // Launch from a user tap. If the app is unavailable, keep the event readable on the web.
-  const androidUrl = `intent://www.dutyit.net/events/${eventId}#Intent;scheme=https;package=${ANDROID_APP_PACKAGE};S.browser_fallback_url=${encodeURIComponent(webUrl)};end`;
-  return { webUrl, iosUrl, androidUrl };
+  const androidUrl = `intent://www.dutyit.net/events/${eventId}#Intent;scheme=https;package=${ANDROID_APP_PACKAGE};S.browser_fallback_url=${encodeURIComponent(webFallbackUrl)};end`;
+  return { webUrl, webFallbackUrl, universalUrl, iosUrl, androidUrl };
 }
 
 export function getEventAppMetadata(eventId: number): Metadata {
-  const { webUrl, iosUrl } = getEventAppLinks(eventId);
+  const { webUrl, universalUrl, iosUrl } = getEventAppLinks(eventId);
   return {
-    itunes: { appId: IOS_APP_ID, appArgument: webUrl },
+    itunes: { appId: IOS_APP_ID, appArgument: universalUrl },
     appLinks: {
       ios: { url: iosUrl, app_store_id: IOS_APP_ID, app_name: "듀잇" },
       android: { url: webUrl, package: ANDROID_APP_PACKAGE, app_name: "듀잇" },

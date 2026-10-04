@@ -9,12 +9,19 @@ const API_BASE = process.env.API_BASE!;
 
 type Props = {
   params: Promise<{ eventId?: string }>;
+  searchParams: Promise<{ openIn?: string | string[] }>;
 };
 
-export default async function Page({ params }: Props) {
+export default async function Page({ params, searchParams }: Props) {
   const { eventId } = await params;
   const normalizedEventId = normalizeViewEventId(eventId);
   if (!normalizedEventId) notFound();
+
+  // OS association matching happens before this request. With no app installed,
+  // the marked link falls back to the same detail without a relaunch loop.
+  if ((await searchParams).openIn === "app") {
+    redirect(`/events/${normalizedEventId}?openIn=web`);
+  }
 
   const res = await fetch(`${API_BASE}/v2/events/${encodeURIComponent(normalizedEventId)}`, {
     next: { revalidate: 0 },
