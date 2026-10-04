@@ -11,6 +11,7 @@ import { Button } from "@/src/components/ui/button";
 import { BookmarkIconButton } from "@/src/components/ui/bookmark-icon-button";
 import EventActions from "./EventActions";
 import EventPoster from "./EventPoster";
+import EventAppLink from "./EventAppLink";
 import styles from "./event-detail.module.css";
 
 export default function EventDetail({
@@ -47,6 +48,7 @@ export default function EventDetail({
           </div>
           <Title id={`event-title-${event.id}`} className={styles.title}>{event.title}</Title>
           <p className={styles.hostName}>{event.host.name}</p>
+          <EventAppLink eventId={event.id} />
 
           <section className={styles.schedule} aria-label="행사 및 신청 일정">
             <div className={styles.sectionHeading}><SectionTitle>일정 안내</SectionTitle><span>한국 시간 (KST)</span></div>

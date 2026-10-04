@@ -19,6 +19,7 @@ import EventCard from "@/src/components/ui/EventCard";
 import eventStyles from "@/src/components/ui/event-item.module.css";
 import styles from "@/src/components/events/event-detail.module.css";
 import { getPageMetadata } from "@/src/lib/seo";
+import { getEventAppMetadata } from "@/src/lib/event-app-links";
 
 type Props = { params: Promise<{ eventId: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -29,6 +30,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     ...getPageMetadata({ title: `${event.title} | 듀잇`, description, url, image }),
     keywords: getEventKeywords(event),
+    ...getEventAppMetadata(event.id),
   };
 }
 export default async function EventDetailPage({ params }: Props) {
