@@ -16,6 +16,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getJobCursor, getJobFilters, getJobsHref, type JobFilters, type JobsSearchParams } from "@/src/lib/job-query";
 import { getJobsListMetadata } from "@/src/lib/list-seo";
+import styles from "@/src/components/ui/job-posting.module.css";
 
 const PAGE_SIZE = 12;
 
@@ -45,14 +46,13 @@ export default async function JobsPage({ searchParams }: Props) {
     const nextHref = pageInfo.hasNext && pageInfo.nextCursor ? getJobsHref(filters, pageInfo.nextCursor) : null;
 
     return (
-        <div className="container mx-auto mb-5 px-4 py-10">
+        <div className={styles.page}>
             <header className="mb-6 text-center">
-                <p className="text-sm font-bold tracking-wide text-brand">NURSING CAREERS</p>
-                <h1 className="mt-1 text-3xl font-bold text-foreground">간호 채용 공고</h1>
+                <h1 className="text-2xl font-bold text-foreground sm:text-[28px]">간호 채용 공고</h1>
                 <p className="mt-3 text-muted-foreground">간호 분야의 새로운 일자리를 한눈에 확인해보세요.</p>
             </header>
 
-            <section className="mb-8 rounded-2xl border border-border/80 bg-background p-4 shadow-[0_16px_40px_rgba(15,23,42,0.08),0_2px_8px_rgba(15,23,42,0.04)] md:p-5" aria-label="채용 공고 필터">
+            <section className="mb-7 border-b border-border pb-5" aria-label="채용 공고 필터">
                 <JobFiltersForm
                     searchKeyword={filters.searchKeyword}
                     workRegion={filters.workRegion ?? ""}
@@ -66,11 +66,11 @@ export default async function JobsPage({ searchParams }: Props) {
 
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
                 <p className="text-sm text-muted-foreground">{getResultSummary(filters)} · {pageInfo.pageSize}개 표시</p>
-                {cursor && <Link className="text-sm font-semibold text-brand underline" href={getJobsHref(filters, null)}>첫 페이지로</Link>}
+                {cursor && <Link className="text-sm font-semibold text-foreground underline" href={getJobsHref(filters, null)}>첫 페이지로</Link>}
             </div>
 
             {content.length > 0 ? (
-                <ul className="flex flex-col gap-4">
+                <ul className={styles.grid}>
                     {content.map((job) => <li key={job.id}><JobPostingCard job={job} /></li>)}
                 </ul>
             ) : (
@@ -83,7 +83,7 @@ export default async function JobsPage({ searchParams }: Props) {
 
             <nav className="mt-8 flex items-center justify-center gap-3" aria-label="채용 공고 페이지 이동">
                 {nextHref ? (
-                    <Link href={nextHref} className={buttonVariants({ variant: "outline", className: "h-10 border-input bg-background px-5 font-semibold text-foreground hover:border-brand hover:text-brand" })}>
+                    <Link href={nextHref} className={buttonVariants({ variant: "outline", className: "h-10 border-input bg-background px-5 font-semibold text-foreground hover:border-subtle-foreground" })}>
                         다음 채용 공고 보기
                     </Link>
                 ) : (

@@ -3,11 +3,12 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowUpRight, CalendarDays } from "lucide-react";
-import HomeEventCard from "./HomeEventCard";
+import EventCard from "@/src/components/ui/EventCard";
+import eventStyles from "@/src/components/ui/event-item.module.css";
 import type { HomeEventGroup } from "./home-event-groups";
 import styles from "./home.module.css";
 
-export default function HomeEventCollection({ groups }: { groups: readonly HomeEventGroup[] }) {
+export default function HomeEventCollection({ groups, referenceDate }: { groups: readonly HomeEventGroup[]; referenceDate: string }) {
   const [selectedId, setSelectedId] = useState<HomeEventGroup["id"]>("all");
   const selected = groups.find((group) => group.id === selectedId) ?? groups[0];
   if (!selected) return null;
@@ -26,8 +27,8 @@ export default function HomeEventCollection({ groups }: { groups: readonly HomeE
           {selected.events === null ? `${selected.label} 행사 정보를 불러오지 못했어요.` : `${selected.label} 행사 ${selected.events.length}개`}
         </span>
         {selected.events !== null && selected.events.length > 0 ? (
-          <ul key={selected.id} className={styles.eventGrid} tabIndex={0} aria-label={`${selected.label} 행사. 좁은 화면에서는 좌우로 스크롤할 수 있어요.`}>
-            {selected.events.map((event) => <li key={event.id}><HomeEventCard event={event} /></li>)}
+          <ul key={selected.id} className={eventStyles.grid} aria-label={`${selected.label} 행사`}>
+            {selected.events.map((event) => <li key={event.id}><EventCard event={event} referenceDate={referenceDate} /></li>)}
           </ul>
         ) : (
           <div className={styles.eventsEmpty}>

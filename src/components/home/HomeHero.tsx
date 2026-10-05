@@ -38,15 +38,15 @@ export default function HomeHero() {
     <section className={styles.hero} aria-labelledby="home-title">
       <div className={styles.container + " " + styles.heroLayout}>
         <div className={styles.heroCopy}>
-          <h1 id="home-title">간호의 내일을<br /><span>발견하는 곳</span></h1>
+          <h1 id="home-title">간호사를 위한<br />대외활동과 채용을 한곳에서</h1>
           <p className={styles.heroDescription}>
-            <span>배우고 경험하고 나아가는 당신을 위해.</span>
-            <span>대외활동·행사를 듀잇에서 만나보세요.</span>
+            <span>간호대학생부터 현직 간호사까지,</span>
+            <span>나에게 맞는 활동과 일자리를 찾아보세요.</span>
           </p>
           <div className={styles.heroActions}>
             <HomeHeroCta />
-            <a href="#features" className={styles.textLink}>
-              듀잇 알아보기 <ArrowDown size={18} strokeWidth={1.7} aria-hidden />
+            <a href="#home-jobs" className={styles.textLink}>
+              채용 공고 보기 <ArrowDown size={18} strokeWidth={1.7} aria-hidden />
             </a>
           </div>
         </div>

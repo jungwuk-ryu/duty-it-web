@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Bell, LoaderCircle } from "lucide-react";
+import { Bell } from "lucide-react";
 import { checkSession, useAuth } from "@/src/lib/auth/client";
 import { useNotifications } from "./NotificationProvider";
 import { Button, buttonVariants } from "./ui/button";
@@ -25,8 +25,7 @@ export default function NotificationsPage({ tab, unread, hostId }: { tab: "inbox
             </Link>
             <Link href="/notifications?tab=subscriptions" aria-current={tab === "subscriptions" ? "page" : undefined} className={buttonVariants({ variant: tab === "subscriptions" ? "default" : "outline" })}>새 행사 구독</Link>
         </nav>
-        {auth.status === "loading" ? <div role="status" className="flex items-center justify-center gap-2 py-16 text-sm text-muted-foreground"><LoaderCircle size={18} className="animate-spin motion-reduce:animate-none" aria-hidden />로그인을 확인하고 있어요</div>
-            : auth.user ? <div key={auth.user.id}>
+        {auth.user ? <div key={auth.user.id}>
                 <BrowserPushSettings userId={auth.user.id} />
                 {tab === "subscriptions" ? <EventSubscriptionsSettings initialHostId={hostId} /> : <>
                     <nav aria-label="알림 읽음 상태" className="mb-5 flex gap-2">

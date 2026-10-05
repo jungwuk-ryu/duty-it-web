@@ -7,6 +7,7 @@ import { useState } from "react";
 import { useBookmark } from "@/src/components/BookmarkProvider";
 import { checkSession, useAuth } from "@/src/lib/auth/client";
 import { createEventCalendarIcs, getEventCalendarFilename, getGoogleCalendarUrl } from "@/src/lib/event-calendar";
+import { getEventAppLinks } from "@/src/lib/event-app-links";
 import { Button } from "@/src/components/ui/button";
 import { ExpandableActionBar } from "@/src/components/ui/expandable-action-bar";
 
@@ -28,9 +29,9 @@ export default function EventActions({ eventId, title, hostName, startAt, endAt,
   const [copied, setCopied] = useState(false);
   const [calendarOpen, setCalendarOpen] = useState(false);
   const saved = Boolean(auth.user) && (entry?.saved ?? initialSaved);
-  const pending = auth.status === "loading" || Boolean(auth.user && (!entry || entry.pending));
-  const shareUrl = () => new URL(`/events/${eventId}`, window.location.origin).href;
-  const calendarInput = () => ({ eventId, title, hostName, startAt, endAt, eventUrl: shareUrl() });
+  const pending = Boolean(auth.user && entry?.pending);
+  const shareUrl = () => getEventAppLinks(eventId).universalUrl;
+  const calendarInput = () => ({ eventId, title, hostName, startAt, endAt, eventUrl: getEventAppLinks(eventId).webUrl });
 
   async function copyLink() {
     try {

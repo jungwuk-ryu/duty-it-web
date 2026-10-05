@@ -38,7 +38,7 @@ const getSnapshot = createSitemapCache(async () => {
   const events = [...new Map([...pages[0], ...pages[1]].map((entry) => [entry.url, entry])).values()]
     .sort((a, b) => Number(a.url.split("/").at(-1)) - Number(b.url.split("/").at(-1)));
   return buildSitemapDocuments({
-    static: ["/", "/events", "/jobs"].map((path) => ({ url: `${SITE_ORIGIN}${path}` })),
+    static: ["/", "/events", "/jobs", "/about"].map((path) => ({ url: `${SITE_ORIGIN}${path}` })),
     events,
     jobs: pages[2],
   });

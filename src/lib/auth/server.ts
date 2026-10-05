@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { ACCESS_RECHECK_MS, openSession, PublicUserSchema, sealSession, SESSION_MAX_AGE, type Session } from "./session-crypto";
 import { firebaseConfig } from "../firebase/config";
+import { GUEST, type AuthState } from "./state";
 
 export const PRIVATE_HEADERS = { "Cache-Control": "private, no-store", Vary: "Cookie" };
 const COOKIE_NAME = process.env.NODE_ENV === "production" ? "__Host-duit_session" : "duit_session";
@@ -21,6 +22,17 @@ export function requireSameOrigin(request: Request) {
 }
 
 export async function readSession() { return openSession((await cookies()).get(COOKIE_NAME)?.value); }
+
+// Only the display identity crosses the server/client boundary. API authorization
+// still checks the session and renews expired access credentials separately.
+export async function initialAuthState(): Promise<AuthState> {
+    try {
+        const session = await readSession();
+        return session ? { status: "authenticated", user: session.user, message: null } : GUEST;
+    } catch {
+        return { status: "error", user: null, message: "로그인 연결을 확인하지 못했습니다. 다시 시도해 주세요." };
+    }
+}
 
 export async function requireSession() {
     const session = await readSession();

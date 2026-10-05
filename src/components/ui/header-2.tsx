@@ -11,7 +11,7 @@ import AccountMenu from "../AccountMenu";
 import { NotificationLink } from "../NotificationProvider";
 
 const links = [
-    { label: "행사 목록", href: "/events" },
+    { label: "대외활동·행사", href: "/events" },
     { label: "채용 공고", href: "/jobs" },
     { label: "북마크", href: "/bookmarks" },
 ] as const;

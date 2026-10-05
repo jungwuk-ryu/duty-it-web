@@ -1,182 +1,33 @@
-import { Suspense } from "react";
+import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
 
-import CategoryExploreCard, { type CategoryExploreImage } from "@/src/components/ui/CategoryExploreCard";
-import { fetchEvents } from "@/src/lib/api/events";
-import type { Event } from "@/src/lib/schemas/event";
-import type { EventType } from "@/src/lib/schemas/event-type";
-
-type EventCategory = {
-    actionLabel: string;
-    description: string;
-    eventType: EventType;
-    href: string;
-    id: "volunteer" | "supporters" | "conference" | "continuing-education";
-    title: string;
-};
-
-const CATEGORY_IMAGE_LIMIT = 3;
-const EVENT_IMAGE_FALLBACK = "/event-thumbnail-placeholder.svg";
-
-const EVENT_CATEGORIES = [
-    {
-        id: "volunteer",
-        title: "봉사",
-        description: "현장에서 함께하는 간호 활동",
-        actionLabel: "행사 보기",
-        href: "/events?types=VOLUNTEER",
-        eventType: "VOLUNTEER",
-    },
-    {
-        id: "supporters",
-        title: "서포터즈",
-        description: "간호의 가치를 알리는 경험",
-        actionLabel: "행사 보기",
-        href: "/events?types=SUPPORTERS",
-        eventType: "SUPPORTERS",
-    },
-    {
-        id: "conference",
-        title: "학술대회",
-        description: "새로운 지식을 나누는 자리",
-        actionLabel: "행사 보기",
-        href: "/events?types=CONFERENCE",
-        eventType: "CONFERENCE",
-    },
-    {
-        id: "continuing-education",
-        title: "보수교육",
-        description: "실무 역량을 채우는 시간",
-        actionLabel: "행사 보기",
-        href: "/events?types=CONTINUING_EDUCATION",
-        eventType: "CONTINUING_EDUCATION",
-    },
-] as const satisfies readonly EventCategory[];
+const categories = [
+    { title: "봉사", description: "현장에서 함께하는 간호 활동", type: "VOLUNTEER" },
+    { title: "서포터즈", description: "간호의 가치를 알리는 경험", type: "SUPPORTERS" },
+    { title: "학술대회", description: "새로운 지식을 나누는 자리", type: "CONFERENCE" },
+    { title: "보수교육", description: "실무 역량을 채우는 시간", type: "CONTINUING_EDUCATION" },
+] as const;
 
 export default function EventCategoryExplore() {
     return (
-        <Suspense fallback={<EventCategoryExploreLoading />}>
-            <EventCategoryExploreContent />
-        </Suspense>
-    );
-}
-
-async function EventCategoryExploreContent() {
-    const categories = await loadEventCategories();
-
-    return (
-        <section id="category-explore" aria-labelledby="event-category-explore-title" className="py-2 sm:py-4">
-            <header className="max-w-2xl">
-                <h2 id="event-category-explore-title" className="text-3xl font-bold tracking-[-0.04em] text-foreground sm:text-4xl">
-                    관심 분야별로 둘러보기
-                </h2>
-                <p className="mt-3 text-[15px] leading-7 text-muted-foreground sm:text-base">
-                    내게 맞는 간호 활동과 다음 기회를 찾아보세요.
-                </p>
+        <section id="category-explore" aria-labelledby="event-category-explore-title">
+            <header>
+                <h2 id="event-category-explore-title" className="text-2xl font-bold tracking-tight text-foreground sm:text-[28px]">관심 분야별로 둘러보기</h2>
+                <p className="mt-2 text-sm leading-7 text-muted-foreground">내게 맞는 간호 활동과 다음 기회를 찾아보세요.</p>
             </header>
-
-            <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:gap-5 xl:grid-cols-4">
+            <ul className="mt-5 grid grid-cols-2 gap-x-5 border-t border-border lg:grid-cols-4 lg:gap-x-8">
                 {categories.map((category) => (
-                    <CategoryExploreCard
-                        key={category.id}
-                        actionLabel={category.actionLabel}
-                        href={category.href}
-                        images={category.images}
-                        title={category.title}
-                    />
+                    <li key={category.type} className="min-w-0 border-b border-border">
+                        <Link href={`/events?types=${category.type}`} prefetch={false}
+                            className="group block py-5 focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-4">
+                            <span className="flex items-center justify-between gap-2 text-base font-bold text-foreground group-hover:text-brand">
+                                {category.title}<ArrowUpRight size={17} aria-hidden />
+                            </span>
+                            <span className="mt-2 block text-xs leading-6 text-muted-foreground sm:text-sm">{category.description}</span>
+                        </Link>
+                    </li>
                 ))}
-            </div>
+            </ul>
         </section>
     );
-}
-
-async function loadEventCategories() {
-    return Promise.all(EVENT_CATEGORIES.map(async (category) => {
-        try {
-            const { content } = await fetchEvents({
-                field: "CREATED_AT",
-                size: 12,
-                statusGroup: "FINISHED",
-                types: [category.eventType],
-            });
-
-            return {
-                ...category,
-                images: getEventImages(content, category.description),
-            };
-        } catch (error) {
-            console.error("Failed to load event category content", {
-                category: category.id,
-                error: getSafeErrorLog(error),
-            });
-
-            return {
-                ...category,
-                images: [{
-                    src: EVENT_IMAGE_FALLBACK,
-                    title: category.description,
-                }],
-            };
-        }
-    }));
-}
-
-function getEventImages(events: readonly Event[], fallbackTitle: string): CategoryExploreImage[] {
-    const imageUrls = new Set<string>();
-    const images: CategoryExploreImage[] = [];
-
-    for (const event of events) {
-        const imageUrl = event.thumbnail?.trim();
-        if (!isAllowedEventThumbnail(imageUrl) || imageUrls.has(imageUrl)) continue;
-
-        imageUrls.add(imageUrl);
-        images.push({
-            src: imageUrl,
-            title: event.title.trim() || fallbackTitle,
-        });
-
-        if (images.length === CATEGORY_IMAGE_LIMIT) break;
-    }
-
-    return images.length > 0
-        ? images
-        : [{ src: EVENT_IMAGE_FALLBACK, title: fallbackTitle }];
-}
-
-function isAllowedEventThumbnail(imageUrl: string | undefined): imageUrl is string {
-    if (!imageUrl) return false;
-
-    try {
-        const url = new URL(imageUrl);
-        return url.protocol === "https:" && url.hostname === "api.dutyit.net" && url.pathname.startsWith("/uploads/");
-    } catch {
-        return false;
-    }
-}
-
-function EventCategoryExploreLoading() {
-    return (
-        <section id="category-explore" aria-busy="true" aria-labelledby="event-category-explore-loading-title" className="py-2 sm:py-4">
-            <header className="max-w-2xl">
-                <h2 id="event-category-explore-loading-title" className="text-3xl font-bold tracking-[-0.04em] text-foreground sm:text-4xl">
-                    관심 분야별로 둘러보기
-                </h2>
-                <p className="mt-3 text-[15px] leading-7 text-muted-foreground sm:text-base">
-                    내게 맞는 간호 활동과 다음 기회를 찾아보세요.
-                </p>
-            </header>
-            <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:gap-5 xl:grid-cols-4" aria-hidden>
-                {Array.from({ length: 4 }, (_, index) => (
-                    <div key={index} className="min-h-[22rem] animate-pulse rounded-[1.5rem] bg-border sm:min-h-[25rem] xl:min-h-[28rem]" />
-                ))}
-            </div>
-        </section>
-    );
-}
-
-function getSafeErrorLog(error: unknown) {
-    if (error instanceof Error) {
-        return { name: error.name, message: error.message };
-    }
-
-    return { type: typeof error };
 }

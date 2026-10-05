@@ -1,11 +1,7 @@
-import type { HomeEventPreview, HomeJobPreview } from "./home-preview-data";
+import { getHomePreviewData } from "./home-preview-data";
 import HomeFeaturesClient from "./HomeFeaturesClient";
 
-type HomeFeaturesProps = {
-  events: HomeEventPreview[];
-  jobs: HomeJobPreview[];
-};
-
-export default function HomeFeatures({ events, jobs }: HomeFeaturesProps) {
+export default async function HomeFeatures() {
+  const { events, jobs } = await getHomePreviewData();
   return <HomeFeaturesClient events={events} jobs={jobs} />;
 }

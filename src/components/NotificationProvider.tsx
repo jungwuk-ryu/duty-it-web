@@ -24,7 +24,7 @@ export default function NotificationProvider({ children }: { children: React.Rea
     }, []);
 
     useEffect(() => {
-        if (auth.status === "loading" || (auth.status === "error" && !userId)) return;
+        if (auth.status === "error" && !userId) return;
         let canceled = false;
         let pushEpoch = 0;
         let stopMessages: (() => void) | undefined;

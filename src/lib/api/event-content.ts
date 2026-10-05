@@ -32,24 +32,22 @@ export type EventContent = Extract<
 const SURFER_API_BASE = "https://surfer.dutyit.net";
 
 /**
- * Reads AI-generated event content through the server-only Surfer API.
+ * Reads AI-generated content for public events through Surfer's read-only API.
  * Missing content and upstream failures are intentionally non-fatal because
  * only a subset of DuIt events has generated content.
  */
 export const fetchEventContent = cache(async (id: string): Promise<EventContent | null> => {
   const eventId = normalizeViewEventId(id);
-  const token = process.env.DUIT_EVENT_CONTENT_API_TOKEN?.trim();
-  if (!eventId || !token) return null;
+  if (!eventId) return null;
 
   const apiBase = (process.env.SURFER_API_BASE?.trim() || SURFER_API_BASE).replace(/\/$/, "");
 
   try {
-    const response = await fetch(`${apiBase}/api/v1/duit-events/${eventId}/content`, {
+    const response = await fetch(`${apiBase}/api/v1/public/duit-events/${eventId}/content`, {
       headers: {
         Accept: "application/json",
-        Authorization: `Bearer ${token}`,
       },
-      next: { revalidate: 300 },
+      next: { revalidate: 60 },
       signal: AbortSignal.timeout(8_000),
     });
 

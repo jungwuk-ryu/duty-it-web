@@ -1,12 +1,11 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { createContext, useContext, useSyncExternalStore } from "react";
 import { z } from "zod";
-import type { PublicUser } from "./session-crypto";
+import { GUEST, type AuthState } from "./state";
 
-type AuthState = { status: "loading" | "authenticated" | "guest" | "error"; user: PublicUser | null; message: string | null };
-const INITIAL: AuthState = { status: "loading", user: null, message: null };
-let state = INITIAL;
+export const InitialAuthContext = createContext<AuthState>(GUEST);
+let state: AuthState | null = null;
 let generation = 0;
 const listeners = new Set<() => void>();
 let refreshing: Promise<Response> | null = null;
@@ -19,8 +18,10 @@ export class SessionRequestError extends Error {
 }
 
 function publish(next: AuthState) { state = next; listeners.forEach((listener) => listener()); }
+function subscribe(listener: () => void) { listeners.add(listener); return () => { listeners.delete(listener); }; }
 export function useAuth() {
-    return useSyncExternalStore((listener) => { listeners.add(listener); return () => listeners.delete(listener); }, () => state, () => INITIAL);
+    const initial = useContext(InitialAuthContext);
+    return useSyncExternalStore(subscribe, () => state ?? initial, () => initial);
 }
 export function getCurrentUserId() { return state?.user?.id ?? null; }
 function signalChange() {
@@ -86,7 +87,7 @@ export async function responseJson(response: Response): Promise<unknown> {
 export function checkSession(): Promise<void> {
     if (checking) return checking;
     const started = generation;
-    checking = (async () => {
+    const check = (async () => {
         try {
             const response = await sessionFetch("/api/auth/session");
             if (started !== generation) return;
@@ -94,10 +95,11 @@ export function checkSession(): Promise<void> {
             const parsed = UserResponseSchema.parse(await responseJson(response));
             if (started === generation) publish({ status: "authenticated", user: parsed.user, message: null });
         } catch {
-            if (started === generation) publish({ ...state, status: state.user ? "authenticated" : "error", message: "로그인 연결을 확인하지 못했습니다. 다시 시도해 주세요." });
+            if (started === generation) publish({ user: state?.user ?? null, status: state?.user ? "authenticated" : "error", message: "로그인 연결을 확인하지 못했습니다. 다시 시도해 주세요." });
         }
-    })().finally(() => { checking = null; });
-    return checking;
+    })().finally(() => { if (checking === check) checking = null; });
+    checking = check;
+    return check;
 }
 
 export async function signInSession(refreshToken: string) {
@@ -129,13 +131,14 @@ export async function signOutSession() {
     });
 }
 
-export function observeSession() {
+export function observeSession(initial: AuthState) {
+    if (!state) publish(initial);
     void checkSession();
     const resume = () => { if (document.visibilityState === "visible") void checkSession(); };
     const changed = (event: StorageEvent) => {
         if (event.key !== "duit-auth-change") return;
         generation++;
-        publish(INITIAL); // Remove the previous account's private content immediately.
+        publish(GUEST); // Remove the previous account's private content immediately.
         checking = null;
         void checkSession();
     };

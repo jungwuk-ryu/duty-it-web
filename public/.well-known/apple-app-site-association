@@ -4,7 +4,7 @@
     "details": [
       {
         "appID": "M3CULMDKU3.com.dutyit.app",
-        "paths": [ "/visitEvent/*" ]
+        "paths": [ "/visitEvent/*", "/events/*" ]
       }
     ]
   }

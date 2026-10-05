@@ -11,7 +11,6 @@ export default function AccountMenu({ onNavigate, className }: { onNavigate?: ()
     const { status, user } = useAuth();
     const [pending, setPending] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    if (status === "loading") return <span className={cn("px-4 text-sm text-muted-foreground", className)} role="status">로그인 확인 중</span>;
     if (status === "error") return <Button variant="ghost" className={className} onClick={() => void checkSession()}>로그인 다시 확인</Button>;
     if (!user) return <Button variant="ghost" className={className} asChild><Link href="/login" onClick={onNavigate}>로그인</Link></Button>;
 
