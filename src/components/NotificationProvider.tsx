@@ -8,14 +8,16 @@ import { NotificationsPageSchema } from "@/src/lib/notifications";
 import { NOTIFICATIONS_CHANGE_EVENT, PUSH_CHANGE_EVENT, PUSH_STORAGE_KEY, notificationHrefFromData, parseBrowserPushRecord } from "@/src/lib/web-push";
 import { Button } from "./ui/button";
 import { cn } from "@/src/lib/utils";
+import EventPushPrompt from "./notifications/EventPushPrompt";
 
 const CHANGE_STORAGE_KEY = "duit-notification-change";
-const NotificationContext = createContext({ unreadCount: 0, refresh: () => {} });
+const NotificationContext = createContext<{ unreadCount: number; refresh: () => void; setPromptContainer: (container: HTMLElement | null) => void }>({ unreadCount: 0, refresh: () => {}, setPromptContainer: () => {} });
 export function useNotifications() { return useContext(NotificationContext); }
 
 export default function NotificationProvider({ children }: { children: React.ReactNode }) {
     const auth = useAuth();
     const userId = auth.user?.id ?? null;
+    const [promptContainer, setPromptContainer] = useState<HTMLElement | null>(null);
     const [count, setCount] = useState({ userId: null as number | null, value: 0 });
     const [notice, setNotice] = useState<{ userId: number; title: string; body: string; href: string } | null>(null);
     const refresh = useCallback(() => {
@@ -104,10 +106,11 @@ export default function NotificationProvider({ children }: { children: React.Rea
     }, [userId, auth.status]);
 
     const unreadCount = count.userId === userId && userId ? count.value : 0;
-    const value = useMemo(() => ({ unreadCount, refresh }), [unreadCount, refresh]);
+    const value = useMemo(() => ({ unreadCount, refresh, setPromptContainer }), [unreadCount, refresh]);
     const visibleNotice = notice?.userId === userId ? notice : null;
     return <NotificationContext.Provider value={value}>
         {children}
+        <EventPushPrompt container={promptContainer} />
         {visibleNotice && <div role="status" aria-live="polite" className="fixed inset-x-4 bottom-24 z-[110] mx-auto flex max-w-md items-start gap-3 rounded-2xl border border-border bg-background p-4 text-foreground shadow-xl">
             <Bell className="mt-1 shrink-0 text-brand" size={20} aria-hidden />
             <Link href={visibleNotice.href} onClick={() => setNotice(null)} className="min-w-0 flex-1 rounded focus-visible:outline-2 focus-visible:outline-brand">
