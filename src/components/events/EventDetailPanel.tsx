@@ -7,10 +7,12 @@ import type { ReactNode } from "react";
 import { Button } from "@/src/components/ui/button";
 import type { Event } from "@/src/lib/schemas/event";
 import EventActions from "./EventActions";
+import { useNotifications } from "../NotificationProvider";
 import styles from "./event-detail.module.css";
 
 export default function EventDetailPanel({ children, event }: { children: ReactNode; event?: Event }) {
   const router = useRouter();
+  const { setPromptContainer } = useNotifications();
   return <Dialog.Root open onOpenChange={(open) => { if (!open) router.back(); }}>
     <Dialog.Portal>
       <Dialog.Overlay className={styles.overlay} />
@@ -28,6 +30,7 @@ export default function EventDetailPanel({ children, event }: { children: ReactN
           </div>
         </div>
         {children}
+        <div ref={setPromptContainer} />
       </Dialog.Content>
     </Dialog.Portal>
   </Dialog.Root>;

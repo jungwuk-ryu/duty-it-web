@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowUpRight, Building2, CalendarDays, ChevronRight, Clock3, Eye, Info } from "lucide-react";
+import { ArrowUpRight, Bell, Building2, CalendarDays, ChevronRight, Clock3, Eye, Info } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { Event } from "@/src/lib/schemas/event";
 import { formatEventDateTime, formatEventPeriod, getEventRecruitmentStatus, getHostEventsHref } from "@/src/lib/event-detail";
@@ -74,6 +74,10 @@ export default function EventDetail({
               <HostAvatar name={event.host.name} thumbnail={event.host.thumbnail} />
               <span className={styles.hostCopy}><strong>{event.host.name}</strong><span>주최의 행사 목록 보기 <ArrowUpRight size={13} aria-hidden /></span></span>
               <ChevronRight size={18} aria-hidden className="shrink-0 text-muted-foreground" />
+            </Link>
+            <Link href={"/notifications?tab=subscriptions&hostId=" + event.host.id} prefetch={false}
+                className="mt-3 inline-flex items-center gap-2 rounded text-sm font-medium text-brand hover:underline focus-visible:outline-2 focus-visible:outline-brand">
+              <Bell size={16} aria-hidden />이 주최자의 새 행사 구독하기
             </Link>
           </section>
 

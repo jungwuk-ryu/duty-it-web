@@ -86,6 +86,7 @@ Google Indexing API를 실제로 호출하는 운영 명령에는 별도로 `GOO
 - `scripts`: SEO 점검과 채용 색인 알림 명령
 - [로그인·북마크 운영 지침](docs/auth-and-bookmarks.md): 세션 비밀, 인증 갱신, 북마크 동작
 - [행사 내용 연동 지침](docs/event-content.md): Surfer 토큰과 선택적 행사 내용
+- [새 행사 알림 운영 지침](docs/notifications.md): 행사 구독과 브라우저 푸시
 - [SEO 운영 지침](docs/seo.md): canonical, 사이트맵, 구조화 데이터, 검색 점검
 - [SEO 점검 기록](docs/seo-audit-2026-09-29.md): 운영 기준선과 로컬 검증 결과
 

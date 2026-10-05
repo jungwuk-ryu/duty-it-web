@@ -1,0 +1,40 @@
+import { notificationHrefFromData } from "./web-push";
+
+export function firebaseMessagingWorker(config: Record<string, string>, version: string) {
+    if (!/^\d+\.\d+\.\d+$/.test(version)) throw new Error("Invalid Firebase SDK version");
+    return [
+        '"use strict";',
+        "const notificationHref = " + notificationHrefFromData.toString() + ";",
+        'self.addEventListener("install", () => self.skipWaiting());',
+        'self.addEventListener("activate", (event) => event.waitUntil(self.clients.claim()));',
+        'self.addEventListener("notificationclick", (event) => {',
+        "  event.stopImmediatePropagation();",
+        "  event.notification.close();",
+        "  const payload = event.notification.data?.FCM_MSG ?? event.notification.data;",
+        "  const href = notificationHref(payload?.data ?? payload);",
+        "  const target = new URL(href, self.location.origin).href;",
+        "  event.waitUntil((async () => {",
+        '    const windows = await self.clients.matchAll({ type: "window", includeUncontrolled: true });',
+        "    for (const client of windows) {",
+        "      if (new URL(client.url).origin !== self.location.origin) continue;",
+        "      try { await client.navigate(target); return await client.focus(); } catch { /* Try another window. */ }",
+        "    }",
+        "    return self.clients.openWindow(target);",
+        "  })());",
+        "});",
+        'importScripts("https://www.gstatic.com/firebasejs/' + version + '/firebase-app-compat.js");',
+        'importScripts("https://www.gstatic.com/firebasejs/' + version + '/firebase-messaging-compat.js");',
+        "firebase.initializeApp(" + JSON.stringify(config) + ");",
+        "firebase.messaging().onBackgroundMessage(async (payload) => {",
+        '  const windows = await self.clients.matchAll({ type: "window", includeUncontrolled: true });',
+        '  windows.forEach((client) => client.postMessage({ type: "duit-notification" }));',
+        "  if (payload.notification) return; // FCM already displays notification payloads.",
+        "  const href = notificationHref(payload.data);",
+        '  if (href === "/notifications") return;',
+        '  await self.registration.showNotification("새 소식이 도착했어요", {',
+        '    body: "관심 있는 소식을 듀잇에서 확인해 보세요.", icon: "/app-icon.png",',
+        '    tag: "duit-" + href, data: payload.data,',
+        "  });",
+        "});",
+    ].join("\n");
+}

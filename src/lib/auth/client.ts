@@ -23,6 +23,7 @@ export function useAuth() {
     const initial = useContext(InitialAuthContext);
     return useSyncExternalStore(subscribe, () => state ?? initial, () => initial);
 }
+export function getCurrentUserId() { return state?.user?.id ?? null; }
 function signalChange() {
     window.dispatchEvent(new Event("duit-auth-change"));
     try { localStorage.setItem("duit-auth-change", crypto.randomUUID()); } catch { /* Cookies work without localStorage. */ }
@@ -102,6 +103,8 @@ export function checkSession(): Promise<void> {
 }
 
 export async function signInSession(refreshToken: string) {
+    const { preparePushLogout } = await import("../notifications/push");
+    await preparePushLogout();
     return withAuthLock(async () => {
         const response = await request("/api/auth/social", {
             method: "POST",
@@ -117,6 +120,9 @@ export async function signInSession(refreshToken: string) {
 }
 
 export async function signOutSession() {
+    // Push cleanup may refresh the session, so it must run before the auth lock.
+    const { preparePushLogout } = await import("../notifications/push");
+    await preparePushLogout();
     return withAuthLock(async () => {
         await responseJson(await request("/api/auth/logout", { method: "POST" }));
         generation++;
