@@ -10,3 +10,5 @@
 로그인 유지에 필요한 환경 변수와 북마크 구현은 [로그인·북마크 운영 지침](docs/auth-and-bookmarks.md)을 참고하세요.
 
 행사 상세의 AI 행사 내용과 서버 토큰 설정은 [행사 내용 연동 지침](docs/event-content.md)을 참고하세요.
+
+새 행사 구독과 브라우저 푸시 설정은 [새 행사 알림 운영 지침](docs/notifications.md)을 참고하세요.

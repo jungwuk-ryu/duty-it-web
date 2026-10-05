@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import { Bookmark, LogOut, UserRound } from "lucide-react";
+import { Bell, Bookmark, LogOut, UserRound } from "lucide-react";
 import { Button } from "./ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
 import { checkSession, signOutSession, useAuth } from "@/src/lib/auth/client";
@@ -33,6 +33,7 @@ export default function AccountMenu({ onNavigate, className }: { onNavigate?: ()
                 <DropdownMenuLabel>로그인되어 있어요</DropdownMenuLabel>
                 <DropdownMenuGroup>
                     <DropdownMenuItem asChild><Link href="/bookmarks" onClick={onNavigate}><Bookmark size={16} aria-hidden />내 북마크</Link></DropdownMenuItem>
+                    <DropdownMenuItem asChild><Link href="/notifications" onClick={onNavigate}><Bell size={16} aria-hidden />내 알림과 행사 구독</Link></DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>

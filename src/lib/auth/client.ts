@@ -22,6 +22,7 @@ function publish(next: AuthState) { state = next; listeners.forEach((listener) =
 export function useAuth() {
     return useSyncExternalStore((listener) => { listeners.add(listener); return () => listeners.delete(listener); }, () => state, () => INITIAL);
 }
+export function getCurrentUserId() { return state?.user?.id ?? null; }
 function signalChange() {
     window.dispatchEvent(new Event("duit-auth-change"));
     try { localStorage.setItem("duit-auth-change", crypto.randomUUID()); } catch { /* Cookies work without localStorage. */ }
@@ -55,6 +56,7 @@ export async function sessionFetch(path: string, init?: RequestInit): Promise<Re
     if (!path.startsWith("/api/")) throw new Error("Session requests must stay on this site.");
     const started = generation;
     const response = await request(path, init);
+    if (started !== generation) throw new SessionRequestError("로그인 상태가 변경되었습니다. 다시 시도해 주세요.", 409);
     if (response.status !== 401) return response;
     const refreshed = await refreshSession();
     if (started !== generation) throw new SessionRequestError("로그인 상태가 변경되었습니다. 다시 시도해 주세요.", 409);
@@ -63,10 +65,13 @@ export async function sessionFetch(path: string, init?: RequestInit): Promise<Re
         return refreshed;
     }
     const parsed = UserResponseSchema.safeParse(await refreshed.json());
+    if (started !== generation) throw new SessionRequestError("로그인 상태가 변경되었습니다. 다시 시도해 주세요.", 409);
     if (!parsed.success) throw new SessionRequestError("로그인을 확인하지 못했습니다.", 502);
     publish({ status: "authenticated", user: parsed.data.user, message: null });
     // Only a definite 401 is retried. Never replay a toggle after a timeout or 5xx.
-    return request(path, init);
+    const retried = await request(path, init);
+    if (started !== generation) throw new SessionRequestError("로그인 상태가 변경되었습니다. 다시 시도해 주세요.", 409);
+    return retried;
 }
 
 export async function responseJson(response: Response): Promise<unknown> {
@@ -96,6 +101,8 @@ export function checkSession(): Promise<void> {
 }
 
 export async function signInSession(refreshToken: string) {
+    const { preparePushLogout } = await import("../notifications/push");
+    await preparePushLogout();
     return withAuthLock(async () => {
         const response = await request("/api/auth/social", {
             method: "POST",
@@ -111,6 +118,9 @@ export async function signInSession(refreshToken: string) {
 }
 
 export async function signOutSession() {
+    // Push cleanup may refresh the session, so it must run before the auth lock.
+    const { preparePushLogout } = await import("../notifications/push");
+    await preparePushLogout();
     return withAuthLock(async () => {
         await responseJson(await request("/api/auth/logout", { method: "POST" }));
         generation++;

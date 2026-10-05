@@ -8,6 +8,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import AccountMenu from "../AccountMenu";
+import { NotificationLink } from "../NotificationProvider";
 
 const links = [
     { label: "행사 목록", href: "/events" },
@@ -63,12 +64,14 @@ export function Header() {
                         </Link>
                     ))}
                     <AccountMenu />
+                    <NotificationLink />
                     <Link href="/#download" className={buttonVariants({ className: "ml-3 h-10 rounded-xl bg-brand px-5 text-white hover:bg-brand/90" })}>
                         앱 다운로드
                     </Link>
                 </div>
 
                 <div className="flex items-center gap-2 md:hidden">
+                    <NotificationLink onNavigate={closeMenu} />
                     <Link
                         href="/#download"
                         className={buttonVariants({ className: "h-9 rounded-lg bg-brand px-3 text-xs font-bold text-white shadow-sm hover:bg-brand/90 min-[390px]:px-3.5" })}
