@@ -74,6 +74,7 @@ export default async function RootLayout({
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(getOrganizationStructuredData()) }} />
         <ThemeProvider>
           <SessionProvider initialAuth={initialAuth}>
+            <FirebaseAnalytics />
             <Header />
             <AnimatedThemeToggle className="app-theme-toggle fixed bottom-6 right-6 z-50 bg-background/90 shadow-lg shadow-slate-950/10 backdrop-blur-sm" />
             <main className="flex-1 bg-canvas">
@@ -84,7 +85,6 @@ export default async function RootLayout({
             <AndroidOnlySmartBanner />
           </SessionProvider>
         </ThemeProvider>
-        <FirebaseAnalytics />
       </body>
     </html>
   );
