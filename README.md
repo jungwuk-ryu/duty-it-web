@@ -21,6 +21,10 @@
 
 Google·Apple 로그인은 Firebase 인증과 듀잇 API를 사용합니다. 채용 정보는 고용24에서 제공된 내용을 안내하며, 듀잇 웹에서 직접 지원을 완료하지는 않습니다.
 
+웹 분석은 `duty-it` Firebase 프로젝트에 등록된 웹 앱과 측정 ID `G-1XQ0L9EYBE`를 사용합니다. 설정은 `src/lib/firebase/config.ts`에서 관리하며, Firebase Analytics SDK를 화면의 hydration 이후에 불러옵니다. 브라우저에서 Analytics를 지원하지 않거나 초기화가 실패해도 화면 이용은 계속할 수 있습니다.
+
+GA4 웹 스트림의 향상된 측정과 **브라우저 방문 기록 이벤트에 따른 페이지 변경**을 활성화했습니다. Next.js의 페이지 이동을 계속 집계하려면 이 설정을 유지하세요. 기존 `GA_ID` 환경 변수는 사용하지 않으므로 배포 환경에서 제거할 수 있습니다. 기존 듀잇-웹 속성은 과거 데이터 조회용으로 보관합니다.
+
 ### 행사 이미지 전송
 
 홈·행사 목록·북마크·상세 포스터에서 사용하는 `EventThumbnail`은 허용된 `https://api.dutyit.net/uploads/` 이미지를 API 서버에서 직접 불러옵니다. `next/image`의 `unoptimized`를 적용해 행사 이미지 요청이 Vercel Image Optimization 변환 한도를 소비하지 않도록 합니다. 로컬 UI 이미지의 최적화, 행사 이미지의 지연 로딩과 실패 시 대체 이미지는 유지합니다.
@@ -60,7 +64,6 @@ npm run dev
 | `AUTH_SESSION_SECRET` | 로그인 사용 시 필수. 세션 쿠키 암호화용 64자리 hex 값입니다. 재배포·서버 인스턴스 간 같은 값을 유지합니다. |
 | `AUTH_ORIGIN` | 선택. 프록시가 공개 origin을 보존하지 않을 때 실제 웹 origin을 지정합니다. |
 | `SURFER_API_BASE` | 선택. Surfer 주소를 기본값 `https://surfer.dutyit.net`에서 변경할 때 사용합니다. |
-| `GA_ID` | 선택. Google Analytics 측정 ID입니다. |
 
 Google Indexing API를 실제로 호출하는 운영 명령에는 별도로 `GOOGLE_INDEXING_ACCESS_TOKEN`이 필요합니다. 상세 설정은 아래 운영 문서를 참고하세요.
 
