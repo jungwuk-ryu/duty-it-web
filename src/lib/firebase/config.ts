@@ -1,11 +1,12 @@
-// Public project identifiers shared by popup sign-in and server token renewal.
+// Public web app configuration shared by authentication, messaging, and Analytics.
 export const firebaseConfig = {
-    apiKey: "AIzaSyCQNadOPVyW9ly6JCP7hEqQz7Az_0Srrdo",
+    apiKey: "AIzaSyB6Na3azaC9gMraWwxE7vYHyHKnLmsUjC0",
     authDomain: "duty-it.firebaseapp.com",
     projectId: "duty-it",
     storageBucket: "duty-it.firebasestorage.app",
     messagingSenderId: "348194173787",
-    appId: "1:348194173787:web:351a6728a7c86facd2e07e",
+    appId: "1:348194173787:web:e0027c17501f43a1d2e07e",
+    measurementId: "G-1XQ0L9EYBE",
 };
 
 // Public Web Push certificate for duty-it. Override when using another certificate.

@@ -3,7 +3,7 @@ import "./globals.css";
 import Header from "../components/Header";
 import { Noto_Sans_KR } from "next/font/google";
 import Footer from "../components/Footer";
-import { GoogleAnalytics } from '@next/third-parties/google'
+import FirebaseAnalytics from "../components/FirebaseAnalytics";
 import AndroidOnlySmartBanner from "../components/AndroidOnlySmartBanner";
 import SessionProvider from "../components/SessionProvider";
 import ThemeProvider from "../components/ThemeProvider";
@@ -84,8 +84,8 @@ export default async function RootLayout({
             <AndroidOnlySmartBanner />
           </SessionProvider>
         </ThemeProvider>
+        <FirebaseAnalytics />
       </body>
-      <GoogleAnalytics gaId={process.env.GA_ID ?? ""} />
     </html>
   );
 }
