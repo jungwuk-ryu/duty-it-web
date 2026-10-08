@@ -34,13 +34,14 @@ export default function EventActions({ eventId, title, hostName, startAt, endAt,
   const calendarInput = () => ({ eventId, title, hostName, startAt, endAt, eventUrl: getEventAppLinks(eventId).webUrl });
 
   async function copyLink() {
+    const url = getEventAppLinks(eventId).webUrl;
     try {
-      await navigator.clipboard.writeText(shareUrl());
+      await navigator.clipboard.writeText(url);
       setCopied(true);
       setManualLink("");
       setMessage("행사 링크를 복사했어요.");
     } catch {
-      setManualLink(shareUrl());
+      setManualLink(url);
       setMessage("아래 링크를 선택해 복사해 주세요.");
     }
   }
