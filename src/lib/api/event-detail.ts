@@ -8,8 +8,9 @@ import { normalizeViewEventId } from "./viewGuard";
 export const fetchEventDetail = cache(async (id: string) => {
   const eventId = normalizeViewEventId(id);
   if (!eventId) notFound();
+  // Revalidated like the event lists so most requests skip the API round trip; status and views may lag by up to 60s.
   const response = await fetch(`${process.env.API_BASE}/v2/events/${eventId}`, {
-    cache: "no-store", signal: AbortSignal.timeout(15_000),
+    next: { revalidate: 60 }, signal: AbortSignal.timeout(15_000),
   });
   if (response.status === 404) notFound();
   if (!response.ok) throw new Error("행사 정보를 불러오지 못했어요.");
