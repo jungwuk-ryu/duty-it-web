@@ -1,0 +1,14 @@
+/* CSS equivalents of the former spring, tap and burst animations, kept out of the JS bundle. */
+.icon { transition: scale 450ms cubic-bezier(.34, 1.56, .64, 1), rotate 450ms cubic-bezier(.34, 1.56, .64, 1); }
+.icon[data-saved="true"] { scale: 1.1; }
+button:active > .icon { scale: .85; transition-duration: 120ms; }
+button:active > .icon[data-saved="false"] { rotate: -10deg; }
+.burst { animation: burst 700ms ease-out both; background: radial-gradient(circle, rgb(59 130 246 / 40%) 0%, rgb(59 130 246 / 0%) 80%); }
+.particle { animation: particle-fade 650ms ease-out both, particle-move 650ms ease-out both; animation-delay: var(--delay); }
+@keyframes burst { 0% { scale: 0; opacity: 0; } 50% { scale: 1.4; opacity: .4; } 100% { scale: 1; opacity: 0; } }
+@keyframes particle-fade { 0% { scale: 0; opacity: .3; } 50% { scale: 1; opacity: .8; } 100% { scale: 0; opacity: 0; } }
+@keyframes particle-move { from { translate: 0 0; } to { translate: var(--x) var(--y); } }
+@media (prefers-reduced-motion: reduce) {
+  .icon, .icon[data-saved="true"], button:active > .icon { scale: 1; rotate: 0deg; transition: none; }
+  .burst, .particle { display: none; }
+}

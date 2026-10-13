@@ -9,7 +9,7 @@
 .panelDetail .information { padding-top: 24px; }
 .heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .tags { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.status { border-radius: 99px; padding: 8px 12px; color: var(--duit-brand); background: color-mix(in srgb, var(--duit-brand) 9%, transparent); font-size: 12px; font-weight: 700; }
+.status { border-radius: 99px; padding: 8px 12px; color: color-mix(in srgb, var(--duit-brand) 90%, var(--duit-foreground)); background: color-mix(in srgb, var(--duit-brand) 9%, transparent); font-size: 12px; font-weight: 700; }
 .title { margin-top: 16px; font-size: clamp(22px, 1.85vw, 28px); line-height: 1.5; font-weight: 700; letter-spacing: -.035em; word-break: keep-all; overflow-wrap: anywhere; }
 .hostName { margin-top: 10px; font-size: 14px; line-height: 1.7; color: var(--duit-muted-foreground); }
 .appLink { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin-top: 24px; padding: 16px; border: 1px solid var(--duit-border); border-radius: 14px; background: var(--duit-canvas); }
@@ -25,8 +25,8 @@
 .sectionHeading :is(h2, h3) { font-size: 15px; font-weight: 700; }
 .sectionHeading > span { font-size: 11px; color: var(--duit-subtle-foreground); }
 .schedule dl { display: grid; gap: 24px; }
-.scheduleRow { display: flex; gap: 14px; }
-.scheduleRow > svg { flex-shrink: 0; margin-top: 2px; color: var(--duit-muted-foreground); }
+.scheduleRow { position: relative; padding-left: 34px; }
+.scheduleRow dt > svg { position: absolute; top: 2px; left: 0; color: var(--duit-muted-foreground); }
 .scheduleRow dt { font-size: 12px; color: var(--duit-muted-foreground); }
 .scheduleRow dd { margin-top: 6px; font-size: 14px; line-height: 1.8; font-weight: 700; word-break: keep-all; overflow-wrap: anywhere; }
 .scheduleRow .recruitmentStart { font-size: 12px; font-weight: 400; color: var(--duit-muted-foreground); }

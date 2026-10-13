@@ -1,9 +1,7 @@
 import { z } from "zod";
 import { NotificationIdSchema, PushTokenSchema } from "./notifications";
 
-export const PUSH_STORAGE_KEY = "duit-web-push:v1";
-export const PUSH_CHANGE_EVENT = "duit-web-push-change";
-export const NOTIFICATIONS_CHANGE_EVENT = "duit-notifications-change";
+export { NOTIFICATIONS_CHANGE_EVENT, PUSH_CHANGE_EVENT, PUSH_STORAGE_KEY } from "./web-push-events";
 export const BrowserPushRecordSchema = z.object({
     version: z.literal(1), userId: NotificationIdSchema, token: PushTokenSchema,
 });

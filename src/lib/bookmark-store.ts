@@ -1,4 +1,11 @@
-import { BookmarkToggleSchema, type BookmarkKind } from "./bookmarks";
+import type { BookmarkKind } from "./bookmarks";
+
+// Same contract as BookmarkToggleSchema, checked by hand to keep zod out of every page's bundle.
+function bookmarkState(response: unknown): boolean {
+    const saved = typeof response === "object" && response !== null ? (response as { isBookmarked?: unknown }).isBookmarked : undefined;
+    if (typeof saved !== "boolean") throw new Error("Unexpected bookmark response.");
+    return saved;
+}
 
 type Entry = { saved?: boolean; pending: boolean; error: string | null };
 type Entries = Record<string, Entry>;
@@ -57,7 +64,7 @@ export function createBookmarkStore({ userId, storage, request, changed }: {
         checked.add(key);
         const read = (async () => {
             try {
-                const { isBookmarked: saved } = BookmarkToggleSchema.parse(await request(kind, id, false));
+                const saved = bookmarkState(await request(kind, id, false));
                 update(key, { saved, pending: writes.has(key), error: null });
                 remember(key, saved);
             } catch {
@@ -79,7 +86,7 @@ export function createBookmarkStore({ userId, storage, request, changed }: {
         try {
             await ready;
             if (recheckOnly || entries[key]?.error || entries[key]?.saved === undefined) return;
-            const { isBookmarked: saved } = BookmarkToggleSchema.parse(await request(kind, id, true));
+            const saved = bookmarkState(await request(kind, id, true));
             update(key, { saved, pending: true, error: null });
             remember(key, saved);
             changed(kind, id, saved);

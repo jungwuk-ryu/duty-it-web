@@ -1,10 +1,10 @@
 "use client";
 
-import { motion, useMotionValue, useReducedMotion, useTransform } from "framer-motion";
 import { useAppTheme } from "@/src/lib/use-theme";
 
 import { cn } from "@/src/lib/utils";
 import { Button } from "./button";
+import styles from "./animated-theme-toggle.module.css";
 
 export function AnimatedThemeToggle({ className }: { className?: string }) {
     const { resolvedTheme, setTheme } = useAppTheme();
@@ -41,39 +41,31 @@ const SUN_PATHS = [
 ];
 
 function SolarSwitch({ isDark }: { isDark: boolean }) {
-    const reducedMotion = useReducedMotion();
-    const transition = { duration: reducedMotion ? 0 : 0.7 };
-    const scaleMoon = useMotionValue(isDark ? 1 : 0);
-    const scaleSun = useMotionValue(isDark ? 0 : 1);
-    const pathLengthMoon = useTransform(scaleMoon, [0.6, 1], [0, 1]);
-    const pathLengthSun = useTransform(scaleSun, [0.6, 1], [0, 1]);
+    const sun = cn(styles.path, isDark ? styles.hidden : styles.shown);
+    const moon = cn(styles.path, isDark ? styles.shown : styles.hidden);
 
     return (
         <svg width="20" height="20" viewBox="0 0 25 25" fill="none" aria-hidden="true" focusable="false">
             {SUN_PATHS.map((path) => (
-                <motion.path
+                <path
                     key={path}
                     d={path}
+                    pathLength={1}
+                    className={sun}
                     stroke="currentColor"
                     strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    initial={false}
-                    animate={{ scale: isDark ? 0 : 1 }}
-                    transition={transition}
-                    style={{ pathLength: pathLengthSun, scale: scaleSun }}
                 />
             ))}
-            <motion.path
+            <path
                 d="M21.1918 13.2013C21.0345 14.9035 20.3957 16.5257 19.35 17.8781C18.3044 19.2305 16.8953 20.2571 15.2875 20.8379C13.6797 21.4186 11.9398 21.5294 10.2713 21.1574C8.60281 20.7854 7.07479 19.9459 5.86602 18.7371C4.65725 17.5283 3.81774 16.0003 3.4457 14.3318C3.07367 12.6633 3.18451 10.9234 3.76526 9.31561C4.346 7.70783 5.37263 6.29868 6.72501 5.25307C8.07739 4.20746 9.69959 3.56862 11.4018 3.41132C10.4052 4.75958 9.92564 6.42077 10.0503 8.09273C10.175 9.76469 10.8957 11.3364 12.0812 12.5219C13.2667 13.7075 14.8384 14.4281 16.5104 14.5528C18.1823 14.6775 19.8435 14.1979 21.1918 13.2013Z"
+                pathLength={1}
+                className={moon}
                 stroke="currentColor"
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                initial={false}
-                animate={{ scale: isDark ? 1 : 0 }}
-                transition={transition}
-                style={{ pathLength: pathLengthMoon, scale: scaleMoon }}
             />
         </svg>
     );

@@ -2,17 +2,17 @@
 
 import { Smartphone } from "lucide-react";
 import { useEffect, useSyncExternalStore } from "react";
-import { ANDROID_APP_STORE_URL, getAppPlatform, getEventAppLinks, IOS_APP_STORE_URL } from "@/src/lib/event-app-links";
+import { ANDROID_APP_STORE_URL, getAppPlatform, getEventAppLinks, IOS_APP_STORE_URL, type AppPlatform } from "@/src/lib/event-app-links";
 import { launchEventApp } from "@/src/lib/event-app-launch";
 import { Button } from "@/src/components/ui/button";
 import styles from "./event-detail.module.css";
 
 function subscribe() { return () => {}; }
 function getSnapshot() { return getAppPlatform(navigator.userAgent, navigator.maxTouchPoints); }
-function getServerSnapshot() { return null; }
 
-export default function EventAppLink({ eventId }: { eventId: number }) {
-  const platform = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+/** `initialPlatform` comes from the request's user agent so the server renders the banner and nothing shifts on hydration. */
+export default function EventAppLink({ eventId, initialPlatform = null }: { eventId: number; initialPlatform?: AppPlatform }) {
+  const platform = useSyncExternalStore(subscribe, getSnapshot, () => initialPlatform);
   useEffect(() => {
     if (platform) launchEventApp(eventId, true);
   }, [eventId, platform]);

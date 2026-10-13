@@ -4,12 +4,13 @@ import Link from "next/link";
 import { ArrowUpRight, Bell, Building2, CalendarDays, ChevronRight, Clock3, Eye, Info } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { Event } from "@/src/lib/schemas/event";
+import type { AppPlatform } from "@/src/lib/event-app-links";
 import { formatEventDateTime, formatEventPeriod, getEventRecruitmentStatus, getHostEventsHref } from "@/src/lib/event-detail";
 import { withUtmSource } from "@/src/lib/url";
 import CategoryTag from "@/src/components/ui/EventTypeTag";
 import { Button } from "@/src/components/ui/button";
 import { BookmarkIconButton } from "@/src/components/ui/bookmark-icon-button";
-import EventActions from "./EventActions";
+import EventActions from "./LazyEventActions";
 import EventPoster from "./EventPoster";
 import EventAppLink from "./EventAppLink";
 import styles from "./event-detail.module.css";
@@ -18,10 +19,12 @@ export default function EventDetail({
   event,
   eventContent,
   variant = "page",
+  appPlatform = null,
 }: {
   event: Event;
   eventContent?: ReactNode;
   variant?: "page" | "panel";
+  appPlatform?: AppPlatform;
 }) {
   const Title = variant === "panel" ? "h2" : "h1";
   const SectionTitle = variant === "panel" ? "h3" : "h2";
@@ -48,20 +51,19 @@ export default function EventDetail({
           </div>
           <Title id={`event-title-${event.id}`} className={styles.title}>{event.title}</Title>
           <p className={styles.hostName}>{event.host.name}</p>
-          <EventAppLink eventId={event.id} />
+          <EventAppLink eventId={event.id} initialPlatform={appPlatform} />
 
           <section className={styles.schedule} aria-label="행사 및 신청 일정">
             <div className={styles.sectionHeading}><SectionTitle>일정 안내</SectionTitle><span>한국 시간 (KST)</span></div>
             <dl>
               <div className={styles.scheduleRow}>
-                <CalendarDays size={20} aria-hidden />
-                <div><dt>행사 일시</dt><dd>{formatEventPeriod(event.startAt, event.endAt)}</dd></div>
+                <dt><CalendarDays size={20} aria-hidden />행사 일시</dt>
+                <dd>{formatEventPeriod(event.startAt, event.endAt)}</dd>
               </div>
               <div className={styles.scheduleRow}>
-                <Clock3 size={20} aria-hidden />
-                <div><dt>신청 마감</dt><dd>{event.recruitmentEndAt ? <time dateTime={event.recruitmentEndAt.toISOString()}>{formatEventDateTime(event.recruitmentEndAt)}까지</time> : "주최 페이지에서 확인해 주세요"}</dd>
-                  {event.recruitmentStartAt && <dd className={styles.recruitmentStart}>신청 시작 · <time dateTime={event.recruitmentStartAt.toISOString()}>{formatEventDateTime(event.recruitmentStartAt)}</time></dd>}
-                </div>
+                <dt><Clock3 size={20} aria-hidden />신청 마감</dt>
+                <dd>{event.recruitmentEndAt ? <time dateTime={event.recruitmentEndAt.toISOString()}>{formatEventDateTime(event.recruitmentEndAt)}까지</time> : "주최 페이지에서 확인해 주세요"}</dd>
+                {event.recruitmentStartAt && <dd className={styles.recruitmentStart}>신청 시작 · <time dateTime={event.recruitmentStartAt.toISOString()}>{formatEventDateTime(event.recruitmentStartAt)}</time></dd>}
               </div>
             </dl>
           </section>
@@ -102,7 +104,7 @@ export function HostAvatar({ name, thumbnail }: { name: string; thumbnail: strin
     {safeThumbnail && !failed
       // Host logos can be any aspect ratio; preserve the complete mark.
       // eslint-disable-next-line @next/next/no-img-element
-      ? <img src={safeThumbnail} alt={`${name} 로고`} onError={() => setFailed(true)} />
+      ? <img src={safeThumbnail} alt={`${name} 로고`} loading="lazy" decoding="async" onError={() => setFailed(true)} />
       : <Building2 size={25} aria-hidden />}
   </span>;
 }

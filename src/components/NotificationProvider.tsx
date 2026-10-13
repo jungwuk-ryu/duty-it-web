@@ -1,14 +1,22 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { Bell, X } from "lucide-react";
 import { responseJson, sessionFetch, useAuth } from "@/src/lib/auth/client";
-import { NotificationsPageSchema } from "@/src/lib/notifications";
-import { NOTIFICATIONS_CHANGE_EVENT, PUSH_CHANGE_EVENT, PUSH_STORAGE_KEY, notificationHrefFromData, parseBrowserPushRecord } from "@/src/lib/web-push";
+import { NOTIFICATIONS_CHANGE_EVENT, PUSH_CHANGE_EVENT, PUSH_STORAGE_KEY } from "@/src/lib/web-push-events";
 import { Button } from "./ui/button";
 import { cn } from "@/src/lib/utils";
-import EventPushPrompt from "./notifications/EventPushPrompt";
+
+// The new-event push offer only appears on desktop, so other devices never download it or its schemas.
+const EventPushPrompt = dynamic(() => import("./notifications/EventPushPrompt"), { ssr: false });
+const PUSH_PROMPT_QUERY = "(min-width: 1024px) and (hover: hover) and (pointer: fine)";
+function subscribePushPromptQuery(onChange: () => void) {
+    const query = window.matchMedia(PUSH_PROMPT_QUERY);
+    query.addEventListener("change", onChange);
+    return () => query.removeEventListener("change", onChange);
+}
 
 const CHANGE_STORAGE_KEY = "duit-notification-change";
 const NotificationContext = createContext<{ unreadCount: number; refresh: () => void; setPromptContainer: (container: HTMLElement | null) => void }>({ unreadCount: 0, refresh: () => {}, setPromptContainer: () => {} });
@@ -42,6 +50,8 @@ export default function NotificationProvider({ children }: { children: React.Rea
             const current = new AbortController();
             controller = current;
             try {
+                // Signed-in only, so guests never load the notification schemas.
+                const { NotificationsPageSchema } = await import("@/src/lib/notifications");
                 const page = NotificationsPageSchema.parse(await responseJson(await sessionFetch("/api/notifications?unread=true&size=1", { signal: current.signal })));
                 if (!canceled && !current.signal.aborted) setCount({ userId, value: page.totalElements });
             } catch { /* Preserve the last confirmed count on transient errors. */ }
@@ -50,11 +60,14 @@ export default function NotificationProvider({ children }: { children: React.Rea
             const epoch = ++pushEpoch;
             stopMessages?.();
             stopMessages = undefined;
-            let record;
-            try { record = parseBrowserPushRecord(localStorage.getItem(PUSH_STORAGE_KEY)); } catch { return; }
-            if (!record) return;
+            let stored;
+            try { stored = localStorage.getItem(PUSH_STORAGE_KEY); } catch { return; }
+            if (!stored) return;
             try {
-                const push = await import("@/src/lib/notifications/push");
+                const [push, { notificationHrefFromData, parseBrowserPushRecord }] = await Promise.all([
+                    import("@/src/lib/notifications/push"), import("@/src/lib/web-push"),
+                ]);
+                if (!parseBrowserPushRecord(stored)) return;
                 const status = await push.synchronizeBrowserPush(userId);
                 if (canceled || epoch !== pushEpoch || !userId || status !== "enabled") return;
                 const stop = await push.observeForegroundPush((message) => {
@@ -105,12 +118,13 @@ export default function NotificationProvider({ children }: { children: React.Rea
         };
     }, [userId, auth.status]);
 
+    const pushPromptDevice = useSyncExternalStore(subscribePushPromptQuery, () => window.matchMedia(PUSH_PROMPT_QUERY).matches, () => false);
     const unreadCount = count.userId === userId && userId ? count.value : 0;
     const value = useMemo(() => ({ unreadCount, refresh, setPromptContainer }), [unreadCount, refresh]);
     const visibleNotice = notice?.userId === userId ? notice : null;
     return <NotificationContext.Provider value={value}>
         {children}
-        <EventPushPrompt container={promptContainer} />
+        {pushPromptDevice && <EventPushPrompt container={promptContainer} />}
         {visibleNotice && <div role="status" aria-live="polite" className="fixed inset-x-4 bottom-24 z-[110] mx-auto flex max-w-md items-start gap-3 rounded-2xl border border-border bg-background p-4 text-foreground shadow-xl">
             <Bell className="mt-1 shrink-0 text-brand" size={20} aria-hidden />
             <Link href={visibleNotice.href} onClick={() => setNotice(null)} className="min-w-0 flex-1 rounded focus-visible:outline-2 focus-visible:outline-brand">

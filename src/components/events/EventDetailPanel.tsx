@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { Button } from "@/src/components/ui/button";
 import type { Event } from "@/src/lib/schemas/event";
-import EventActions from "./EventActions";
+import EventActions from "./LazyEventActions";
 import { useNotifications } from "../NotificationProvider";
 import styles from "./event-detail.module.css";
 

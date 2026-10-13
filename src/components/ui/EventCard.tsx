@@ -18,11 +18,13 @@ type Props = {
     event: Event;
     referenceDate: string;
     eager?: boolean;
+    /** Below-the-fold placements load the thumbnail only as it nears the viewport. */
+    deferImage?: boolean;
     onHostClick?: (hostId: number) => void;
     priority?: boolean;
 };
 
-export default function EventCard({ event, referenceDate, eager = false, onHostClick, priority = false }: Props) {
+export default function EventCard({ event, referenceDate, eager = false, deferImage = false, onHostClick, priority = false }: Props) {
     const dday = getEventDday(event.startAt, new Date(referenceDate));
 
     return (
@@ -30,7 +32,7 @@ export default function EventCard({ event, referenceDate, eager = false, onHostC
             <div className={styles.image}>
                 <EventLink eventId={event.id} tabIndex={-1} aria-hidden="true">
                     <EventThumbnail src={event.thumbnail} alt="" className={styles.thumbnail}
-                        sizes="(max-width: 799px) 50vw, 280px" eager={eager} priority={priority} />
+                        sizes="(max-width: 799px) 50vw, 280px" eager={eager} priority={priority} deferUntilNear={deferImage} />
                 </EventLink>
                 <BookmarkIconButton kind="events" itemId={event.id} title={event.title} initialSaved={event.isBookmarked} className={styles.bookmark} />
             </div>

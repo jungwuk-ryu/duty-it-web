@@ -18,6 +18,7 @@ import {
 import type { EventFilters, EventSortField, EventStatusFilter } from "@/src/lib/event-query";
 import type { EventType } from "@/src/lib/schemas/event-type";
 import { SearchField, useFilter } from "@heroui/react";
+import "@/src/components/ui/heroui.css";
 import { ChevronDown, ListFilter, X } from "lucide-react";
 import { type ReactNode, useState } from "react";
 

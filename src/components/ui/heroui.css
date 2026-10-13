@@ -1,0 +1,3 @@
+/* HeroUI component styles, imported by the components that render HeroUI so other pages skip them. */
+@reference "../../app/globals.css";
+@import "@heroui/styles/components/index.css" layer(components);

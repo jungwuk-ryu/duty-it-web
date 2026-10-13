@@ -2,8 +2,10 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Header from "../components/Header";
 import { Noto_Sans_KR } from "next/font/google";
+import { cookies } from "next/headers";
 import Footer from "../components/Footer";
 import FirebaseAnalytics from "../components/FirebaseAnalytics";
+import WebFontLoader from "../components/WebFontLoader";
 import AndroidOnlySmartBanner from "../components/AndroidOnlySmartBanner";
 import SessionProvider from "../components/SessionProvider";
 import ThemeProvider from "../components/ThemeProvider";
@@ -12,11 +14,15 @@ import { serializeJsonLd, SITE_DESCRIPTION, SITE_ORIGIN, SITE_TITLE } from "../l
 import { getOrganizationStructuredData } from "../lib/site-info";
 import { initialAuthState } from "../lib/auth/server";
 import { IOS_APP_ID } from "../lib/event-app-links";
+import { WEB_FONT_COOKIE } from "../lib/web-font";
 
+// Only defines --font-noto-sans-kr; WebFontLoader decides when the page switches to it.
 const notoSansKR = Noto_Sans_KR({
   subsets: ["latin"],
   weight: ["400", "700"],
   display: "swap",
+  preload: false,
+  variable: "--font-noto-sans-kr",
 });
 
 export const metadata: Metadata = {
@@ -66,8 +72,9 @@ export default async function RootLayout({
   eventModal: React.ReactNode;
 }>) {
   const initialAuth = await initialAuthState();
+  const webFontCached = (await cookies()).get(WEB_FONT_COOKIE)?.value === "1";
   return (
-    <html lang="ko" className={`${notoSansKR.className} scroll-smooth motion-reduce:scroll-auto`} data-scroll-behavior="smooth" suppressHydrationWarning>
+    <html lang="ko" className={`${notoSansKR.variable} scroll-smooth motion-reduce:scroll-auto`} data-scroll-behavior="smooth" data-web-font={webFontCached ? "" : undefined} suppressHydrationWarning>
       <body
         className={"antialiased min-h-screen flex flex-col bg-background text-foreground"}
       >
@@ -75,6 +82,7 @@ export default async function RootLayout({
         <ThemeProvider>
           <SessionProvider initialAuth={initialAuth}>
             <FirebaseAnalytics />
+            <WebFontLoader />
             <Header />
             <AnimatedThemeToggle className="app-theme-toggle fixed bottom-6 right-6 z-50 bg-background/90 shadow-lg shadow-slate-950/10 backdrop-blur-sm" />
             <main className="flex-1 bg-canvas">

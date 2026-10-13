@@ -62,3 +62,13 @@ test("browser rejection leaves the web usable without a repeated automatic promp
   assert.equal(launch(811, true, page), false);
   assert.equal(launch(811, true, page), false);
 });
+
+test("automated browsers keep the web detail but a tap still opens the app", () => {
+  const launch = createEventAppLauncher();
+  const page = browser("Android");
+  Object.assign(page.navigator, { webdriver: true });
+  assert.equal(launch(811, true, page), false);
+  assert.equal(page.opened.length, 0);
+  assert.equal(launch(811, false, page), true);
+  assert.match(page.opened[0], /^intent:\/\/www\.dutyit\.net\/events\/811#Intent;/);
+});

@@ -2,6 +2,7 @@
 
 import * as Popover from "@radix-ui/react-popover";
 import { Apple, Bookmark, CalendarPlus, Check, Download, ExternalLink, Link2, LoaderCircle, MoreHorizontal, Share2 } from "lucide-react";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useBookmark } from "@/src/components/BookmarkProvider";
@@ -9,7 +10,13 @@ import { checkSession, useAuth } from "@/src/lib/auth/client";
 import { createEventCalendarIcs, getEventCalendarFilename, getGoogleCalendarUrl } from "@/src/lib/event-calendar";
 import { getEventAppLinks } from "@/src/lib/event-app-links";
 import { Button } from "@/src/components/ui/button";
-import { ExpandableActionBar } from "@/src/components/ui/expandable-action-bar";
+
+const loadActionBar = () => import("@/src/components/ui/expandable-action-bar");
+// The animated bar only renders in the open popover, so its motion code stays out of the detail page bundle.
+const ExpandableActionBar = dynamic(() => loadActionBar().then((module) => module.ExpandableActionBar), {
+  ssr: false,
+  loading: () => <div className="h-[3.25rem] w-72 max-w-full rounded-full border border-border bg-background/95 shadow-lg" aria-hidden />,
+});
 
 interface EventActionsProps {
   eventId: number;
@@ -86,7 +93,8 @@ export default function EventActions({ eventId, title, hostName, startAt, endAt,
   return (
     <Popover.Root>
       <Popover.Trigger asChild>
-        <Button variant="ghost" size="icon" className="size-10 rounded-full" aria-label="행사 더보기" title="링크 복사, 공유, 북마크, 캘린더 저장">
+        <Button variant="ghost" size="icon" className="size-10 rounded-full" aria-label="행사 더보기" title="링크 복사, 공유, 북마크, 캘린더 저장"
+          onPointerEnter={() => void loadActionBar()} onFocus={() => void loadActionBar()}>
           <MoreHorizontal size={22} aria-hidden />
         </Button>
       </Popover.Trigger>

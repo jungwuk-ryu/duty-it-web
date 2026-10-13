@@ -1,8 +1,8 @@
 "use client";
 
 import { createContext, useContext, useSyncExternalStore } from "react";
-import { z } from "zod";
 import { GUEST, type AuthState } from "./state";
+import type { PublicUser } from "./session-crypto";
 
 export const InitialAuthContext = createContext<AuthState>(GUEST);
 let state: AuthState | null = null;
@@ -11,7 +11,18 @@ const listeners = new Set<() => void>();
 let refreshing: Promise<Response> | null = null;
 let checking: Promise<void> | null = null;
 let queue: Promise<unknown> = Promise.resolve();
-const UserResponseSchema = z.object({ user: z.object({ id: z.number().int().positive(), nickname: z.string() }) });
+// Plain checks instead of zod: this module loads on every page.
+function isRecord(value: unknown): value is Record<string, unknown> {
+    return typeof value === "object" && value !== null;
+}
+/** The response's user, `null` for the guest answer of the session check, or `undefined` when malformed. */
+function responseUser(body: unknown): PublicUser | null | undefined {
+    if (!isRecord(body)) return undefined;
+    const { user } = body;
+    if (user === null) return null;
+    if (!isRecord(user) || !Number.isInteger(user.id) || (user.id as number) <= 0 || typeof user.nickname !== "string") return undefined;
+    return { id: user.id as number, nickname: user.nickname };
+}
 
 export class SessionRequestError extends Error {
     constructor(message: string, readonly status: number) { super(message); this.name = "SessionRequestError"; }
@@ -46,11 +57,17 @@ async function refreshSession() {
         refreshing = withAuthLock(async () => {
             // Another tab may already have refreshed or logged out while waiting for the lock.
             const current = await request("/api/auth/session");
-            if (current.status !== 401) return current;
+            // A guest answer means the cookie is gone; the refresh endpoint reports that as 401.
+            if (current.status !== 401 && !await isGuestResponse(current)) return current;
             return request("/api/auth/refresh", { method: "POST" });
         }).finally(() => { refreshing = null; });
     }
     return (await refreshing).clone();
+}
+
+async function isGuestResponse(response: Response) {
+    if (!response.ok) return false;
+    return responseUser(await response.clone().json().catch(() => null)) === null;
 }
 
 export async function sessionFetch(path: string, init?: RequestInit): Promise<Response> {
@@ -65,10 +82,10 @@ export async function sessionFetch(path: string, init?: RequestInit): Promise<Re
         if (refreshed.status === 401) publish({ status: "guest", user: null, message: null });
         return refreshed;
     }
-    const parsed = UserResponseSchema.safeParse(await refreshed.json());
+    const user = responseUser(await refreshed.json());
     if (started !== generation) throw new SessionRequestError("로그인 상태가 변경되었습니다. 다시 시도해 주세요.", 409);
-    if (!parsed.success) throw new SessionRequestError("로그인을 확인하지 못했습니다.", 502);
-    publish({ status: "authenticated", user: parsed.data.user, message: null });
+    if (!user) throw new SessionRequestError("로그인을 확인하지 못했습니다.", 502);
+    publish({ status: "authenticated", user, message: null });
     // Only a definite 401 is retried. Never replay a toggle after a timeout or 5xx.
     const retried = await request(path, init);
     if (started !== generation) throw new SessionRequestError("로그인 상태가 변경되었습니다. 다시 시도해 주세요.", 409);
@@ -78,8 +95,8 @@ export async function sessionFetch(path: string, init?: RequestInit): Promise<Re
 export async function responseJson(response: Response): Promise<unknown> {
     const body: unknown = await response.json().catch(() => null);
     if (!response.ok) {
-        const error = z.object({ message: z.string() }).safeParse(body);
-        throw new SessionRequestError(error.success ? error.data.message : "요청을 처리하지 못했습니다. 다시 시도해 주세요.", response.status);
+        const message = isRecord(body) && typeof body.message === "string" ? body.message : "요청을 처리하지 못했습니다. 다시 시도해 주세요.";
+        throw new SessionRequestError(message, response.status);
     }
     return body;
 }
@@ -92,8 +109,10 @@ export function checkSession(): Promise<void> {
             const response = await sessionFetch("/api/auth/session");
             if (started !== generation) return;
             if (response.status === 401) { publish({ status: "guest", user: null, message: null }); return; }
-            const parsed = UserResponseSchema.parse(await responseJson(response));
-            if (started === generation) publish({ status: "authenticated", user: parsed.user, message: null });
+            // The session check answers guests with `user: null` instead of a 401 that would start a refresh.
+            const user = responseUser(await responseJson(response));
+            if (user === undefined) throw new SessionRequestError("로그인을 확인하지 못했습니다.", 502);
+            if (started === generation) publish(user ? { status: "authenticated", user, message: null } : GUEST);
         } catch {
             if (started === generation) publish({ user: state?.user ?? null, status: state?.user ? "authenticated" : "error", message: "로그인 연결을 확인하지 못했습니다. 다시 시도해 주세요." });
         }
@@ -111,11 +130,13 @@ export async function signInSession(refreshToken: string) {
             headers: { "Content-Type": "text/plain; charset=utf-8" },
             body: refreshToken,
         });
-        const parsed = UserResponseSchema.extend({ isNewUser: z.boolean() }).parse(await responseJson(response));
+        const body = await responseJson(response);
+        const user = responseUser(body);
+        if (!user || !isRecord(body) || typeof body.isNewUser !== "boolean") throw new SessionRequestError("로그인을 확인하지 못했습니다.", 502);
         generation++;
-        publish({ status: "authenticated", user: parsed.user, message: null });
+        publish({ status: "authenticated", user, message: null });
         signalChange();
-        return parsed;
+        return { user, isNewUser: body.isNewUser };
     });
 }
 

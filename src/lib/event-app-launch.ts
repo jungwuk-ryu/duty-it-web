@@ -1,7 +1,7 @@
 import { getAppPlatform, getEventAppLinks } from "./event-app-links";
 
 interface AppLaunchBrowser {
-  navigator: Pick<Navigator, "userAgent" | "maxTouchPoints">;
+  navigator: Pick<Navigator, "userAgent" | "maxTouchPoints"> & Partial<Pick<Navigator, "webdriver">>;
   document: Pick<Document, "visibilityState">;
   location: Pick<Location, "search" | "assign">;
 }
@@ -14,6 +14,8 @@ export function createEventAppLauncher() {
     const platform = getAppPlatform(browser.navigator.userAgent, browser.navigator.maxTouchPoints);
     if (!platform) return false;
     if (automatic && (attemptedEvents.has(eventId) || new URLSearchParams(browser.location.search).get("openIn") === "web")) return false;
+    // Automated browsers (crawlers, audits) cannot open the app; leave the page in the browser.
+    if (automatic && browser.navigator.webdriver) return false;
 
     // A card tap and the subsequently mounted detail must not open the app twice.
     // Also avoid another automatic prompt on remount or return from the app.

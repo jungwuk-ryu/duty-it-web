@@ -1,0 +1,7 @@
+/* The hidden glyph shrinks while its stroke retracts; the shown glyph grows and draws in its last stretch. */
+.path { transform-box: fill-box; transform-origin: center; stroke-dasharray: 1; }
+.shown { scale: 1; stroke-dashoffset: 0; transition: scale 700ms ease, stroke-dashoffset 400ms ease 300ms; }
+.hidden { scale: 0; stroke-dashoffset: 1; transition: scale 700ms ease, stroke-dashoffset 400ms ease; }
+@media (prefers-reduced-motion: reduce) {
+  .shown, .hidden { transition: none; }
+}
