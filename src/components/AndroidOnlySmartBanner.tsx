@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useSyncExternalStore } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import { ANDROID_APP_STORE_URL } from "@/src/lib/event-app-links";
 import "./smartbanner.fancy.css";
 
@@ -31,6 +31,18 @@ function hideFor(duration: number) {
   window.dispatchEvent(new Event(CHANGE_EVENT));
 }
 
+// smartbanner-tsx kept the dismissal in cookies. Their expiry cannot be read, so carry each over
+// for its full period, then expire the cookie.
+const LEGACY_COOKIES = [["smartbanner-closed", HIDE_AFTER_CLOSE], ["smartbanner-installed", HIDE_AFTER_INSTALL]] as const;
+
+function migrateLegacyCookies() {
+  for (const [name, duration] of LEGACY_COOKIES) {
+    if (!document.cookie.split(/;\s*/).some((cookie) => cookie.startsWith(`${name}=`))) continue;
+    hideFor(duration);
+    document.cookie = `${name}=; Max-Age=0; Path=/`;
+  }
+}
+
 function subscribe(listener: () => void) {
   window.addEventListener(CHANGE_EVENT, listener);
   window.addEventListener("storage", listener);
@@ -54,6 +66,7 @@ function getServerSnapshot() {
 
 export default function AndroidOnlySmartBanner() {
   const visible = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  useEffect(migrateLegacyCookies, []);
   if (!visible) return null;
 
   return (
