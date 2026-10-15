@@ -18,10 +18,14 @@
 | `/bookmarks` | 로그인한 계정의 행사·채용 북마크 |
 | `/about` | 서비스 소개, 정보 출처와 이용 문답 |
 | `/submit-event` | 행사 제보 |
+| `/privacy` | 개인정보 처리방침과 이 브라우저의 이용 통계 수집 거부 설정 |
+| `/terms` | 이용약관 |
+| `/report` | 행사 포스터 등 권리침해 신고 방법과 처리 절차. 행사 상세에서 `?eventId=`로 연결 |
+| `/account/withdraw` | 로그인한 계정의 회원 탈퇴 |
 
 Google·Apple 로그인은 Firebase 인증과 듀잇 API를 사용합니다. 채용 정보는 고용24에서 제공된 내용을 안내하며, 듀잇 웹에서 직접 지원을 완료하지는 않습니다.
 
-웹 분석은 `duty-it` Firebase 프로젝트에 등록된 웹 앱과 측정 ID `G-1XQ0L9EYBE`를 사용합니다. 설정은 `src/lib/firebase/config.ts`에서 관리하며, Firebase Analytics SDK를 화면의 hydration 이후에 불러옵니다. 브라우저에서 Analytics를 지원하지 않거나 초기화가 실패해도 화면 이용은 계속할 수 있습니다.
+웹 분석은 `duty-it` Firebase 프로젝트에 등록된 웹 앱과 측정 ID `G-1XQ0L9EYBE`를 사용합니다. 설정은 `src/lib/firebase/config.ts`에서 관리하며, Firebase Analytics SDK를 화면의 hydration 이후에 불러옵니다. 브라우저에서 Analytics를 지원하지 않거나 초기화가 실패해도 화면 이용은 계속할 수 있습니다. 방문자가 `/privacy#cookies`에서 이용 통계 수집을 거부하면 선택을 localStorage의 `duit-analytics-opt-out:v1`에 저장하고, 이후 Analytics를 불러오지 않으며 이미 불러온 경우에도 즉시 수집을 중단합니다.
 
 로그인한 회원의 서버 회원 번호를 문자열로 변환해 앱과 웹에서 동일한 Analytics `user_id`로 사용합니다. 최초 페이지의 로그인 세션도 반영하고, 계정 변경 시 ID를 교체하며 로그아웃·세션 만료 시 `null`로 지웁니다. 비회원에게 공통 ID를 부여하지 않으며 이메일·닉네임·Firebase 인증 토큰은 Analytics에 보내지 않습니다. Flutter 앱에도 같은 규칙이 적용된 버전을 배포해야 앱과 웹의 로그인 활동이 연결됩니다.
 
