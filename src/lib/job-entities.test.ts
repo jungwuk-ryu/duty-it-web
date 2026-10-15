@@ -25,3 +25,13 @@ test("job API text is decoded once for list and detail views", () => {
         assert.equal(job.dtlRecrContUrl, "https://example.com/apply?a=1&b=2");
     }
 });
+
+test("company wage defaulter status is optional and keeps unchecked companies distinct", () => {
+    const listed = JobPostingSchema.parse({ ...encodedJob, company: { id: 2, wageDefaulter: true, wageDefaulterCheckedAt: "2026-10-15T09:00:00" } });
+    assert.equal(listed.company.wageDefaulter, true);
+    assert.equal(listed.company.wageDefaulterCheckedAt, "2026-10-15T09:00:00");
+    assert.equal(JobPostingSchema.parse({ ...encodedJob, company: { id: 2, wageDefaulter: false } }).company.wageDefaulter, false);
+    const unchecked = JobPostingSchema.parse({ ...encodedJob, company: { id: 2, wageDefaulter: null, wageDefaulterCheckedAt: null } });
+    assert.equal(unchecked.company.wageDefaulter, null);
+    assert.equal(JobPostingSchema.parse(encodedJob).company.wageDefaulter, undefined);
+});

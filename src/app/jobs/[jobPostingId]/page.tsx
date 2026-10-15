@@ -1,7 +1,7 @@
 import { buttonVariants } from "@/src/components/ui/button";
 import { BookmarkIconButton } from "@/src/components/ui/bookmark-icon-button";
 import { fetchJobDetail } from "@/src/lib/api/job-detail";
-import { getJobDeadlineLabel, getJobEmploymentSummary, getJobTitle, isJobOpen } from "@/src/lib/jobs";
+import { getJobDeadlineLabel, getJobEmploymentSummary, getJobTitle, isJobOpen, WAGE_DEFAULTER_LIST_URL } from "@/src/lib/jobs";
 import { getJobClosingLabel } from "@/src/lib/job-list-summary";
 import { getJobCanonicalUrl, getJobMetadataDescription, getJobStructuredData } from "@/src/lib/job-seo";
 import { getBreadcrumbStructuredData, getPageMetadata, serializeJsonLd } from "@/src/lib/seo";
@@ -30,6 +30,8 @@ export default async function JobPostingPage({ params }: Props) {
     const applicationUrl = open && isHttpUrl(job.dtlRecrContUrl) ? job.dtlRecrContUrl : null;
     const closingLabel = getJobClosingLabel(job);
     const postedDate = getKoreanDate(job.postedAt);
+    const wageDefaulter = job.company.wageDefaulter === true;
+    const wageDefaulterCheckedDate = getKoreanDate(job.company.wageDefaulterCheckedAt);
     const jobData = getJobStructuredData(job);
     const breadcrumbs = getBreadcrumbStructuredData("jobs", getJobTitle(job), getJobCanonicalUrl(job.id));
 
@@ -46,6 +48,12 @@ export default async function JobPostingPage({ params }: Props) {
                     <div className="flex flex-wrap items-center gap-2">
                         <span className={`text-sm font-bold ${closingLabel.startsWith("D-") ? "text-brand" : "text-muted-foreground"}`}>{closingLabel}</span>
                         <span className="text-sm font-medium text-muted-foreground">{job.jobsNm || "간호 채용"}</span>
+                        {wageDefaulter && (
+                            <a href="#defaulter-notice" className="inline-flex items-center gap-1 rounded-full bg-danger-surface px-2.5 py-0.5 text-xs font-bold text-destructive">
+                                <ShieldAlert className="size-3.5 shrink-0" aria-hidden="true" />
+                                임금체불 명단공개 사업주
+                            </a>
+                        )}
                     </div>
                     <p className="mt-4 flex items-center gap-1.5 text-sm font-semibold text-muted-foreground">
                         <Building2 className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
@@ -92,26 +100,50 @@ export default async function JobPostingPage({ params }: Props) {
                         </dl>
                     </section>
 
-                    <aside className="rounded-xl border border-border bg-muted/50 p-5 md:p-6" aria-labelledby="defaulter-notice">
-                        <div className="flex items-start gap-3">
-                            <ShieldAlert className="mt-0.5 size-5 shrink-0 text-muted-foreground" aria-hidden="true" />
-                            <div className="min-w-0">
-                                <h2 id="defaulter-notice" className="text-base font-bold text-foreground">지원 전, 체불사업주 명단을 확인해 주세요</h2>
-                                <p className="mt-2 text-sm leading-6 text-foreground">
-                                    이 공고의 사업주가 체불사업주 명단에 포함되어 있는지 확인해 주세요. 직업안정법 제25조(직업정보제공사업자의 준수 사항) 제1호에 따라 고용노동부의 공개 명단을 안내합니다.
-                                </p>
-                                <a
-                                    href="https://www.moel.go.kr/info/defaulter/defaulterList.do"
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-foreground underline underline-offset-4 hover:text-muted-foreground"
-                                >
-                                    체불사업주 명단 확인하기
-                                    <ExternalLink className="size-4 text-muted-foreground" aria-hidden="true" />
-                                </a>
+                    {wageDefaulter ? (
+                        <aside className="rounded-xl border border-destructive/40 bg-danger-surface p-5 md:p-6" aria-labelledby="defaulter-notice">
+                            <div className="flex items-start gap-3">
+                                <ShieldAlert className="mt-0.5 size-5 shrink-0 text-destructive" aria-hidden="true" />
+                                <div className="min-w-0">
+                                    <h2 id="defaulter-notice" className="scroll-mt-24 text-base font-bold text-destructive">이 구인기관은 고용노동부 임금체불 명단공개 사업주입니다.</h2>
+                                    <p className="mt-2 text-sm leading-6 text-foreground">
+                                        「직업안정법」 제25조 제1호에 따라 안내합니다. 지원 전에 고용노동부의 공개 명단에서 내용을 확인해 주세요.
+                                    </p>
+                                    {wageDefaulterCheckedDate && <p className="mt-1 text-xs leading-5 text-muted-foreground">명단 확인일: {wageDefaulterCheckedDate}</p>}
+                                    <a
+                                        href={WAGE_DEFAULTER_LIST_URL}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-destructive underline underline-offset-4 hover:text-foreground"
+                                    >
+                                        임금체불 명단 확인하기
+                                        <ExternalLink className="size-4" aria-hidden="true" />
+                                    </a>
+                                </div>
                             </div>
-                        </div>
-                    </aside>
+                        </aside>
+                    ) : (
+                        <aside className="rounded-xl border border-border bg-muted/50 p-5 md:p-6" aria-labelledby="defaulter-notice">
+                            <div className="flex items-start gap-3">
+                                <ShieldAlert className="mt-0.5 size-5 shrink-0 text-muted-foreground" aria-hidden="true" />
+                                <div className="min-w-0">
+                                    <h2 id="defaulter-notice" className="text-base font-bold text-foreground">지원 전, 체불사업주 명단을 확인해 주세요</h2>
+                                    <p className="mt-2 text-sm leading-6 text-foreground">
+                                        이 공고의 사업주가 체불사업주 명단에 포함되어 있는지 확인해 주세요. 직업안정법 제25조(직업정보제공사업자의 준수 사항) 제1호에 따라 고용노동부의 공개 명단을 안내합니다.
+                                    </p>
+                                    <a
+                                        href={WAGE_DEFAULTER_LIST_URL}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-foreground underline underline-offset-4 hover:text-muted-foreground"
+                                    >
+                                        체불사업주 명단 확인하기
+                                        <ExternalLink className="size-4 text-muted-foreground" aria-hidden="true" />
+                                    </a>
+                                </div>
+                            </div>
+                        </aside>
+                    )}
 
                     {(job.certificate || job.major || job.pfCond || job.etcPfCond) && (
                         <section className="border-t border-border/60 pt-7" aria-labelledby="qualifications">
@@ -146,10 +178,9 @@ export default async function JobPostingPage({ params }: Props) {
                         />
                         <Image
                             src="/job-information-source-work24-dark.svg"
-                            alt=""
+                            alt="고용24 제공 채용 정보 출처"
                             width={360}
                             height={77}
-                            aria-hidden="true"
                             className="mx-auto hidden h-auto w-full max-w-[360px] dark:block"
                         />
                     </section>

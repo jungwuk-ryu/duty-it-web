@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ShieldAlert } from "lucide-react";
 import { getJobDeadlineLabel, getJobTitle } from "@/src/lib/jobs";
 import { getJobCareerSummary, getJobClosingLabel, getJobLocationSummary, getJobSalarySummary } from "@/src/lib/job-list-summary";
 import type { JobPosting } from "@/src/lib/schemas/job";
@@ -24,6 +25,9 @@ export default function JobPostingCard({ job, heading: Heading = "h2" }: Props) 
                     <span className="sr-only">접수 마감 </span>{closingLabel}
                 </span>
                 <p className={styles.company}>{job.company.corpNm || "기업 정보 미등록"}</p>
+                {job.company.wageDefaulter === true && (
+                    <span className={styles.defaulter}><ShieldAlert size={13} aria-hidden="true" />임금체불 명단공개 사업주</span>
+                )}
                 <Heading className={styles.title}>{title}</Heading>
                 <ul className={styles.facts}>
                     {facts.map((fact) => <li key={fact.label}><span className="sr-only">{fact.label} </span>{fact.value}</li>)}

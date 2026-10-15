@@ -9,6 +9,7 @@
 .deadline { display: block; padding-right: 40px; color: var(--duit-muted-foreground); font-size: 13px; font-weight: 700; line-height: 22px; }
 .deadline[data-countdown="true"] { color: var(--duit-brand); }
 .company { overflow: hidden; margin-top: 14px; color: var(--duit-muted-foreground); font-size: 13px; line-height: 1.6; text-overflow: ellipsis; white-space: nowrap; }
+.defaulter { display: inline-flex; align-self: flex-start; align-items: center; gap: 4px; margin-top: 6px; padding: 1px 8px; border-radius: 999px; background: var(--duit-danger-surface); color: var(--duit-destructive); font-size: 12px; font-weight: 700; line-height: 20px; }
 .title { display: -webkit-box; overflow: hidden; min-height: 52px; margin-top: 5px; -webkit-box-orient: vertical; -webkit-line-clamp: 2; color: var(--duit-foreground); font-size: 17px; font-weight: 700; line-height: 1.55; letter-spacing: -.035em; overflow-wrap: anywhere; }
 .facts { padding: 0; margin: 14px 0 0; color: var(--duit-muted-foreground); font-size: 13px; line-height: 1.8; list-style: none; }
 .facts li { display: inline; }

@@ -12,6 +12,9 @@ export const JobCompanySchema = z.object({
     busiCont: OptionalTextSchema,
     indTpCdNm: OptionalTextSchema,
     updatedAt: OptionalTextSchema,
+    // true: on the MOEL wage defaulter list, false: checked and not listed, null: not checked yet.
+    wageDefaulter: z.boolean().nullable().optional(),
+    wageDefaulterCheckedAt: z.string().nullable().optional(),
 });
 
 export const JobPostingSchema = z.object({

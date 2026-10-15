@@ -1,6 +1,9 @@
 import type { JobPosting } from "@/src/lib/schemas/job";
 import { getKoreanDate, parseJobDeadlineDate } from "./seo-date";
 
+// 고용노동부 임금체불 사업주 명단공개 (직업안정법 제25조 제1호).
+export const WAGE_DEFAULTER_LIST_URL = "https://www.moel.go.kr/info/defaulter/defaulterList.do";
+
 export function getJobValidThrough(job: Pick<JobPosting, "receiptCloseDt" | "expiresAt">): string | null {
     if (/채용\s*시|상시/.test(job.receiptCloseDt)) return null;
     // expiresAt is a sorting date at midnight, not an exact application deadline.
