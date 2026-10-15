@@ -92,6 +92,8 @@ export function getLlmsText() {
 - [간호대학생·간호사 대외활동](${SITE_ORIGIN}/events): 봉사·서포터즈·공모전과 학술대회·교육, 모집 기간과 주최자 원문 링크
 - [간호 채용 공고](${SITE_ORIGIN}/jobs): 채용기관, 근무 조건, 접수 마감과 고용24 지원 링크
 - [사이트맵](${SITE_ORIGIN}/sitemap.xml): 공개 페이지와 행사·채용 상세 주소
+- [이용약관](${SITE_ORIGIN}/terms): 서비스 이용 조건, 행사·채용 정보의 성격, 권리침해 게시물의 신고·삭제 절차
+- [개인정보 처리방침](${SITE_ORIGIN}/privacy): 처리하는 개인정보, 처리위탁과 국외 이전, 정보주체의 권리와 개인정보 보호책임자
 
 ## 정보 출처와 확인 방법
 ${INFORMATION_POLICIES.map(({ label, text }) => `- ${label}: ${text}`).join("\n")}
