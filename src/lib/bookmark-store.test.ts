@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { createBookmarkStore } from "./bookmark-store.ts";
+import { bookmarkCacheKey, createBookmarkStore } from "./bookmark-store.ts";
 
 function memoryStorage() {
     const values = new Map<string, string>();
@@ -129,4 +129,13 @@ test("background rechecks cannot overwrite an in-flight toggle", async () => {
     await click;
     assert.equal(gets, 1);
     assert.equal(store.getSnapshot()["jobs:1"].saved, true);
+});
+
+test("caches each account's bookmark hints under a key that withdrawal can remove", async () => {
+    const storage = memoryStorage();
+    const store = createBookmarkStore({ userId: 7, storage, changed, request: async () => ({ isBookmarked: true }) });
+    await store.load("jobs", 3);
+    assert.equal(bookmarkCacheKey(7), "duit-bookmarks:v1:7");
+    assert.match(storage.getItem(bookmarkCacheKey(7)) ?? "", /"jobs:3"/);
+    assert.equal(storage.getItem(bookmarkCacheKey(8)), null);
 });

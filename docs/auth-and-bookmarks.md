@@ -29,6 +29,8 @@
 
 명시적 로그아웃은 해당 브라우저의 쿠키를 지웁니다. 모든 기기의 토큰 폐기는 Firebase 관리 기능으로 처리해야 합니다. 암호화는 쿠키 탈취 후 재사용 자체를 막는 장치가 아니므로 HTTPS, XSS 방지, 비밀 환경 변수 관리가 필요합니다. 브라우저가 사이트 데이터를 삭제하거나 비공개 모드를 종료하는 경우 로그인 복원이 불가능할 수 있습니다.
 
+회원 탈퇴는 계정 메뉴의 `회원 탈퇴`(`/account/withdraw`)에서 확인란을 체크한 뒤 진행합니다. `/api/auth/withdraw`는 정확한 Origin과 세션을 확인하고 세션의 액세스 토큰으로 `DELETE /v1/users`를 호출합니다. API는 회원 데이터와 Firebase 인증 계정을 함께 삭제합니다. 성공하면 로그아웃과 같이 세션 쿠키를 지우고, 브라우저는 계정별 북마크 캐시와 브라우저 푸시 연결을 지우며 Analytics 사용자 ID를 비웁니다. API가 404를 반환하면 이미 삭제된 계정으로 보고 세션을 지웁니다.
+
 기존 버전의 `duit_access_token`만 가진 사용자는 새 로그인 방식으로 한 번 로그인해야 합니다. 로그인·로그아웃 시 이전 쿠키도 삭제합니다.
 
 근거: [Firebase 갱신 토큰 API](https://firebase.google.com/docs/reference/rest/auth#section-refresh-token), [Firebase 세션과 토큰 폐기](https://firebase.google.com/docs/auth/admin/manage-sessions).

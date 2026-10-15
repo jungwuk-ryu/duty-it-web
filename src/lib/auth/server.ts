@@ -78,6 +78,19 @@ export async function upstreamFetch(path: string, accessToken?: string, method =
     return response;
 }
 
+// Deletes the DuIt account; the API also deletes the Firebase Auth account.
+export async function deleteAccount(accessToken: string) {
+    try {
+        await upstreamFetch("/v1/users", accessToken, "DELETE");
+    } catch (error) {
+        // Already deleted, for example from the app or by a retry after a lost response.
+        if (error instanceof AuthError && error.status === 404) return;
+        // The client renews the access credential and retries once.
+        if (error instanceof AuthError && error.status === 401) throw error;
+        throw new AuthError("회원 탈퇴를 완료하지 못했어요. 잠시 뒤 다시 시도해 주세요.", error instanceof AuthError && error.status < 500 ? error.status : 502);
+    }
+}
+
 const FirebaseRefreshSchema = z.object({ id_token: z.string().min(1), refresh_token: z.string().min(1), user_id: z.string().min(1) });
 const SocialResponseSchema = z.object({
     accessToken: z.string().min(1), user: PublicUserSchema.extend({ providerId: z.string() }), isNewUser: z.boolean(),

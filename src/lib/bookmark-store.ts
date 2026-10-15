@@ -7,6 +7,7 @@ type Cached = Record<string, { saved: boolean; at: number }>;
 const EMPTY: Entries = {};
 const MAX_AGE = 30 * 24 * 60 * 60 * 1000;
 const keyOf = (kind: BookmarkKind, id: number) => `${kind}:${id}`;
+export const bookmarkCacheKey = (userId: number | undefined) => `duit-bookmarks:v1:${userId}`;
 
 // Display hints only: no credentials, and never used to authorize a request.
 function readCache(storage: Storage | undefined, key: string): Cached {
@@ -27,7 +28,7 @@ export function createBookmarkStore({ userId, storage, request, changed }: {
     request: (kind: BookmarkKind, id: number, toggle: boolean) => Promise<unknown>;
     changed: (kind: BookmarkKind, id: number, saved: boolean) => void;
 }) {
-    const storageKey = `duit-bookmarks:v1:${userId}`;
+    const storageKey = bookmarkCacheKey(userId);
     let entries: Entries = userId ? Object.fromEntries(Object.entries(readCache(storage, storageKey))
         .map(([key, value]) => [key, { saved: value.saved, pending: false, error: null }])) : EMPTY;
     const listeners = new Set<() => void>();

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { afterEach, beforeEach, mock, test } from "node:test";
 import { NextResponse } from "next/server";
-import { AuthError, authErrorResponse, clearSession, createSession, PRIVATE_HEADERS, readSocialLoginRequest, requireSameOrigin, writeSession } from "./server.ts";
+import { AuthError, authErrorResponse, clearSession, createSession, deleteAccount, PRIVATE_HEADERS, readSocialLoginRequest, requireSameOrigin, writeSession } from "./server.ts";
 import { openSession, type Session } from "./session-crypto.ts";
 
 const env = { secret: process.env.AUTH_SESSION_SECRET, base: process.env.API_BASE, origin: process.env.AUTH_ORIGIN };
@@ -110,6 +110,34 @@ test("renewal cannot switch to a different Firebase or DuIt account", async () =
         ? Response.json({ id_token: "id", refresh_token: "refresh", user_id: "firebase-user" })
         : Response.json({ accessToken: "access", user: { id: 8, nickname: "다른 계정", providerId: "firebase-user" }, isNewUser: false }));
     await assert.rejects(createSession("old-refresh", previous), (error: unknown) => error instanceof AuthError && error.clearSession);
+});
+
+test("account deletion calls the authenticated user endpoint and treats a missing account as deleted", async () => {
+    mock.method(globalThis, "fetch", async (input: string | URL | Request, init: RequestInit) => {
+        assert.equal(String(input), "https://api.example.test/api/v1/users");
+        assert.equal(init.method, "DELETE");
+        assert.equal(init.body, undefined);
+        assert.equal(new Headers(init.headers).get("authorization"), "Bearer current-access");
+        return new Response(null, { status: 204 });
+    });
+    await deleteAccount("current-access");
+    mock.restoreAll();
+    mock.method(globalThis, "fetch", async () => Response.json({ message: "not found" }, { status: 404 }));
+    await deleteAccount("current-access");
+});
+
+test("failed account deletion keeps the session and explains the failure", async () => {
+    for (const [status, expected] of [[401, 401], [403, 403], [500, 502]] as const) {
+        mock.method(globalThis, "fetch", async () => Response.json({ message: "upstream" }, { status }));
+        await assert.rejects(deleteAccount("current-access"), (error: unknown) => {
+            assert.ok(error instanceof AuthError);
+            assert.equal(error.status, expected);
+            assert.equal(error.clearSession, false);
+            if (status !== 401) assert.match(error.message, /회원 탈퇴를 완료하지 못했어요/);
+            return true;
+        });
+        mock.restoreAll();
+    }
 });
 
 test("browser receives only HttpOnly encrypted cookies and public user fields", async () => {

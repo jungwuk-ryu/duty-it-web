@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useSyncExternalStore } from "react";
 import { z } from "zod";
+import { bookmarkCacheKey } from "../bookmark-store";
 import { GUEST, type AuthState } from "./state";
 
 export const InitialAuthContext = createContext<AuthState>(GUEST);
@@ -129,6 +130,23 @@ export async function signOutSession() {
         publish({ status: "guest", user: null, message: null });
         signalChange();
     });
+}
+
+// onDeleted runs before the auth change remounts account-bound UI.
+export async function withdrawAccount(onDeleted?: () => void) {
+    const userId = getCurrentUserId();
+    // Outside the auth lock so an expired access credential can be renewed and retried once.
+    await responseJson(await sessionFetch("/api/auth/withdraw", { method: "POST" }));
+    onDeleted?.();
+    await withAuthLock(async () => {
+        generation++;
+        publish({ status: "guest", user: null, message: null });
+        signalChange();
+    });
+    // The account is gone; also clear what this browser kept for it, as logout does.
+    try { if (userId) localStorage.removeItem(bookmarkCacheKey(userId)); } catch { /* Display hints only. */ }
+    const { preparePushLogout } = await import("../notifications/push");
+    await preparePushLogout().catch(() => undefined);
 }
 
 export function observeSession(initial: AuthState) {

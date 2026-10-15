@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import { Bell, Bookmark, LogOut, UserRound } from "lucide-react";
+import { Bell, Bookmark, LogOut, UserRound, UserX } from "lucide-react";
 import { Button } from "./ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
 import { checkSession, signOutSession, useAuth } from "@/src/lib/auth/client";
@@ -37,6 +37,7 @@ export default function AccountMenu({ onNavigate, className }: { onNavigate?: ()
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
                     <DropdownMenuItem disabled={pending} onSelect={() => void logout()}><LogOut size={16} aria-hidden />로그아웃</DropdownMenuItem>
+                    <DropdownMenuItem asChild><Link href="/account/withdraw" onClick={onNavigate}><UserX size={16} aria-hidden />회원 탈퇴</Link></DropdownMenuItem>
                 </DropdownMenuGroup>
             </DropdownMenuContent>
         </DropdownMenu>
