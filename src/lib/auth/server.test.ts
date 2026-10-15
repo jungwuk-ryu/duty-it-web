@@ -128,8 +128,22 @@ test("account deletion calls the authenticated user endpoint and treats a missin
     });
     await deleteAccount("current-access");
     mock.restoreAll();
-    mock.method(globalThis, "fetch", async () => Response.json({ message: "not found" }, { status: 404 }));
+    const requests: string[] = [];
+    mock.method(globalThis, "fetch", async (input: string | URL | Request, init: RequestInit) => {
+        requests.push(`${init.method} ${String(input)}`);
+        return Response.json({ code: "NOT_FOUND" }, { status: 404 });
+    });
     await deleteAccount("current-access");
+    assert.deepEqual(requests, ["DELETE https://api.example.test/api/v1/users", "GET https://api.example.test/api/v1/users/me"]);
+});
+
+test("account deletion does not report success when only the DELETE route is missing", async () => {
+    mock.method(console, "warn", () => undefined);
+    mock.method(globalThis, "fetch", async (_input: string | URL | Request, init: RequestInit) => init.method === "DELETE"
+        ? Response.json({ code: "NOT_FOUND" }, { status: 404 })
+        : Response.json({ id: 7, nickname: "테스트" }));
+    await assert.rejects(deleteAccount("current-access"), (error: unknown) =>
+        error instanceof AuthError && /회원 탈퇴를 완료하지 못했어요/.test(error.message) && !error.clearSession);
 });
 
 test("failed account deletion keeps the session and explains the failure", async () => {

@@ -85,11 +85,20 @@ export async function deleteAccount(accessToken: string) {
         await upstreamFetch("/v1/users", accessToken, "DELETE");
     } catch (error) {
         // Already deleted, for example from the app or by a retry after a lost response.
-        if (error instanceof AuthError && error.status === 404) return;
+        // A misrouted DELETE also returns 404, so confirm that the account itself is gone.
+        if (error instanceof AuthError && error.status === 404) {
+            if (await accountIsGone(accessToken)) return;
+            console.warn("Account deletion returned 404 while the account still exists.");
+        }
         // The client renews the access credential and retries once.
         if (error instanceof AuthError && error.status === 401) throw error;
         throw new AuthError("회원 탈퇴를 완료하지 못했어요. 잠시 뒤 다시 시도해 주세요.", error instanceof AuthError && error.status < 500 ? error.status : 502);
     }
+}
+
+async function accountIsGone(accessToken: string) {
+    try { await upstreamFetch("/v1/users/me", accessToken); return false; }
+    catch (error) { return error instanceof AuthError && error.status === 404; }
 }
 
 const FirebaseRefreshSchema = z.object({ id_token: z.string().min(1), refresh_token: z.string().min(1), user_id: z.string().min(1) });
