@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { ACCESS_RECHECK_MS, openSession, PublicUserSchema, sealSession, SESSION_MAX_AGE, type Session } from "./session-crypto";
 import { firebaseConfig } from "../firebase/config";
+import { TERMS_VERSION } from "../legal";
 import { GUEST, type AuthState } from "./state";
 
 export const PRIVATE_HEADERS = { "Cache-Control": "private, no-store", Vary: "Cookie" };
@@ -110,7 +111,12 @@ export async function readSocialLoginRequest(request: Request) {
         try { body = JSON.parse(text); } catch { return null; }
     }
     const parsed = SocialLoginRequestSchema.safeParse(body);
-    return parsed.success ? parsed.data : null;
+    if (!parsed.success) return null;
+    // Record only the version this build shows. A tab opened before a terms update must reload it first.
+    if (parsed.data.agreedTermsVersion && parsed.data.agreedTermsVersion !== TERMS_VERSION) {
+        throw new AuthError("이용약관이 바뀌었어요. 페이지를 새로고침한 뒤 다시 동의해 주세요.", 409);
+    }
+    return parsed.data;
 }
 
 // Redeem the refresh token first so both credentials belong to the same verified account.

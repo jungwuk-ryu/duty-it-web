@@ -3,6 +3,7 @@ import { afterEach, beforeEach, mock, test } from "node:test";
 import { NextResponse } from "next/server";
 import { AuthError, authErrorResponse, clearSession, createSession, deleteAccount, PRIVATE_HEADERS, readSocialLoginRequest, requireSameOrigin, writeSession } from "./server.ts";
 import { openSession, type Session } from "./session-crypto.ts";
+import { TERMS_VERSION } from "../legal.ts";
 
 const env = { secret: process.env.AUTH_SESSION_SECRET, base: process.env.API_BASE, origin: process.env.AUTH_ORIGIN };
 beforeEach(() => {
@@ -68,8 +69,8 @@ test("login forwards the agreed terms version with the verified ID token", async
 
 test("login requests accept JSON with a terms version and legacy text/plain tokens", async () => {
     const post = (body: string, type: string) => new Request("https://www.dutyit.net/api/auth/social", { method: "POST", headers: { "Content-Type": type }, body });
-    assert.deepEqual(await readSocialLoginRequest(post(JSON.stringify({ refreshToken: " token ", agreedTermsVersion: "2026-10-15" }), "application/json")),
-        { refreshToken: "token", agreedTermsVersion: "2026-10-15" });
+    assert.deepEqual(await readSocialLoginRequest(post(JSON.stringify({ refreshToken: " token ", agreedTermsVersion: TERMS_VERSION }), "application/json")),
+        { refreshToken: "token", agreedTermsVersion: TERMS_VERSION });
     assert.deepEqual(await readSocialLoginRequest(post("legacy-token", "text/plain; charset=utf-8")), { refreshToken: "legacy-token" });
     for (const [body, type] of [
         [JSON.stringify({ refreshToken: "token", agreedTermsVersion: "latest" }), "application/json"],
@@ -78,6 +79,11 @@ test("login requests accept JSON with a terms version and legacy text/plain toke
         [" ", "text/plain"],
         ["x".repeat(3001), "text/plain"],
     ]) assert.equal(await readSocialLoginRequest(post(body, type)), null);
+    // Only the terms version this build shows can be recorded.
+    for (const version of ["2020-01-01", "2026-13-45"]) {
+        await assert.rejects(readSocialLoginRequest(post(JSON.stringify({ refreshToken: "token", agreedTermsVersion: version }), "application/json")),
+            (error: unknown) => error instanceof AuthError && error.status === 409 && !error.clearSession);
+    }
 });
 
 test("temporary refresh errors preserve the durable session cookie", async () => {
