@@ -1,9 +1,10 @@
 # Search engines and AI search/answer agents (including ChatGPT) may read all public pages.
-# AI training crawlers may not collect /jobs: job postings include 고용24 data reused under
-# KOGL Type 4 (공공누리 제4유형: no commercial use or modification) and the 고용24 terms of use.
+# AI training crawlers may not collect 고용24 data reused under KOGL Type 4 (공공누리 제4유형:
+# no commercial use or modification) and the 고용24 terms of use: job postings under /jobs and
+# the home page, which previews recent job postings. Events and other pages stay open to them.
 # A crawler matched by a named group ignores the * group, so every group repeats /api/.
 
-# AI training crawlers
+# AI training crawlers. "/$" and "/?" match only the home page, with or without a query.
 User-agent: GPTBot
 User-agent: ClaudeBot
 User-agent: anthropic-ai
@@ -14,6 +15,8 @@ User-agent: Bytespider
 User-agent: meta-externalagent
 User-agent: cohere-training-data-crawler
 User-agent: Diffbot
+Disallow: /$
+Disallow: /?
 Disallow: /jobs
 Disallow: /api/
 

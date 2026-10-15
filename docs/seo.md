@@ -33,7 +33,7 @@ Google은 `priority`와 `changefreq`를 사용하지 않는다. 정확한 변경
 
 행사 경로의 자동 `loading.tsx` 경계를 제거해 존재 여부와 커서 검증 전에 200 헤더가 전송되지 않도록 한다. 유효한 상세페이지의 부가 콘텐츠는 계속 Suspense로 표시하고, 클라이언트에서 행사 필터를 바꾸는 동안에는 기존 로딩 화면을 사용한다. [Next.js not-found 상태 코드](https://nextjs.org/docs/app/api-reference/file-conventions/not-found)
 
-`robots.txt`는 공개 페이지와 사이트맵 수집을 허용하며 내부 `/api/`를 제외한다. AI 학습 크롤러에는 고용24 데이터가 포함된 `/jobs`도 제외한다. `noindex` 페이지는 크롤러가 메타 태그를 읽을 수 있도록 robots.txt로 차단하지 않는다. [네이버 robots.txt 안내](https://searchadvisor.naver.com/guide/seo-basic-robots)
+`robots.txt`는 공개 페이지와 사이트맵 수집을 허용하며 내부 `/api/`를 제외한다. AI 학습 크롤러에는 고용24 데이터가 포함된 `/jobs`와 채용 공고를 미리 보여 주는 홈(`/`)도 제외한다. `noindex` 페이지는 크롤러가 메타 태그를 읽을 수 있도록 robots.txt로 차단하지 않는다. [네이버 robots.txt 안내](https://searchadvisor.naver.com/guide/seo-basic-robots)
 
 ## 구조화 데이터와 메타데이터
 
@@ -85,7 +85,7 @@ npm run seo:notify-jobs -- --type URL_DELETED --url https://www.dutyit.net/jobs/
 
 2026-09-29 확인한 Google 문서에 따르면 FAQ 리치 결과는 2026-05-07부터 중단됐으며, `llms.txt`는 Google 검색 노출·순위에 영향을 주지 않는다. FAQPage는 실제 문답을 표현하는 용도이고, `llms.txt`는 이를 이용하는 다른 시스템을 위한 안내다. AI 인용이나 순위 상승의 보장 조건으로 취급하지 않는다. [Google 변경 기록](https://developers.google.com/search/updates#june-2026), [Google AI 기능 안내](https://developers.google.com/search/docs/appearance/ai-features)
 
-`robots.txt`는 검색 수집과 학습 수집을 구분한다. 채용 공고는 고용24 데이터(공공누리 제4유형: 출처표시·상업적 이용금지·변경금지, 고용24 이용약관)를 포함하므로 AI 학습 크롤러(GPTBot, ClaudeBot, anthropic-ai, CCBot, Google-Extended, Applebot-Extended, Bytespider, meta-externalagent, cohere-training-data-crawler, Diffbot)에는 `/jobs`와 `/api/`를 제외한다. 일반 검색과 ChatGPT 등 AI 검색·답변 에이전트(OAI-SearchBot, ChatGPT-User, Claude-SearchBot, Claude-User, PerplexityBot, Perplexity-User, Googlebot, Bingbot, Yeti 등)와 `User-agent: *`는 `/api/`만 제외하고 모든 공개 페이지를 읽을 수 있다. 이름이 지정된 그룹에 해당하는 봇은 `*` 그룹을 따르지 않으므로 모든 그룹에 `/api/` 제외를 반복한다. 새 학습 크롤러가 확인되면 학습 그룹에 추가한다. robots.txt는 접근 제어나 개인정보 보호 장치가 아니다.
+`robots.txt`는 검색 수집과 학습 수집을 구분한다. 채용 공고는 고용24 데이터(공공누리 제4유형: 출처표시·상업적 이용금지·변경금지, 고용24 이용약관)를 포함하므로 AI 학습 크롤러(GPTBot, ClaudeBot, anthropic-ai, CCBot, Google-Extended, Applebot-Extended, Bytespider, meta-externalagent, cohere-training-data-crawler, Diffbot)에는 `/jobs`와 `/api/`를 제외한다. 홈도 최근 채용 공고의 제목·채용기관·근무지·경력·학력·급여·마감 정보를 서버 HTML로 미리 보여 주므로 학습 크롤러에서 제외한다. `Disallow: /$`(쿼리 없는 홈)와 `Disallow: /?`(쿼리가 붙은 홈)는 홈만 가리키므로 행사(`/events`)와 소개 등 다른 페이지는 학습 크롤러도 읽을 수 있다. `$`는 [RFC 9309](https://www.rfc-editor.org/rfc/rfc9309#section-2.2.3)의 URL 끝 표시다. 일반 검색과 ChatGPT 등 AI 검색·답변 에이전트(OAI-SearchBot, ChatGPT-User, Claude-SearchBot, Claude-User, PerplexityBot, Perplexity-User, Googlebot, Bingbot, Yeti 등)와 `User-agent: *`는 `/api/`만 제외하고 모든 공개 페이지를 읽을 수 있다. 이름이 지정된 그룹에 해당하는 봇은 `*` 그룹을 따르지 않으므로 모든 그룹에 `/api/` 제외를 반복한다. 새 학습 크롤러가 확인되면 학습 그룹에 추가한다. robots.txt는 접근 제어나 개인정보 보호 장치가 아니다.
 
 ## 재현 가능한 HTTP 점검
 
@@ -97,7 +97,7 @@ npm run seo:audit -- --output /path/to/production-seo.json
 npm run seo:audit -- --base-url http://localhost:3000 --output /path/to/local-seo.json
 ```
 
-`seo:audit`는 로그인·JavaScript 실행 없이 응답을 읽는다. 홈·목록·소개, 개인 페이지의 noindex, 실제 404, robots.txt, llms.txt, 네이버 확인 파일, 사이트맵의 모든 하위 파일과 행사·채용 각 1개 상세를 점검한다. HTTP 상태, 제목·설명·대표 주소·소셜 메타, JSON-LD 파싱, 가시 FAQ 일치, 사이트맵 URL 수를 JSON으로 남긴다. 로컬에서도 canonical은 운영 도메인이어야 한다. 실패한 검사가 있거나 요청이 실패하면 종료 코드 1을 반환한다. robots 검사는 기본 정책의 회귀 점검이며 전체 robots 구문 해석기는 아니다.
+`seo:audit`는 로그인·JavaScript 실행 없이 응답을 읽는다. 홈·목록·소개, 개인 페이지의 noindex, 실제 404, robots.txt, llms.txt, 네이버 확인 파일, 사이트맵의 모든 하위 파일과 행사·채용 각 1개 상세를 점검한다. HTTP 상태, 제목·설명·대표 주소·소셜 메타, JSON-LD 파싱, 가시 FAQ 일치, 사이트맵 URL 수를 JSON으로 남긴다. 로컬에서도 canonical은 운영 도메인이어야 한다. 실패한 검사가 있거나 요청이 실패하면 종료 코드 1을 반환한다. robots 검사는 사이트 전체 차단이 없는지와 `*`·검색·AI 검색 크롤러에 홈이 열려 있는지 확인하는 기본 정책의 회귀 점검이며 전체 robots 구문 해석기는 아니다.
 
 이 명령은 표본 점검이다. 모든 상세 페이지의 품질, 구조화 데이터 전체 스키마 적합성, Google이 실제 선택한 canonical, 네이버 사이트 등록 완료, 실제 검색 순위·인용을 증명하지 않는다. 릴리스 점검 때 실행하고, URL 수의 급감은 API 데이터 변화와 함께 확인한다. HTML 전체나 인증 정보는 보고서에 저장하지 않는다.
 

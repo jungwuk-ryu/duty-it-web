@@ -39,6 +39,24 @@ function flattenLd(value: unknown): Record<string, unknown>[] {
   }
   return [];
 }
+// Disallow rules per User-agent group: enough for policy regressions, not a full robots.txt parser.
+function robotsGroups(body: string) {
+  const groups: { agents: string[]; disallow: string[]; hasRules: boolean }[] = [];
+  for (const line of body.split(/\r?\n/)) {
+    const match = /^\s*(user-agent|allow|disallow)\s*:\s*([^#\s]*)/i.exec(line);
+    if (!match) continue;
+    const field = match[1].toLowerCase();
+    let group = groups.at(-1);
+    if (field === "user-agent") {
+      if (!group || group.hasRules) groups.push(group = { agents: [], disallow: [], hasRules: false });
+      group.agents.push(match[2].toLowerCase());
+    } else if (group) {
+      group.hasRules = true;
+      if (field === "disallow") group.disallow.push(match[2]);
+    }
+  }
+  return groups;
+}
 async function read(path: string, expectedStatus = 200) {
   const row: Row = { path, checks: {} };
   rows.push(row);
@@ -112,7 +130,12 @@ async function main() {
   const robots = await read("/robots.txt");
   robots.row.checks.sitemapDeclared = robots.body.includes(`Sitemap: ${SITE_ORIGIN}/sitemap.xml`);
   robots.row.checks.wildcardPresent = /^User-agent:\s*\*\s*$/mi.test(robots.body);
-  robots.row.checks.noSitewideBlock = !/^Disallow:\s*\/(?:\*|\$)?\s*$/mi.test(robots.body);
+  const robotsRules = robotsGroups(robots.body);
+  robots.row.checks.noSitewideBlock = robotsRules.every(({ disallow }) => !disallow.some((path) => /^\/\*?$/.test(path)));
+  // Only AI training crawlers may skip the home page, which previews 고용24 job postings.
+  robots.row.checks.homeOpenToSearch = robotsRules
+    .filter(({ agents }) => agents.some((agent) => ["*", "googlebot", "bingbot", "yeti", "oai-searchbot", "chatgpt-user"].includes(agent)))
+    .every(({ disallow }) => !disallow.some((path) => /^\/[$?]/.test(path)));
   const llms = await read("/llms.txt");
   llms.row.checks.plainText = llms.row.contentType?.includes("text/plain") ?? false;
   llms.row.checks.siteGuide = /^# 듀잇/m.test(llms.body) && ["/about", "/events", "/jobs"].every((p) => llms.body.includes(SITE_ORIGIN + p));
