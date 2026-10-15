@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowUpRight, Bell, Building2, CalendarDays, ChevronRight, Clock3, Eye, Info } from "lucide-react";
+import { ArrowUpRight, Bell, Building2, CalendarDays, ChevronRight, Clock3, Eye, Flag, Info } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { Event } from "@/src/lib/schemas/event";
 import { formatEventDateTime, formatEventPeriod, getEventRecruitmentStatus, getHostEventsHref } from "@/src/lib/event-detail";
+import { REPORT_PATH } from "@/src/lib/legal";
 import { withUtmSource } from "@/src/lib/url";
 import CategoryTag from "@/src/components/ui/EventTypeTag";
 import { Button } from "@/src/components/ui/button";
@@ -81,7 +82,10 @@ export default function EventDetail({
             </Link>
           </section>
 
-          <div className={styles.views}><Eye size={15} aria-hidden /><span>조회 {views.toLocaleString("ko-KR")}</span></div>
+          <div className={styles.views}>
+            <Eye size={15} aria-hidden /><span>조회 {views.toLocaleString("ko-KR")}</span>
+            <Link href={`${REPORT_PATH}?eventId=${event.id}`} className={styles.reportLink} prefetch={false}><Flag size={13} aria-hidden />권리침해 신고</Link>
+          </div>
           <p className={styles.notice}><Info size={17} aria-hidden /><span>자세한 내용과 신청은 주최 페이지에서 확인해 주세요.</span></p>
         </div>
       </div>
