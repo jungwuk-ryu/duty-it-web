@@ -33,7 +33,7 @@ Google은 `priority`와 `changefreq`를 사용하지 않는다. 정확한 변경
 
 행사 경로의 자동 `loading.tsx` 경계를 제거해 존재 여부와 커서 검증 전에 200 헤더가 전송되지 않도록 한다. 유효한 상세페이지의 부가 콘텐츠는 계속 Suspense로 표시하고, 클라이언트에서 행사 필터를 바꾸는 동안에는 기존 로딩 화면을 사용한다. [Next.js not-found 상태 코드](https://nextjs.org/docs/app/api-reference/file-conventions/not-found)
 
-`robots.txt`는 공개 페이지와 사이트맵 수집을 허용하며 내부 `/api/`만 제외한다. `noindex` 페이지는 크롤러가 메타 태그를 읽을 수 있도록 robots.txt로 차단하지 않는다. [네이버 robots.txt 안내](https://searchadvisor.naver.com/guide/seo-basic-robots)
+`robots.txt`는 공개 페이지와 사이트맵 수집을 허용하며 내부 `/api/`를 제외한다. AI 학습 크롤러에는 고용24 데이터가 포함된 `/jobs`도 제외한다. `noindex` 페이지는 크롤러가 메타 태그를 읽을 수 있도록 robots.txt로 차단하지 않는다. [네이버 robots.txt 안내](https://searchadvisor.naver.com/guide/seo-basic-robots)
 
 ## 구조화 데이터와 메타데이터
 
@@ -85,7 +85,7 @@ npm run seo:notify-jobs -- --type URL_DELETED --url https://www.dutyit.net/jobs/
 
 2026-09-29 확인한 Google 문서에 따르면 FAQ 리치 결과는 2026-05-07부터 중단됐으며, `llms.txt`는 Google 검색 노출·순위에 영향을 주지 않는다. FAQPage는 실제 문답을 표현하는 용도이고, `llms.txt`는 이를 이용하는 다른 시스템을 위한 안내다. AI 인용이나 순위 상승의 보장 조건으로 취급하지 않는다. [Google 변경 기록](https://developers.google.com/search/updates#june-2026), [Google AI 기능 안내](https://developers.google.com/search/docs/appearance/ai-features)
 
-`robots.txt`의 기존 `User-agent: *` 정책을 유지한다. 일반 검색, AI 검색, 학습 크롤러 모두 같은 공개 경로 허용과 `/api/` 제외 규칙을 받는다. 별도의 봇 그룹에 `Allow: /`만 추가하면 일반 그룹의 `/api/` 제한을 상속하지 않으므로 그런 중복 그룹은 만들지 않는다. 공개 수집 정책을 바꿀 때에는 검색 수집과 학습 수집을 구분해 검토한다. robots.txt는 접근 제어나 개인정보 보호 장치가 아니다.
+`robots.txt`는 검색 수집과 학습 수집을 구분한다. 채용 공고는 고용24 데이터(공공누리 제4유형: 출처표시·상업적 이용금지·변경금지, 고용24 이용약관)를 포함하므로 AI 학습 크롤러(GPTBot, ClaudeBot, anthropic-ai, CCBot, Google-Extended, Applebot-Extended, Bytespider, meta-externalagent, cohere-training-data-crawler, Diffbot)에는 `/jobs`와 `/api/`를 제외한다. 일반 검색과 ChatGPT 등 AI 검색·답변 에이전트(OAI-SearchBot, ChatGPT-User, Claude-SearchBot, Claude-User, PerplexityBot, Perplexity-User, Googlebot, Bingbot, Yeti 등)와 `User-agent: *`는 `/api/`만 제외하고 모든 공개 페이지를 읽을 수 있다. 이름이 지정된 그룹에 해당하는 봇은 `*` 그룹을 따르지 않으므로 모든 그룹에 `/api/` 제외를 반복한다. 새 학습 크롤러가 확인되면 학습 그룹에 추가한다. robots.txt는 접근 제어나 개인정보 보호 장치가 아니다.
 
 ## 재현 가능한 HTTP 점검
 
