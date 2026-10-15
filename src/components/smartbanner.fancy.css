@@ -1,11 +1,9 @@
   :root {
     --sb-glass-border: var(--duit-border);
-    /*--sb-shadow: 0 14px 34px rgba(0, 0, 0, 0.18);*/
 
     /* typography */
     --sb-text: var(--duit-foreground);
     --sb-subtext: var(--duit-muted-foreground);
-    --sb-muted: var(--duit-subtle-foreground);
 
     /* brand accent */
     --sb-accent: var(--duit-primary);
@@ -16,161 +14,168 @@
     --sb-pad-x: 12px;
   }
 
+  /* Keep the end of the page reachable above the fixed banner. */
+  html:has(.smartbanner) {
+    margin-bottom: calc(var(--sb-h) + 12px);
+  }
+
+  html body:has(.smartbanner) .app-theme-toggle {
+    bottom: calc(var(--sb-h) + 24px + env(safe-area-inset-bottom));
+  }
 
   .smartbanner-bottom {
-    left: 12px !important;
-    right: 12px !important;
-    bottom: 12px !important;
-    width: auto !important;
-    z-index: var(--sb-z) !important;
+    position: fixed;
+    left: 12px;
+    right: 12px;
+    bottom: calc(12px + env(safe-area-inset-bottom));
   }
 
   .smartbanner {
-    height: var(--sb-h) !important;
-    border-radius: var(--sb-radius) !important;
-    overflow: hidden !important;
+    height: var(--sb-h);
+    border-radius: var(--sb-radius);
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
 
-    background: color-mix(in srgb, var(--duit-background) 94%, transparent) !important;
-    border: 1px solid var(--sb-glass-border) !important;
-    box-shadow: none !important;
+    background: color-mix(in srgb, var(--duit-background) 94%, transparent);
+    border: 1px solid var(--sb-glass-border);
   }
 
   .smartbanner-container {
-    height: 100% !important;
-    display: flex !important;
-    align-items: center !important;
-    gap: 0 !important;
-    padding: 0 var(--sb-pad-x) !important;
-    position: relative !important;
-    z-index: 1 !important;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0 var(--sb-pad-x);
+    position: relative;
+    z-index: 1;
   }
 
   .smartbanner-icon {
-    width: 46px !important;
-    height: 46px !important;
-    border-radius: 14px !important;
-    flex: 0 0 auto !important;
-    background-size: cover !important;
-    background-position: center !important;
+    width: 46px;
+    height: 46px;
+    margin-right: 12px;
+    border-radius: 14px;
+    flex: 0 0 auto;
+    object-fit: cover;
 
-    border: 1px solid var(--sb-glass-border) !important;
-    box-shadow: 0 10px 22px rgba(0,0,0,0.10) !important;
+    border: 1px solid var(--sb-glass-border);
+    box-shadow: 0 10px 22px rgba(0,0,0,0.10);
   }
 
-  .smartbanner-android .smartbanner-close,
   .smartbanner-close {
-    border-radius: 12px !important;
-    flex: 0 0 auto !important;
+    width: 28px;
+    height: 28px;
+    margin-right: 8px;
+    border-radius: 12px;
+    flex: 0 0 auto;
 
-    background: var(--duit-muted) !important;
-    border: 1px solid var(--sb-glass-border) !important;
-    color: var(--sb-text) !important;
+    background: var(--duit-muted);
+    border: 1px solid var(--sb-glass-border);
+    color: var(--sb-text);
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
 
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 
-    transition: transform 160ms ease, background 160ms ease, border-color 160ms ease !important;
-    box-shadow: none !important;
+    transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
   }
 
   .smartbanner-close:hover {
-    background: var(--duit-background) !important;
-    border-color: var(--duit-input) !important;
-    transform: translateY(-1px) !important;
+    background: var(--duit-background);
+    border-color: var(--duit-input);
+    transform: translateY(-1px);
   }
 
-  .smartbanner-android .smartbanner-info,
+  .smartbanner-close:focus-visible,
+  .smartbanner-button:focus-visible {
+    outline: 2px solid var(--duit-brand);
+    outline-offset: 2px;
+  }
+
   .smartbanner-info {
-    flex: 1 1 auto !important;
-    min-width: 0 !important;
+    flex: 1 1 auto;
+    min-width: 0;
 
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 2px !important;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
 
-    color: var(--sb-text) !important;
-    line-height: 1.18 !important;
-    text-shadow: none !important;
+    color: var(--sb-text);
+    line-height: 1.18;
   }
 
   .smartbanner-title {
-    font-size: 14px !important;
-    font-weight: 760 !important;
-    color: var(--sb-text) !important;
-    white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
+    font-size: 14px;
+    font-weight: 760;
+    color: var(--sb-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .smartbanner-author {
-    font-size: 12px !important;
-    font-weight: 650 !important;
-    color: var(--sb-subtext) !important;
-    white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-  }
-
-  .smartbanner-description {
-    font-size: 12px !important;
-    color: var(--sb-muted) !important;
-    white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
+    font-size: 12px;
+    font-weight: 650;
+    color: var(--sb-subtext);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .smartbanner-wrapper {
-    flex: 0 0 auto !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: flex-end !important;
-    gap: 10px !important;
-    width: 20% !important;
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    width: 20%;
+    max-width: 110px;
   }
 
   .smartbanner-button {
-    text-decoration: none !important;
-    border-radius: 14px !important;
-    overflow: hidden !important;
-    box-shadow: none !important;
+    text-decoration: none;
+    border-radius: 14px;
   }
 
-  .smartbanner-android .smartbanner-button-text,
   .smartbanner-button-text {
-    display: inline-flex !important;
-    justify-content: center !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 
-    height: 36px !important;
-    padding: 0 14px !important;
-    border-radius: 14px !important;
+    height: 36px;
+    padding: 0 14px;
+    border-radius: 14px;
 
-    background: linear-gradient(180deg, var(--sb-accent), var(--sb-accent-hover)) !important;
-    color: rgba(255, 255, 255, 0.96) !important;
+    background: linear-gradient(180deg, var(--sb-accent), var(--sb-accent-hover));
+    color: rgba(255, 255, 255, 0.96);
 
-    font-size: 13px !important;
-    font-weight: 820 !important;
-    letter-spacing: -0.2px !important;
+    font-size: 13px;
+    font-weight: 820;
+    letter-spacing: -0.2px;
+    white-space: nowrap;
 
-    box-shadow: 0 12px 22px rgba(217, 75, 65, 0.22) !important;
-    transition: transform 160ms ease, filter 160ms ease !important;
+    box-shadow: 0 12px 22px rgba(217, 75, 65, 0.22);
+    transition: transform 160ms ease, filter 160ms ease;
   }
 
   .smartbanner-button-text:hover {
-    transform: translateY(-1px) !important;
-    filter: brightness(1.03) saturate(1.03) !important;
+    transform: translateY(-1px);
+    filter: brightness(1.03) saturate(1.03);
   }
 
   .smartbanner-button-text:active {
-    transform: translateY(0px) scale(0.99) !important;
+    transform: translateY(0px) scale(0.99);
   }
 
   @media (max-width: 360px) {
-    :root { --sb-h: 70px; --sb-gap: 10px; }
-    .smartbanner-icon { width: 42px !important; height: 42px !important; border-radius: 13px !important; }
-    .smartbanner-button-text { height: 34px !important; padding: 0 12px !important; border-radius: 13px !important; }
+    :root { --sb-h: 70px; }
+    .smartbanner-icon { width: 42px; height: 42px; border-radius: 13px; }
+    .smartbanner-button-text { height: 34px; padding: 0 12px; border-radius: 13px; }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .smartbanner-close, .smartbanner-button-text { transition: none !important; }
+    .smartbanner-close, .smartbanner-button-text { transition: none; }
+    .smartbanner-close:hover, .smartbanner-button-text:hover, .smartbanner-button-text:active { transform: none; }
   }
