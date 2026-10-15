@@ -104,6 +104,7 @@ const SocialLoginRequestSchema = z.object({
 
 // The login form posts JSON with the agreed terms version. Tabs loaded before that
 // change still post the bare refresh token as text/plain, so accept both formats.
+// TODO(2026-11-15): the rollout window ends; reject text/plain logins with 400.
 export async function readSocialLoginRequest(request: Request) {
     const text = await request.text().catch(() => "");
     let body: unknown = { refreshToken: text };
