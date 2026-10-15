@@ -4,9 +4,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { ArrowLeft, LoaderCircle } from "lucide-react";
-import { type ComponentProps, useState } from "react";
+import { type ComponentProps, useId, useRef, useState } from "react";
 import { inMemoryPersistence, setPersistence, signInWithPopup, signOut } from "firebase/auth";
 import { safeReturnTo, signInSession, useAuth } from "@/src/lib/auth/client";
+import { PRIVACY_POLICY_PATH, TERMS_PATH, TERMS_VERSION } from "@/src/lib/legal";
 
 import { Button } from "@/src/components/ui/button";
 import {
@@ -34,11 +35,21 @@ const BACKGROUND_DOTS = [
 
 export default function LoginForm() {
     const [authState, setAuthState] = useState<AuthState>({ kind: "idle" });
+    const [agreed, setAgreed] = useState(false);
+    const [agreementMissing, setAgreementMissing] = useState(false);
+    const agreementRef = useRef<HTMLInputElement>(null);
+    const agreementErrorId = useId();
     const isLoading = authState.kind === "loading";
     const session = useAuth();
 
     async function handleSignIn(provider: Provider) {
         if (isLoading) return;
+        // Sign-in must not start until the required terms are explicitly agreed to.
+        if (!agreed) {
+            setAgreementMissing(true);
+            agreementRef.current?.focus();
+            return;
+        }
 
         setAuthState({ kind: "loading", provider });
 
@@ -48,7 +59,7 @@ export default function LoginForm() {
                 firebaseAuth,
                 provider === "google" ? googleAuthProvider : appleAuthProvider,
             );
-            const body = await signInSession(credential.user.refreshToken);
+            const body = await signInSession(credential.user.refreshToken, TERMS_VERSION);
 
             setAuthState({
                 kind: "success",
@@ -88,12 +99,42 @@ export default function LoginForm() {
                                     관심 있는 간호 행사와 채용 소식을 놓치지 마세요.
                                 </p>
 
-                                <div className="mt-9 flex w-full flex-col gap-3">
+                                <div className="mt-9 w-full text-left">
+                                    <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-input bg-background px-4 py-3 text-sm leading-6 text-foreground">
+                                        <input
+                                            ref={agreementRef}
+                                            type="checkbox"
+                                            checked={agreed}
+                                            onChange={(event) => {
+                                                setAgreed(event.target.checked);
+                                                if (event.target.checked) setAgreementMissing(false);
+                                            }}
+                                            aria-invalid={agreementMissing}
+                                            aria-describedby={agreementMissing ? agreementErrorId : undefined}
+                                            className="mt-1 size-4 shrink-0 accent-[var(--duit-primary)]"
+                                        />
+                                        <span>
+                                            [필수] 만 14세 이상이며, 듀잇{" "}
+                                            <Link href={TERMS_PATH} target="_blank" rel="noopener" className="font-semibold text-brand underline underline-offset-4">
+                                                이용약관<span className="sr-only"> (새 탭)</span>
+                                            </Link>
+                                            에 동의합니다
+                                        </span>
+                                    </label>
+                                    {agreementMissing && (
+                                        <p id={agreementErrorId} className="mt-2 text-sm leading-6 text-destructive" role="alert">
+                                            로그인하려면 필수 약관에 동의해 주세요.
+                                        </p>
+                                    )}
+                                </div>
+
+                                <div className="mt-4 flex w-full flex-col gap-3">
                                     <Button
                                         type="button"
                                         variant="outline"
                                         className="h-12 w-full rounded-xl border-input bg-background text-[15px] font-semibold text-foreground shadow-sm shadow-slate-900/5 hover:bg-canvas"
                                         disabled={isLoading}
+                                        aria-describedby={agreementMissing ? agreementErrorId : undefined}
                                         onClick={() => void handleSignIn("google")}
                                     >
                                         {isLoading && authState.provider === "google" ? (
@@ -107,6 +148,7 @@ export default function LoginForm() {
                                         type="button"
                                         className="h-12 w-full rounded-xl bg-inverse text-[15px] font-semibold text-inverse-foreground shadow-sm shadow-black/15 hover:bg-inverse/85"
                                         disabled={isLoading}
+                                        aria-describedby={agreementMissing ? agreementErrorId : undefined}
                                         onClick={() => void handleSignIn("apple")}
                                     >
                                         {isLoading && authState.provider === "apple" ? (
@@ -132,7 +174,11 @@ export default function LoginForm() {
                                     홈으로 돌아가기
                                 </Link>
                                 <p className="mt-7 text-xs leading-5 text-subtle-foreground">
-                                    계속하면 듀잇의 이용약관 및 개인정보 처리방침에 동의하게 됩니다.
+                                    회원 정보 처리에 관한 내용은{" "}
+                                    <Link href={PRIVACY_POLICY_PATH} target="_blank" rel="noopener" className="font-semibold underline underline-offset-4 hover:text-brand">
+                                        개인정보 처리방침<span className="sr-only"> (새 탭)</span>
+                                    </Link>
+                                    에서 확인할 수 있어요.
                                 </p>
                             </>
                         )}

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { afterEach, beforeEach, mock, test } from "node:test";
 import { NextResponse } from "next/server";
-import { AuthError, authErrorResponse, clearSession, createSession, PRIVATE_HEADERS, requireSameOrigin, writeSession } from "./server.ts";
+import { AuthError, authErrorResponse, clearSession, createSession, PRIVATE_HEADERS, readSocialLoginRequest, requireSameOrigin, writeSession } from "./server.ts";
 import { openSession, type Session } from "./session-crypto.ts";
 
 const env = { secret: process.env.AUTH_SESSION_SECRET, base: process.env.API_BASE, origin: process.env.AUTH_ORIGIN };
@@ -49,6 +49,35 @@ test("renews expired access with verified Firebase identity and raw upstream ID 
     assert.equal(session.refreshToken, "rotated-refresh");
     assert.ok(session.refreshAfter > Date.now());
     assert.ok(session.expiresAt > Date.now() + 300 * 86400000);
+});
+
+test("login forwards the agreed terms version with the verified ID token", async () => {
+    mock.method(globalThis, "fetch", async (input: string | URL | Request, init: RequestInit) => {
+        if (String(input).startsWith("https://securetoken.googleapis.com/")) {
+            return Response.json({ id_token: "verified-id", refresh_token: "rotated-refresh", user_id: "firebase-user" });
+        }
+        assert.equal(String(input), "https://api.example.test/api/v1/auth/social");
+        assert.deepEqual(JSON.parse(String(init.body)), { idToken: "verified-id", agreedTermsVersion: "2026-10-15" });
+        assert.equal(new Headers(init.headers).get("content-type"), "application/json");
+        return Response.json({ accessToken: "new-access", user: { id: 7, nickname: "테스트", providerId: "firebase-user" }, isNewUser: true });
+    });
+    const { session, isNewUser } = await createSession("login-refresh", undefined, "2026-10-15");
+    assert.equal(isNewUser, true);
+    assert.equal(session.accessToken, "new-access");
+});
+
+test("login requests accept JSON with a terms version and legacy text/plain tokens", async () => {
+    const post = (body: string, type: string) => new Request("https://www.dutyit.net/api/auth/social", { method: "POST", headers: { "Content-Type": type }, body });
+    assert.deepEqual(await readSocialLoginRequest(post(JSON.stringify({ refreshToken: " token ", agreedTermsVersion: "2026-10-15" }), "application/json")),
+        { refreshToken: "token", agreedTermsVersion: "2026-10-15" });
+    assert.deepEqual(await readSocialLoginRequest(post("legacy-token", "text/plain; charset=utf-8")), { refreshToken: "legacy-token" });
+    for (const [body, type] of [
+        [JSON.stringify({ refreshToken: "token", agreedTermsVersion: "latest" }), "application/json"],
+        [JSON.stringify({ refreshToken: "" }), "application/json"],
+        ["{not json", "application/json"],
+        [" ", "text/plain"],
+        ["x".repeat(3001), "text/plain"],
+    ]) assert.equal(await readSocialLoginRequest(post(body, type)), null);
 });
 
 test("temporary refresh errors preserve the durable session cookie", async () => {

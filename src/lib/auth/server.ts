@@ -83,8 +83,25 @@ const SocialResponseSchema = z.object({
     accessToken: z.string().min(1), user: PublicUserSchema.extend({ providerId: z.string() }), isNewUser: z.boolean(),
 });
 
+const SocialLoginRequestSchema = z.object({
+    refreshToken: z.string().trim().min(1).max(3000),
+    agreedTermsVersion: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+});
+
+// The login form posts JSON with the agreed terms version. Tabs loaded before that
+// change still post the bare refresh token as text/plain, so accept both formats.
+export async function readSocialLoginRequest(request: Request) {
+    const text = await request.text().catch(() => "");
+    let body: unknown = { refreshToken: text };
+    if (request.headers.get("content-type")?.toLowerCase().startsWith("application/json")) {
+        try { body = JSON.parse(text); } catch { return null; }
+    }
+    const parsed = SocialLoginRequestSchema.safeParse(body);
+    return parsed.success ? parsed.data : null;
+}
+
 // Redeem the refresh token first so both credentials belong to the same verified account.
-export async function createSession(refreshToken: string, previous?: Session) {
+export async function createSession(refreshToken: string, previous?: Session, agreedTermsVersion?: string) {
     const firebaseResponse = await fetch(`https://securetoken.googleapis.com/v1/token?key=${firebaseConfig.apiKey}`, {
         method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({ grant_type: "refresh_token", refresh_token: refreshToken }),
@@ -98,8 +115,10 @@ export async function createSession(refreshToken: string, previous?: Session) {
     }
     const firebase = FirebaseRefreshSchema.parse(firebaseBody);
     if (previous && previous.uid !== firebase.user_id) throw new AuthError("다시 로그인해 주세요.", 401, true);
-    // The DuIt API binds @RequestBody String verbatim, so forward the verified ID token as raw text.
-    const response = await upstreamFetch("/v1/auth/social", undefined, "POST", firebase.id_token);
+    // The DuIt API accepts the raw ID token or a JSON SocialLoginRequest. Only a login that
+    // records terms agreement needs JSON; renewal keeps the raw token.
+    const body = agreedTermsVersion ? JSON.stringify({ idToken: firebase.id_token, agreedTermsVersion }) : firebase.id_token;
+    const response = await upstreamFetch("/v1/auth/social", undefined, "POST", body);
     const auth = SocialResponseSchema.parse(await response.json());
     if (auth.user.providerId !== firebase.user_id || (previous && previous.user.id !== auth.user.id)) throw new AuthError("다시 로그인해 주세요.", 401, true);
     const now = Date.now();

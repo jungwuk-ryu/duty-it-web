@@ -102,14 +102,14 @@ export function checkSession(): Promise<void> {
     return check;
 }
 
-export async function signInSession(refreshToken: string) {
+export async function signInSession(refreshToken: string, agreedTermsVersion: string) {
     const { preparePushLogout } = await import("../notifications/push");
     await preparePushLogout();
     return withAuthLock(async () => {
         const response = await request("/api/auth/social", {
             method: "POST",
-            headers: { "Content-Type": "text/plain; charset=utf-8" },
-            body: refreshToken,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ refreshToken, agreedTermsVersion }),
         });
         const parsed = UserResponseSchema.extend({ isNewUser: z.boolean() }).parse(await responseJson(response));
         generation++;
