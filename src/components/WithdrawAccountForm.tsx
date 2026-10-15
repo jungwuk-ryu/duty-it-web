@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { LoaderCircle, UserX } from "lucide-react";
 import { checkSession, useAuth, withdrawAccount } from "@/src/lib/auth/client";
-import { PRIVACY_POLICY_PATH } from "@/src/lib/legal";
+import { OPERATOR_EMAIL, PRIVACY_POLICY_PATH } from "@/src/lib/legal";
 import { Button } from "./ui/button";
 
 const REDIRECT_DELAY = 3_000;
@@ -65,7 +65,7 @@ export default function WithdrawAccountForm() {
                 {pending && <LoaderCircle size={16} className="animate-spin motion-reduce:animate-none" aria-hidden />}
                 {pending ? "탈퇴 처리 중" : "회원 탈퇴하기"}
             </Button>
-            {error && <p role="alert" className="mt-3 text-sm leading-6 text-destructive">{error} 문제가 계속되면 <a href="mailto:contact@dutyit.net" className="underline underline-offset-4">contact@dutyit.net</a>으로 알려 주세요.</p>}
+            {error && <p role="alert" className="mt-3 text-sm leading-6 text-destructive">{error} 문제가 계속되면 <a href={`mailto:${OPERATOR_EMAIL}`} className="underline underline-offset-4">{OPERATOR_EMAIL}</a>으로 알려 주세요.</p>}
         </section> : auth.status === "error" ? <div role="alert" className="flex flex-col items-start gap-4 rounded-2xl border border-border bg-background p-6">
             <p>{auth.message}</p>
             <Button variant="outline" onClick={() => void checkSession()}>다시 시도</Button>
