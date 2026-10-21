@@ -35,7 +35,7 @@ GA4 웹 스트림의 향상된 측정과 **브라우저 방문 기록 이벤트�
 
 ## 로컬 실행
 
-Node.js **22.23.4 이상인 22.x**와 npm, 접근 가능한 듀잇 API가 필요합니다. `.nvmrc`의 기준 버전은 22.23.4입니다.
+Node.js **24.22.1 이상인 24.x**와 npm, 접근 가능한 듀잇 API가 필요합니다. `.nvmrc`의 기준 버전은 24.22.1입니다.
 
 ```sh
 git clone https://github.com/jungwuk-ryu/duty-it-web.git
@@ -99,6 +99,6 @@ Google Indexing API를 실제로 호출하는 운영 명령에는 별도로 `GOO
 
 ### Node.js 보안 업데이트와 Vercel 배포
 
-운영의 Node.js 22.x를 유지하며, [2026-10-21 Node.js 보안 공지](https://nodejs.org/en/blog/vulnerability/october-2026-security-releases)의 수정 버전인 22.23.4를 최소 기준으로 사용합니다. 서버의 외부 API `fetch`도 Brotli 응답을 디코딩할 수 있으므로 런타임 업데이트가 필요합니다.
+[2026-10-21 Node.js 보안 공지](https://nodejs.org/en/blog/vulnerability/october-2026-security-releases)의 수정 버전인 24.22.1을 최소 기준으로 사용합니다. 서버의 외부 API `fetch`도 Brotli 응답을 디코딩할 수 있으므로 런타임 업데이트가 필요합니다.
 
 `package.json`의 `engines.node`가 Vercel의 Node.js 메이저 버전을 선택합니다. [Vercel은 마이너·패치 버전을 관리](https://vercel.com/docs/functions/runtimes/node-js/node-js-versions)하므로 이 설정만으로 패치 적용을 보장하지 않습니다. 빌드 전과 Node 서버 시작 시 실제 버전을 검사해 기준보다 오래된 런타임은 중단하고, 통과한 버전은 `[node-security]`로 빌드·런타임 로그에 남깁니다. Preview에서 이 로그와 주요 경로의 정상 응답을 확인한 뒤 main에 머지하고 Production에서도 다시 확인하세요.
