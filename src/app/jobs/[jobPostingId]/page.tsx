@@ -27,7 +27,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function JobPostingPage({ params }: Props) {
     const job = await fetchJobDetail((await params).jobPostingId);
     const open = isJobOpen(job);
-    const applicationUrl = open && isHttpUrl(job.dtlRecrContUrl) ? job.dtlRecrContUrl : null;
+    const sourceUrl = isHttpUrl(job.dtlRecrContUrl) ? job.dtlRecrContUrl : null;
+    const applicationUrl = open ? sourceUrl : null;
     const closingLabel = getJobClosingLabel(job);
     const postedDate = getKoreanDate(job.postedAt);
     const jobData = getJobStructuredData(job);
@@ -69,13 +70,13 @@ export default async function JobPostingPage({ params }: Props) {
                     <section aria-labelledby="job-summary">
                         <h2 id="job-summary" className="text-lg font-bold text-foreground">채용 요약</h2>
                         <dl className="mt-4 grid grid-cols-1 gap-x-8 gap-y-5 sm:grid-cols-2 lg:grid-cols-3">
-                            <DetailMeta icon={MapPin} label="근무지" value={job.workRegion || "근무지 미정"} />
-                            <DetailMeta icon={BriefcaseBusiness} label="고용 형태" value={getJobEmploymentSummary(job)} />
-                            <DetailMeta icon={WalletCards} label="급여" value={job.salTpNm || "급여 협의"} />
-                            <DetailMeta icon={CalendarClock} label="접수 마감" value={getJobDeadlineLabel(job.receiptCloseDt)} />
+                            <DetailMeta icon={MapPin} label="근무지" value={job.workRegion.trim() || "원문 확인 필요"} />
+                            <DetailMeta icon={BriefcaseBusiness} label="고용 형태" value={job.empTpNm.trim() ? getJobEmploymentSummary(job) : "원문 확인 필요"} />
+                            <DetailMeta icon={WalletCards} label="급여" value={job.salTpNm.trim() || "원문 확인 필요"} />
+                            <DetailMeta icon={CalendarClock} label="접수 마감" value={job.receiptCloseDt.trim() ? getJobDeadlineLabel(job.receiptCloseDt) : "원문 확인 필요"} />
                             {postedDate && <DetailMeta icon={CalendarClock} label="고용24 게시일" value={postedDate} />}
-                            <DetailMeta icon={UsersRound} label="모집 인원" value={job.collectPsncnt ? `${job.collectPsncnt}명` : "미정"} />
-                            <DetailMeta icon={GraduationCap} label="경력·학력" value={`${job.enterTpNm || "경력 무관"} · ${job.eduNm || "학력 무관"}`} />
+                            <DetailMeta icon={UsersRound} label="모집 인원" value={job.collectPsncnt ? `${job.collectPsncnt}명` : "원문 확인 필요"} />
+                            <DetailMeta icon={GraduationCap} label="경력·학력" value={`${job.enterTpNm.trim() || "경력 원문 확인 필요"} · ${job.eduNm.trim() || "학력 원문 확인 필요"}`} />
                         </dl>
                     </section>
 
@@ -137,6 +138,10 @@ export default async function JobPostingPage({ params }: Props) {
                     )}
 
                     <section className="border-t border-border/60 pt-7" aria-label="채용 정보 출처">
+                        <p className="mb-3 text-sm leading-7 text-muted-foreground">이 채용 정보는 고용24에서 제공한 자료입니다. 실제 지원 방법과 최신 모집 조건은 고용24 원문에서 확인해 주세요.</p>
+                        {sourceUrl && <a href={sourceUrl} target="_blank" rel="noopener noreferrer" className="mb-6 inline-flex items-center gap-1.5 text-sm font-semibold text-brand underline underline-offset-4">
+                            고용24 원문 확인<ExternalLink size={14} aria-hidden="true" /><span className="sr-only"> (새 탭)</span>
+                        </a>}
                         <Image
                             src="/job-information-source-work24.svg"
                             alt="고용24 제공 채용 정보 출처"

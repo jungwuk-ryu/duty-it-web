@@ -1,5 +1,7 @@
 # 듀잇 웹 검색 노출 정책과 운영
 
+2026-10-22 AI 검색 관련 공식 근거는 [OpenAI 조사](geo/openai-research.md)와 [Google·Claude 조사](geo/google-claude-research.md)를 참고한다. `npm run geo:audit -- --base-url http://localhost:3000`으로 실행 중인 사이트의 검색·방문 봇별 공개 HTML, robots와 개인 화면 noindex를 점검할 수 있다. 상세 표본은 `--event-id`, `--job-id`, JSON 결과 저장은 `--output`으로 지정한다. 이 점검은 실제 봇 IP·검색 색인·모델 인용 성과 검증과 구분한다.
+
 ## 사이트맵
 
 `/sitemap.xml`은 색인 파일이며 `/sitemap-static-0.xml`, `/sitemap-events-0.xml`, `/sitemap-jobs-0.xml` 등을 가리킨다. 각 파일은 URL 50,000개 또는 압축 전 UTF-8 50MB에 도달하기 전에 분할한다. 공개 파일을 루트 경로에 두기 위해 Next.js rewrite를 사용한다. JSX가 없는 XML 응답은 `route.ts`에서 생성한다.

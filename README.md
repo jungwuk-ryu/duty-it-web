@@ -79,6 +79,7 @@ Google Indexing API를 실제로 호출하는 운영 명령에는 별도로 `GOO
 | `npm run lint` | ESLint 검사 |
 | `npm test` | 인증·북마크·행사·채용·SEO 회귀 테스트 |
 | `npm run seo:audit -- --base-url http://localhost:3000` | 실행 중인 로컬 사이트의 HTTP·메타데이터·사이트맵 표본 점검 |
+| `npm run geo:audit -- --base-url http://localhost:3000` | OpenAI·Claude·Google·Bing 검색/방문 UA의 공개 HTML, robots와 개인 화면 noindex 점검 |
 | `npm run seo:notify-jobs -- --url https://www.dutyit.net/jobs/6522` | 채용 URL의 Google Indexing API 전송 계획 확인. 실제 전송은 별도 `--publish`가 필요합니다. |
 
 `seo:audit`는 실행 중인 사이트를 검사하므로 로컬에서 사용할 때는 먼저 빌드된 앱을 시작하세요. 검사 범위와 운영 전송 조건은 [SEO 운영 지침](docs/seo.md)에 있습니다.

@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "seo:audit": "tsx scripts/audit-seo.ts",
+    "geo:audit": "tsx scripts/audit-geo.ts",
     "seo:notify-jobs": "tsx scripts/notify-job-indexing.ts",
     "test": "tsx --conditions=react-server --test src/lib/auth/*.test.ts src/lib/api/*.test.ts src/lib/*.test.ts"
   },

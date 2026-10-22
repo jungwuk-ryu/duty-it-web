@@ -1,5 +1,10 @@
-# Public pages are open to search, AI search, and training crawlers.
-# The wildcard group also keeps /api/ excluded for those crawlers.
+# Preserve the existing public-content policy for search and training.
+# OAI-SearchBot, Claude-SearchBot, Claude-User, Googlebot and Bingbot use
+# this wildcard group. Separate bot groups would NOT inherit /api/ below.
+# GPTBot and ClaudeBot concern training; Google-Extended covers both
+# Gemini training and grounding. Do not change those policies just for GEO.
+# Private UI routes remain crawlable so their noindex metadata can be read.
+# robots.txt is not authentication. Operational checks: npm run geo:audit.
 User-agent: *
 Allow: /
 Disallow: /api/

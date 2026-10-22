@@ -45,6 +45,7 @@
 .textLink:hover svg { transform: translate(2px, -2px); }
 
 .heroFigure { position: relative; width: 100%; margin: 0; padding-block: 18px 10px; }
+.heroCaption { max-width: 380px; margin: 12px auto 0; color: var(--duit-muted-foreground); font-size: 11px; line-height: 1.7; text-align: center; word-break: keep-all; }
 .productStage { position: relative; width: 580px; height: 490px; left: 50%; transform: translateX(-50%); }
 .heroGlow {
   position: absolute;

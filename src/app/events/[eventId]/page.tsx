@@ -43,7 +43,7 @@ export default async function EventDetailPage({ params }: Props) {
     <EventDetail
       key={event.id}
       event={event}
-      eventContent={<Suspense fallback={null}><EventContentSummary eventId={eventId} /></Suspense>}
+      eventContent={<Suspense fallback={null}><EventContentSummary eventId={eventId} sourceUrl={event.uri} /></Suspense>}
     />
     <Suspense fallback={null}><HostEvents hostId={event.host.id} name={event.host.name} eventId={event.id} /></Suspense>
   </div>;

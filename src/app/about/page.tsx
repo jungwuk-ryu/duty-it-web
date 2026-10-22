@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { getPageMetadata, serializeJsonLd, SITE_ORIGIN } from "@/src/lib/seo";
-import { CONTACT_EMAIL, getAboutStructuredData, INFORMATION_POLICIES, OFFICIAL_APP_LINKS, SERVICE_FAQS, SITE_INTRO } from "@/src/lib/site-info";
+import { CONTACT_EMAIL, getAboutStructuredData, INFORMATION_POLICIES, OFFICIAL_APP_LINKS, SERVICE_FAQS, SERVICE_OVERVIEW, SITE_INTRO } from "@/src/lib/site-info";
 
 export const metadata = getPageMetadata({
   title: "듀잇 소개 · 간호 행사와 채용 이용 안내 | 듀잇",
-  description: "듀잇은 간호사와 간호대학생을 위한 행사·대외활동과 채용 정보를 모아보는 서비스입니다. 정보 출처, 북마크 이용 방법, 행사 제보와 문의 방법을 안내합니다.",
+  description: "간호사와 간호대학생을 위한 듀잇의 정보 출처와 웹 이용 안내입니다. 로그인 없는 탐색, 북마크, 캘린더 저장, 새 행사 구독과 브라우저 알림을 알아보세요.",
   url: `${SITE_ORIGIN}/about`,
 });
 
@@ -22,6 +22,14 @@ export default function AboutPage() {
         <h1 className="text-3xl font-bold leading-tight tracking-tight sm:text-4xl">듀잇은 어떤 서비스인가요?</h1>
         <p className="mt-6 text-lg leading-8 text-foreground">{SITE_INTRO}</p>
         <p className="mt-3 leading-7 text-muted-foreground">여러 곳에 흩어진 기회를 찾고, 관심 있는 정보를 북마크로 모아보세요.</p>
+        <dl className="mt-6 space-y-3 rounded-xl bg-muted/60 p-5 text-sm leading-6">
+          {SERVICE_OVERVIEW.map(({ label, text }) => (
+            <div key={label} className="grid gap-1 sm:grid-cols-[6rem_1fr] sm:gap-4">
+              <dt className="font-semibold">{label}</dt>
+              <dd className="text-muted-foreground">{text}</dd>
+            </div>
+          ))}
+        </dl>
         <div className="mt-6 flex flex-wrap gap-x-6 gap-y-3">
           <Link href="/events" className={linkClassName}>간호 행사·대외활동 보기</Link>
           <Link href="/jobs" className={linkClassName}>간호 채용 공고 보기</Link>
@@ -44,10 +52,12 @@ export default function AboutPage() {
       <section id="faq" aria-labelledby="faq-title" className="mt-12 border-t border-border pt-9">
         <h2 id="faq-title" className="text-xl font-bold">이용할 때 궁금한 점</h2>
         <div className="mt-6 space-y-8">
-          {SERVICE_FAQS.map(({ question, answer, href, linkLabel }) => (
-            <section key={question}>
-              <h3 className="font-semibold leading-7">{question}</h3>
-              <p className="mt-2 leading-7 text-muted-foreground">{answer}</p>
+          {SERVICE_FAQS.map(({ id, question, answer, href, linkLabel }) => (
+            <section key={id} id={id} aria-labelledby={`${id}-title`} className="scroll-mt-24">
+              <h3 id={`${id}-title`} className="font-semibold leading-7">
+                <a href={`#${id}`} className="rounded underline decoration-border underline-offset-4 hover:decoration-brand focus-visible:outline-2 focus-visible:outline-brand">{question}</a>
+              </h3>
+              <p id={`${id}-answer`} className="mt-2 scroll-mt-24 leading-7 text-muted-foreground">{answer}</p>
               <Link href={href} className={`mt-3 inline-block text-sm ${linkClassName}`}>{linkLabel}</Link>
             </section>
           ))}
