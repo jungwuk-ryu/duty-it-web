@@ -2,15 +2,19 @@
   "name": "out",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=22.23.4 <23"
+  },
   "scripts": {
     "dev": "next dev --turbopack",
+    "prebuild": "node scripts/check-node-version.mjs",
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint",
     "seo:audit": "tsx scripts/audit-seo.ts",
     "geo:audit": "tsx scripts/audit-geo.ts",
     "seo:notify-jobs": "tsx scripts/notify-job-indexing.ts",
-    "test": "tsx --conditions=react-server --test src/lib/auth/*.test.ts src/lib/api/*.test.ts src/lib/*.test.ts"
+    "test": "tsx --conditions=react-server --test scripts/*.test.mjs src/lib/auth/*.test.ts src/lib/api/*.test.ts src/lib/*.test.ts"
   },
   "dependencies": {
     "@heroui/react": "^3.2.4",
