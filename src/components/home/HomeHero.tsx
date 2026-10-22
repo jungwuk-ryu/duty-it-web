@@ -50,8 +50,8 @@ export default function HomeHero() {
             </a>
           </div>
         </div>
-        <figure className={styles.heroFigure} aria-label="듀잇 앱 행사 탐색 목업">
-          <div className={styles.productStage} aria-hidden="true">
+        <figure className={styles.heroFigure} aria-label="듀잇 앱 행사 탐색 예시 화면">
+          <div className={styles.productStage} aria-hidden="true" data-nosnippet="">
             <div className={styles.heroGlow} />
             <div className={styles.phone}>
               <div className={styles.phoneScreen}>
@@ -119,6 +119,7 @@ export default function HomeHero() {
               </div>
             </div>
           </div>
+          <figcaption className={styles.heroCaption}>앱 이용 화면 예시입니다. 표시된 행사·주최자·일정은 실제 모집 정보가 아닙니다.</figcaption>
         </figure>
       </div>
     </section>

@@ -11,7 +11,7 @@ export default async function EventPanelPage({ params }: { params: Promise<{ eve
     <EventDetail
       key={event.id}
       event={event}
-      eventContent={<Suspense fallback={null}><EventContentSummary eventId={eventId} headingLevel="h3" /></Suspense>}
+      eventContent={<Suspense fallback={null}><EventContentSummary eventId={eventId} sourceUrl={event.uri} headingLevel="h3" /></Suspense>}
       variant="panel"
     />
   </EventDetailPanel>;
