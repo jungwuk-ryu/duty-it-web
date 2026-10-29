@@ -173,6 +173,23 @@
     mix-blend-mode: normal;
 }
 
+/* Shared event image between a list and the detail panel (src/lib/event-hero.ts). */
+:root[data-event-hero] [data-event-hero-target] {
+    view-transition-name: event-hero;
+}
+
+::view-transition-group(event-hero) {
+    animation-duration: 420ms;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+::view-transition-old(event-hero),
+::view-transition-new(event-hero) {
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+}
+
 .events-list-enter {
     animation: events-list-enter 400ms ease-out both;
 }
@@ -190,7 +207,10 @@
     .events-list-enter { animation: none; }
     ::view-transition-group(event-search),
     ::view-transition-old(event-search),
-    ::view-transition-new(event-search) {
+    ::view-transition-new(event-search),
+    ::view-transition-group(event-hero),
+    ::view-transition-old(event-hero),
+    ::view-transition-new(event-hero) {
         animation: none;
     }
 }

@@ -3,8 +3,9 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { Button } from "@/src/components/ui/button";
+import { closeEventWithHero, isHeroOpening } from "@/src/lib/event-hero";
 import type { Event } from "@/src/lib/schemas/event";
 import EventActions from "./EventActions";
 import { useNotifications } from "../NotificationProvider";
@@ -13,10 +14,16 @@ import styles from "./event-detail.module.css";
 export default function EventDetailPanel({ children, event }: { children: ReactNode; event?: Event }) {
   const router = useRouter();
   const { setPromptContainer } = useNotifications();
-  return <Dialog.Root open onOpenChange={(open) => { if (!open) router.back(); }}>
+  // A hero transition already animates the panel in; its own slide would fight it.
+  const [heroOpened] = useState(() => isHeroOpening(event?.id));
+  const close = () => router.back();
+  return <Dialog.Root open onOpenChange={(open) => {
+    if (open) return;
+    if (!event || !closeEventWithHero(event.id, close)) close();
+  }}>
     <Dialog.Portal>
-      <Dialog.Overlay className={styles.overlay} />
-      <Dialog.Content className={styles.panel} aria-describedby={undefined} onCloseAutoFocus={(e) => {
+      <Dialog.Overlay className={`${styles.overlay} ${heroOpened ? styles.heroOpened : ""}`} />
+      <Dialog.Content className={`${styles.panel} ${heroOpened ? styles.heroOpened : ""}`} aria-describedby={undefined} onCloseAutoFocus={(e) => {
         e.preventDefault();
         // The route unmounts the dialog. Restore focus to the card that opened it.
         if (event) document.querySelector<HTMLAnchorElement>(`a[href="/events/${event.id}"]`)?.focus({ preventScroll: true });

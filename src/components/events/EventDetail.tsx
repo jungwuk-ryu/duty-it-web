@@ -41,7 +41,7 @@ export default function EventDetail({
   return (
     <article className={`${styles.detail} ${variant === "panel" ? styles.panelDetail : styles.pageDetail}`}>
       <div className={styles.detailScroll}>
-        <EventPoster src={event.thumbnail} title={event.title} />
+        <EventPoster src={event.thumbnail} title={event.title} heroTarget={variant === "panel" ? event.id : undefined} />
         <div className={styles.information}>
           <div className={styles.heading}>
             <div className={styles.tags}><CategoryTag category={event.eventType} /><span className={styles.status}>{getEventRecruitmentStatus(event)}</span></div>

@@ -21,6 +21,11 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
+        // Instagram DM collections are private links; never index them.
+        source: '/ig/:path*',
+        headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow, noimageindex' }],
+      },
+      {
         source: '/.well-known/apple-app-site-association',
         headers: [
           {

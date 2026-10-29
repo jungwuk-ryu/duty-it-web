@@ -7,10 +7,10 @@ import EventThumbnail from "@/src/components/ui/EventThumbnail";
 import { Button } from "@/src/components/ui/button";
 import styles from "./event-detail.module.css";
 
-export default function EventPoster({ src, title }: { src: string | null; title: string }) {
+export default function EventPoster({ src, title, heroTarget }: { src: string | null; title: string; heroTarget?: number }) {
   const [failed, setFailed] = useState(false);
   const safeSource = src?.startsWith("https://api.dutyit.net/uploads/") ? src : null;
-  return <div className={styles.poster}>
+  return <div className={styles.poster} data-event-hero-target={heroTarget}>
     <div className="absolute inset-0"><EventThumbnail src={src} alt={`${title} 행사 안내 포스터`} className="object-cover object-top" sizes="(min-width: 1024px) 560px, 100vw" priority /></div>
     {safeSource && <Dialog.Root>
       <Dialog.Trigger asChild><Button variant="outline" size="sm" className="absolute bottom-3 right-3 gap-2 rounded-full bg-background/95 shadow-sm"><Expand size={14} aria-hidden />포스터 전체 보기</Button></Dialog.Trigger>
