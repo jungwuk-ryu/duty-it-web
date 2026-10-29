@@ -92,4 +92,5 @@
   .pageDetail .actions { position: sticky; bottom: 0; width: calc(100% + 40px); margin: 0 -20px; padding: 12px 20px max(12px, env(safe-area-inset-bottom)); background: var(--duit-background); border-top: 1px solid var(--duit-border); z-index: 1; }
   .related { margin-top: 40px; }
 }
+.heroOpened { animation: none; }
 @media (prefers-reduced-motion: reduce) { .overlay, .panel { animation: none; } }
