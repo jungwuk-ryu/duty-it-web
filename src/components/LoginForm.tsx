@@ -7,6 +7,7 @@ import { ArrowLeft, LoaderCircle } from "lucide-react";
 import { type ComponentProps, useState } from "react";
 import { inMemoryPersistence, setPersistence, signInWithPopup, signOut } from "firebase/auth";
 import { safeReturnTo, signInSession, useAuth } from "@/src/lib/auth/client";
+import { PRIVACY_POLICY_PATH, TERMS_PATH } from "@/src/lib/legal";
 
 import { Button } from "@/src/components/ui/button";
 import {
@@ -132,7 +133,15 @@ export default function LoginForm() {
                                     홈으로 돌아가기
                                 </Link>
                                 <p className="mt-7 text-xs leading-5 text-subtle-foreground">
-                                    계속하면 듀잇의 이용약관 및 개인정보 처리방침에 동의하게 됩니다.
+                                    계속하면 듀잇{" "}
+                                    <Link href={TERMS_PATH} target="_blank" rel="noopener" className="font-semibold underline underline-offset-4 hover:text-brand">
+                                        이용약관<span className="sr-only"> (새 탭)</span>
+                                    </Link>
+                                    에 동의하게 됩니다. 회원 정보는{" "}
+                                    <Link href={PRIVACY_POLICY_PATH} target="_blank" rel="noopener" className="font-semibold underline underline-offset-4 hover:text-brand">
+                                        개인정보 처리방침<span className="sr-only"> (새 탭)</span>
+                                    </Link>
+                                    에 따라 처리돼요.
                                 </p>
                             </>
                         )}

@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { JOB_INFO_REGISTRATION, PRIVACY_POLICY_PATH, REPORT_PATH, TERMS_PATH } from "@/src/lib/legal";
 
 export default function Footer() {
   return (
@@ -12,7 +13,7 @@ export default function Footer() {
           <div className="text-[11px] leading-6 sm:text-xs">
             <p>성장을 포기하지 않는 당신을 응원합니다.</p>
             <p>듀잇은 주최자가 아니며 참가·환불은 주최 측 정책을 따릅니다.</p>
-            <p className="mt-1">직업정보제공사업 신고번호: J1205020260001 (서울북부 제2026-1호)</p>
+            <p className="mt-1">직업정보제공사업 신고번호: {JOB_INFO_REGISTRATION}</p>
           </div>
         </div>
         <nav aria-label="서비스 안내" className="flex flex-wrap gap-x-5 gap-y-3 text-xs">
@@ -20,6 +21,9 @@ export default function Footer() {
           <Link href="https://status.dutyit.net/" className="no-underline transition hover:text-brand">서비스 상태</Link>
           <Link href="/submit-event" className="no-underline transition hover:text-brand" prefetch={false}>행사 제보하기</Link>
           <a href="mailto:contact@dutyit.net" className="no-underline transition hover:text-brand">문의하기</a>
+          <Link href={TERMS_PATH} className="no-underline transition hover:text-brand">이용약관</Link>
+          <Link href={PRIVACY_POLICY_PATH} className="font-bold text-foreground no-underline transition hover:text-brand">개인정보 처리방침</Link>
+          <Link href={REPORT_PATH} className="no-underline transition hover:text-brand" prefetch={false}>권리침해 신고</Link>
         </nav>
       </div>
     </footer>
